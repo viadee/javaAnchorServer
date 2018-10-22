@@ -16,30 +16,20 @@ import me.kroeker.alex.anchor.jserver.service.RuleService;
 @RestController
 public class RuleController implements RuleService {
 
-    @Override
-    @RequestMapping(
-            value = "/{h2oServer}/frames/{frameId}/conditions",
-            method = RequestMethod.GET,
-            produces = { "application/json" })
-    public Map<String, Collection<String>> caseSelectConditions(
-            @PathVariable String h2oServer,
-            @PathVariable String modelId,
-            @PathVariable String frameId
-    ) {
-        return null;
-    }
+	@Override
+	@RequestMapping(value = "/{h2oServer}/frames/{frameId}/conditions", method = RequestMethod.GET, produces = {
+			"application/json" })
+	public Map<String, Collection<String>> caseSelectConditions(@PathVariable String h2oServer,
+			@PathVariable String modelId, @PathVariable String frameId) {
+		return null;
+	}
 
-    @Override
-    @RequestMapping(
-            value = "/{h2oServer}/rule/{modelId}/{frameId}",
-            method = RequestMethod.GET,
-            produces = { "application/json" })
-    public Rule createRule(
-            @PathVariable String h2oServer,
-            @PathVariable String modelId,
-            @PathVariable String frameId,
-            Collection<String> conditions) {
-        return null;
-    }
+	@Override
+	@RequestMapping(value = "/{h2oServer}/rule/{modelId}/{frameId}", method = RequestMethod.GET, produces = {
+			"application/json" })
+	public Rule createRule(@PathVariable String h2oServer, @PathVariable String modelId, @PathVariable String frameId,
+			Collection<String> conditions) {
+		return null;
+	}
 
 }

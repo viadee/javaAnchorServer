@@ -13,13 +13,11 @@ import me.kroeker.alex.anchor.jserver.service.DataService;
 @RestController
 public class DataController implements DataService {
 
-    @Override
-    @RequestMapping(
-            value = "/{h2oServer}/frames/{frameId}",
-            method = RequestMethod.GET,
-            produces = { "application/json" })
-    public FrameSummary getFrame(@PathVariable String h2oServer, @PathVariable String frameId) {
-        return null;
-    }
+	@Override
+	@RequestMapping(value = "/{h2oServer}/frames/{frameId}", method = RequestMethod.GET, produces = {
+			"application/json" })
+	public FrameSummary getFrame(@PathVariable String h2oServer, @PathVariable String frameId) {
+		return null;
+	}
 
 }
