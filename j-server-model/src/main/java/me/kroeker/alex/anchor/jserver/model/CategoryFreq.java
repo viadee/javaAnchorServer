@@ -1,0 +1,49 @@
+package me.kroeker.alex.anchor.jserver.model;
+
+import java.util.Objects;
+
+/**
+ * @author ak902764
+ */
+public class CategoryFreq {
+    private String name;
+    private double freq;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getFreq() {
+        return freq;
+    }
+
+    public void setFreq(double freq) {
+        this.freq = freq;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CategoryFreq that = (CategoryFreq) o;
+        return Double.compare(that.freq, freq) == 0 &&
+                Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, freq);
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryFreq{" +
+                "name='" + name + '\'' +
+                ", freq=" + freq +
+                '}';
+    }
+}
