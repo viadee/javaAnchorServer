@@ -12,10 +12,10 @@ public interface ConfigurationService {
 
     String getVersion();
 
-    Boolean tryConnect(String h2oModel);
+    Boolean tryConnect(String connectionName);
 
-    Collection<Model> getModels(String h2oModel);
+    Collection<Model> getModels(String connectionName);
 
-    Collection<DataFrame> getFrames(String h2oModel);
+    Collection<DataFrame> getFrames(String connectionName);
 
 }

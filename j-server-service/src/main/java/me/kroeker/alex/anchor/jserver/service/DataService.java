@@ -1,5 +1,8 @@
 package me.kroeker.alex.anchor.jserver.service;
 
+import java.util.Collection;
+import java.util.Map;
+
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 
 /**
@@ -7,6 +10,8 @@ import me.kroeker.alex.anchor.jserver.model.FrameSummary;
  */
 public interface DataService {
 
-    FrameSummary getFrame(String h2oServer, String frameId);
+    Map<String, Collection<String>> caseSelectConditions(String connectionName, String modelId, String frameId);
+
+    FrameSummary getFrame(String connectionName, String frameId);
 
 }
