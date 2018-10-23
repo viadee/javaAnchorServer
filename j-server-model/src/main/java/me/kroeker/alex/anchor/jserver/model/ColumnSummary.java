@@ -11,7 +11,7 @@ public abstract class ColumnSummary<T extends Object> {
     private String label;
     private String column_type;
     private Collection<T> data;
-    private int missing_count;
+    private long missing_count;
 
     public String getFrame_id() {
         return frame_id;
@@ -45,11 +45,11 @@ public abstract class ColumnSummary<T extends Object> {
         this.data = data;
     }
 
-    public int getMissing_count() {
+    public long getMissing_count() {
         return missing_count;
     }
 
-    public void setMissing_count(int missing_count) {
+    public void setMissing_count(long missing_count) {
         this.missing_count = missing_count;
     }
 

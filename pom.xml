@@ -27,6 +27,7 @@
         <module>j-server-business</module>
         <module>j-server-dao-spark</module>
         <module>j-server-dao-h2o</module>
+        <module>h2o-bindings</module>
     </modules>
 
     <properties>

@@ -3,8 +3,6 @@ package me.kroeker.alex.anchor.jserver.dao.h2o;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,6 @@ import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
-import water.bindings.H2oApi;
 import water.bindings.pojos.AboutV3;
 import water.bindings.pojos.FrameBaseV3;
 import water.bindings.pojos.FramesListV3;

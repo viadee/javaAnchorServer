@@ -28,11 +28,22 @@
             <artifactId>spring-boot-starter-jersey</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/ai.h2o/h2o-bindings -->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/ai.h2o/h2o-bindings &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>ai.h2o</groupId>-->
+            <!--<artifactId>h2o-bindings</artifactId>-->
+            <!--<version>3.20.0.6</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>ai.h2o</groupId>
+            <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>h2o-bindings</artifactId>
             <version>3.20.0.10</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
         </dependency>
     </dependencies>
 

@@ -1,5 +1,6 @@
 package me.kroeker.alex.anchor.jserver.model;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -9,7 +10,7 @@ public class FrameSummary {
 
     private String frame_id;
     private int row_count;
-    private String column_summary_list;
+    private Collection<ColumnSummary<?>> column_summary_list;
 
     public String getFrame_id() {
         return frame_id;
@@ -27,11 +28,11 @@ public class FrameSummary {
         this.row_count = row_count;
     }
 
-    public String getColumn_summary_list() {
+    public Collection<ColumnSummary<?>> getColumn_summary_list() {
         return column_summary_list;
     }
 
-    public void setColumn_summary_list(String column_summary_list) {
+    public void setColumn_summary_list(Collection<ColumnSummary<?>> column_summary_list) {
         this.column_summary_list = column_summary_list;
     }
 
@@ -40,8 +41,8 @@ public class FrameSummary {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FrameSummary that = (FrameSummary) o;
-        return Objects.equals(frame_id, that.frame_id) &&
-                Objects.equals(row_count, that.row_count) &&
+        return row_count == that.row_count &&
+                Objects.equals(frame_id, that.frame_id) &&
                 Objects.equals(column_summary_list, that.column_summary_list);
     }
 
@@ -54,8 +55,8 @@ public class FrameSummary {
     public String toString() {
         return "FrameSummary{" +
                 "frame_id='" + frame_id + '\'' +
-                ", row_count='" + row_count + '\'' +
-                ", column_summary_list='" + column_summary_list + '\'' +
+                ", row_count=" + row_count +
+                ", column_summary_list=" + column_summary_list +
                 '}';
     }
 }
