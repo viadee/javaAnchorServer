@@ -9,6 +9,14 @@ public class CategoryFreq {
     private String name;
     private double freq;
 
+    public CategoryFreq() {
+    }
+
+    public CategoryFreq(String name, double freq) {
+        this.name = name;
+        this.freq = freq;
+    }
+
     public String getName() {
         return name;
     }
