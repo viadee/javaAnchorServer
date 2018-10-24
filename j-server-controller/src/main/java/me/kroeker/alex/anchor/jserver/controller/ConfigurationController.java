@@ -1,19 +1,18 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
-import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
+import me.kroeker.alex.anchor.jserver.model.TryConnectResponse;
 import me.kroeker.alex.anchor.jserver.service.ConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.core.MediaType;
+import java.util.Collection;
 
 /**
  * @author ak902764
@@ -27,18 +26,20 @@ public class ConfigurationController implements ConfigurationService {
     private ConfigurationDAO configuration;
 
     @Override
-    @RequestMapping(path = "/", method = RequestMethod.GET, headers = "Accept=application/json", produces = {
-            "application/json" })
+    @RequestMapping(path = "/", method = RequestMethod.GET, headers = "Accept=application/json",
+            produces = MediaType.APPLICATION_JSON)
     public String getVersion() {
         // TODO get version implementieren
         return "hello";
     }
 
     @Override
-    @RequestMapping(path = "/{connectionName}/try_connect", method = RequestMethod.GET, produces = { "application/json" })
-    public Boolean tryConnect(@PathVariable String connectionName) {
+    @RequestMapping(path = "/{connectionName}/try_connect", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON)
+    public  TryConnectResponse tryConnect(@PathVariable String connectionName) {
         try {
-            return this.configuration.tryConnect(connectionName);
+            boolean canConnect = this.configuration.tryConnect(connectionName);
+            return new TryConnectResponse(canConnect);
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
@@ -47,7 +48,8 @@ public class ConfigurationController implements ConfigurationService {
     }
 
     @Override
-    @RequestMapping(path = "/{connectionName}/models", method = RequestMethod.GET, produces = { "application/json" })
+    @RequestMapping(path = "/{connectionName}/models", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON)
     public Collection<Model> getModels(@PathVariable String connectionName) {
         try {
             return this.configuration.getModels(connectionName);
@@ -59,7 +61,8 @@ public class ConfigurationController implements ConfigurationService {
     }
 
     @Override
-    @RequestMapping(path = "/{connectionName}/frames", method = RequestMethod.GET, produces = { "application/json" })
+    @RequestMapping(path = "/{connectionName}/frames", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON)
     public Collection<DataFrame> getFrames(@PathVariable String connectionName) {
         try {
             return this.configuration.getFrames(connectionName);

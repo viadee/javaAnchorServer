@@ -11,5 +11,5 @@ public class AnchorServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(AnchorServerApplication.class, args);
     }
-    
+
 }
