@@ -1,26 +1,16 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
-import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+import me.kroeker.alex.anchor.jserver.model.*;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.stereotype.Component;
 import water.bindings.pojos.ColV3;
 import water.bindings.pojos.FrameKeyV3;
 import water.bindings.pojos.FrameV3;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author ak902764
@@ -29,9 +19,38 @@ import water.bindings.pojos.FrameV3;
 public class DataH2o extends BaseH2oAccess implements DataDAO {
 
     @Override
-    public Map<String, Collection<String>> caseSelectConditions(String h2oServer, String modelId, String frameId)
+    public Map<String, Map<Integer, String>> caseSelectConditions(String connectionName, String frameId)
             throws DataAccessException {
-        return null;
+        Collection<ColumnSummary<?>> columns = this.getFrame(connectionName, frameId).getColumn_summary_list();
+
+        Map<String, Map<Integer, String>> conditions = new HashMap<>();
+        for (ColumnSummary column : columns) {
+            Map<Integer, String> columnConditions = new HashMap<>();
+            String featureName = column.getLabel();
+
+            if ("enum".equals(column.getColumn_type()) || "string".equals(column.getColumn_type())) {
+                List<CategoryFreq> categories = ((CategoricalColumnSummary) column).getCategories();
+                for (int i = 0; i < categories.size(); i++) {
+                    columnConditions.put(i, categories.get(i).getName());
+                }
+            } else {
+                int buckets = 4;
+                ContinuousColumnSummary cColumn = (ContinuousColumnSummary) column;
+                int columnMin = cColumn.getColumn_min();
+                int columnMax = cColumn.getColumn_max();
+                double step = ((double) columnMax - columnMin) / buckets;
+
+                for (int i = 0; i < buckets; i++) {
+                    double conditionMin = columnMin + i * step;
+                    double conditionMax = columnMin + (i + 1) * step;
+
+                    columnConditions.put(i, conditionMin + " <= " + featureName + " < " + conditionMax); // '{} <= {} < {}'.format(condition_min, column.label, condition_max));
+                }
+            }
+
+            conditions.put(featureName, columnConditions);
+        }
+        return conditions;
     }
 
     @Override
@@ -68,6 +87,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                         categories.add(new CategoryFreq(domain[i], freq));
                         freqCount += freq;
 
+                        // TODO freq count is wrong
                         if (categories.size() > domainMaxItems) {
                             categories.add(new CategoryFreq(
                                     (domainLength - domainMaxItems) + " more",
@@ -84,7 +104,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                     column.setData(Arrays.asList(h2oCol.stringData));
                     Set<String> uniqueStrings = new HashSet<String>(column.getData());
                     ((CategoricalColumnSummary) column).setUnique(uniqueStrings.size());
-
+                    // TODO tail is missing
 
                 } else {
                     column = new ContinuousColumnSummary();

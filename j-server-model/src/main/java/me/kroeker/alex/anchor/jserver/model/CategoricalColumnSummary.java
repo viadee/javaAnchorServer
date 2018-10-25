@@ -1,20 +1,20 @@
 package me.kroeker.alex.anchor.jserver.model;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * @author ak902764
  */
 public class CategoricalColumnSummary<T extends Object> extends ColumnSummary<T> {
-    private Collection<CategoryFreq> categories;
+    private List<CategoryFreq> categories;
     private int unique;
 
-    public Collection<CategoryFreq> getCategories() {
+    public List<CategoryFreq> getCategories() {
         return categories;
     }
 
-    public void setCategories(Collection<CategoryFreq> categories) {
+    public void setCategories(List<CategoryFreq> categories) {
         this.categories = categories;
     }
 

@@ -1,16 +1,15 @@
 package me.kroeker.alex.anchor.jserver.service;
 
-import java.util.Collection;
-import java.util.Map;
-
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+
+import java.util.Map;
 
 /**
  * @author ak902764
  */
 public interface DataService {
 
-    Map<String, Collection<String>> caseSelectConditions(String connectionName, String modelId, String frameId);
+    Map<String, Map<Integer, String>> caseSelectConditions(String connectionName, String frameId);
 
     FrameSummary getFrame(String connectionName, String frameId);
 

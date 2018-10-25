@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -28,7 +27,7 @@ public class DataController implements DataService {
 
     @Override
     @RequestMapping(value = "/{connectionName}/frames/{frameId}", method = RequestMethod.GET, produces = {
-            "application/json" })
+            "application/json"})
     public FrameSummary getFrame(@PathVariable String connectionName, @PathVariable String frameId) {
         try {
             return this.dataDAO.getFrame(connectionName, frameId);
@@ -41,12 +40,11 @@ public class DataController implements DataService {
 
     @Override
     @RequestMapping(value = "/{connectionName}/frames/{frameId}/conditions", method = RequestMethod.GET, produces = {
-            "application/json" })
-    public Map<String, Collection<String>> caseSelectConditions(@PathVariable String connectionName,
-                                                                @PathVariable String modelId,
-                                                                @PathVariable String frameId) {
+            "application/json"})
+    public Map<String, Map<Integer, String>> caseSelectConditions(@PathVariable String connectionName,
+                                                                  @PathVariable String frameId) {
         try {
-            return this.dataDAO.caseSelectConditions(connectionName, modelId, frameId);
+            return this.dataDAO.caseSelectConditions(connectionName, frameId);
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
