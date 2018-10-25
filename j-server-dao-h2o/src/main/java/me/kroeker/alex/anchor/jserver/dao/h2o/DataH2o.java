@@ -112,7 +112,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                     column.setData(Arrays.asList(h2oCol.stringData));
 
                     File temp = File.createTempFile("h2o_data_set", ".csv");
-                    temp.deleteOnExit();
                     ResponseBody data = this.createH2o(connectionName)._downloadDataset_fetch(frameKey);
                     FileUtils.copyInputStreamToFile(data.byteStream(), temp);
 
@@ -123,7 +122,8 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                         }
                     } finally {
                         if (!temp.delete()) {
-                            LOG.error("failed to delete downloaded data set: " + temp.getAbsolutePath());
+                            temp.deleteOnExit();
+                            LOG.error("failed to delete downloaded data set, try delete on exit: " + temp.getAbsolutePath());
                         }
                     }
 
