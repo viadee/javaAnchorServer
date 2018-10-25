@@ -4,13 +4,13 @@
  */
 package water.bindings.proxies.retrofit;
 
-import water.bindings.pojos.*;
+import okhttp3.ResponseBody;
 import retrofit2.*;
 import retrofit2.http.*;
 
 public interface DownloadDataset {
 
-  /** 
+  /**
    * Download dataset as a CSV.
    *   @param frame_id Frame to download
    *   @param hex_string Emit double values in a machine readable lossless format with Double.toHexString().
@@ -18,16 +18,16 @@ public interface DownloadDataset {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/DownloadDataset")
-  Call<DownloadDataV3> fetch(
-    @Field("frame_id") String frame_id,
-    @Field("hex_string") boolean hex_string,
-    @Field("_exclude_fields") String _exclude_fields
+  Call<ResponseBody> fetch(
+    @Query("frame_id") String frame_id,
+    @Query("hex_string") boolean hex_string,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/DownloadDataset")
-  Call<DownloadDataV3> fetch(@Field("frame_id") String frame_id);
+  Call<ResponseBody> fetch(@Query("frame_id") String frame_id);
 
-  /** 
+  /**
    * Download dataset as a CSV.
    *   @param frame_id Frame to download
    *   @param hex_string Emit double values in a machine readable lossless format with Double.toHexString().
@@ -35,13 +35,13 @@ public interface DownloadDataset {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/DownloadDataset.bin")
-  Call<DownloadDataV3> fetchStreaming(
-    @Field("frame_id") String frame_id,
-    @Field("hex_string") boolean hex_string,
-    @Field("_exclude_fields") String _exclude_fields
+  Call<ResponseBody> fetchStreaming(
+    @Query("frame_id") String frame_id,
+    @Query("hex_string") boolean hex_string,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/DownloadDataset.bin")
-  Call<DownloadDataV3> fetchStreaming(@Field("frame_id") String frame_id);
+  Call<ResponseBody> fetchStreaming(@Query("frame_id") String frame_id);
 
 }

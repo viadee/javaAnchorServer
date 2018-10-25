@@ -5,6 +5,7 @@
  */
 package water.bindings;
 
+import okhttp3.ResponseBody;
 import water.bindings.pojos.*;
 import water.bindings.proxies.retrofit.*;
 import retrofit2.*;
@@ -4555,15 +4556,15 @@ public class H2oApi {
   /**
    * Download dataset as a CSV.
    */
-  public DownloadDataV3 _downloadDataset_fetch(FrameKeyV3 frameId) throws IOException {
+  public ResponseBody _downloadDataset_fetch(FrameKeyV3 frameId) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
     return s.fetch(keyToString(frameId)).execute().body();
   }
-  public DownloadDataV3 _downloadDataset_fetch(FrameKeyV3 frameId, boolean hexString) throws IOException {
+  public ResponseBody _downloadDataset_fetch(FrameKeyV3 frameId, boolean hexString) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
     return s.fetch(keyToString(frameId), hexString, "").execute().body();
   }
-  public DownloadDataV3 _downloadDataset_fetch(FrameKeyV3 frameId, boolean hexString, String _excludeFields) throws IOException {
+  public ResponseBody _downloadDataset_fetch(FrameKeyV3 frameId, boolean hexString, String _excludeFields) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
     return s.fetch(keyToString(frameId), hexString, _excludeFields).execute().body();
   }
@@ -4571,15 +4572,15 @@ public class H2oApi {
   /**
    * Download dataset as a CSV.
    */
-  public DownloadDataV3 _downloadDataset_fetchStreaming(FrameKeyV3 frameId) throws IOException {
+  public ResponseBody _downloadDataset_fetchStreaming(FrameKeyV3 frameId) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
     return s.fetchStreaming(keyToString(frameId)).execute().body();
   }
-  public DownloadDataV3 _downloadDataset_fetchStreaming(FrameKeyV3 frameId, boolean hexString) throws IOException {
+  public ResponseBody _downloadDataset_fetchStreaming(FrameKeyV3 frameId, boolean hexString) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
     return s.fetchStreaming(keyToString(frameId), hexString, "").execute().body();
   }
-  public DownloadDataV3 _downloadDataset_fetchStreaming(FrameKeyV3 frameId, boolean hexString, String _excludeFields) throws IOException {
+  public ResponseBody _downloadDataset_fetchStreaming(FrameKeyV3 frameId, boolean hexString, String _excludeFields) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
     return s.fetchStreaming(keyToString(frameId), hexString, _excludeFields).execute().body();
   }

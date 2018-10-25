@@ -9,7 +9,7 @@ import java.util.Objects;
 public class FrameSummary {
 
     private String frame_id;
-    private int row_count;
+    private long row_count;
     private Collection<ColumnSummary<?>> column_summary_list;
 
     public String getFrame_id() {
@@ -20,11 +20,11 @@ public class FrameSummary {
         this.frame_id = frame_id;
     }
 
-    public int getRow_count() {
+    public long getRow_count() {
         return row_count;
     }
 
-    public void setRow_count(int row_count) {
+    public void setRow_count(long row_count) {
         this.row_count = row_count;
     }
 

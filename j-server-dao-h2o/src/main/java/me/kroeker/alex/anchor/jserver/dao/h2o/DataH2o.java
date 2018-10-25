@@ -3,13 +3,22 @@ package me.kroeker.alex.anchor.jserver.dao.h2o;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.*;
+import okhttp3.ResponseBody;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import water.bindings.pojos.ColV3;
 import water.bindings.pojos.FrameKeyV3;
 import water.bindings.pojos.FrameV3;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.*;
 
 /**
@@ -17,6 +26,8 @@ import java.util.*;
  */
 @Component
 public class DataH2o extends BaseH2oAccess implements DataDAO {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DataH2o.class);
 
     @Override
     public Map<String, Map<Integer, String>> caseSelectConditions(String connectionName, String frameId)
@@ -58,13 +69,11 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         FrameKeyV3 frameKey = new FrameKeyV3();
         frameKey.name = frameId;
         try {
-            // TODO frame summary causes MalformedJsonException due to "NaN" value for value mean when column type
-            // TODO is enum or string
             FrameV3 h2oFrame = this.createH2o(connectionName).frameSummary(frameKey).frames[0];
             FrameSummary frame = new FrameSummary();
 
             frame.setFrame_id(h2oFrame.frameId.name);
-            int rowCount = h2oFrame.rowCount;
+            long rowCount = h2oFrame.rows;
             frame.setRow_count(rowCount);
 
             Collection<ColumnSummary<?>> columns = new ArrayList<>(h2oFrame.columns.length);
@@ -87,7 +96,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                         categories.add(new CategoryFreq(domain[i], freq));
                         freqCount += freq;
 
-                        // TODO freq count is wrong
                         if (categories.size() > domainMaxItems) {
                             categories.add(new CategoryFreq(
                                     (domainLength - domainMaxItems) + " more",
@@ -102,6 +110,23 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                 } else if ("string".equals(columnType) || "uuid".equals(columnType)) {
                     column = new CategoricalColumnSummary();
                     column.setData(Arrays.asList(h2oCol.stringData));
+
+                    File temp = File.createTempFile("h2o_data_set", ".csv");
+                    temp.deleteOnExit();
+                    ResponseBody data = this.createH2o(connectionName)._downloadDataset_fetch(frameKey);
+                    FileUtils.copyInputStreamToFile(data.byteStream(), temp);
+
+                    try (Reader in = new FileReader(temp)) {
+                        Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
+                        for (CSVRecord record : records) {
+                            record.getComment();
+                        }
+                    } finally {
+                        if (!temp.delete()) {
+                            LOG.error("failed to delete downloaded data set: " + temp.getAbsolutePath());
+                        }
+                    }
+
                     Set<String> uniqueStrings = new HashSet<String>(column.getData());
                     ((CategoricalColumnSummary) column).setUnique(uniqueStrings.size());
                     // TODO tail is missing
