@@ -80,8 +80,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                 String columnType = h2oCol.type;
                 ColumnSummary column;
 
-                columnType = generateCustomValues(h2oCol, columnName, columnType);
-
                 if ("enum".equals(columnType)) {
                     column = generateEnumColumnSummary(rowCount, h2oCol);
                 } else if ("string".equals(columnType) || "uuid".equals(columnType)) {
@@ -104,22 +102,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             throw new DataAccessException("Failed to retrieve frame summary of h2o with connection name: "
                     + connectionName + " and frame id: " + frameId, ioe);
         }
-    }
-
-    private String generateCustomValues(ColV3 h2oCol, String columnName, String columnType) {
-        if ("weekday".equals(columnName)) {
-            columnType = "string";
-            h2oCol.stringData = new String[] { "s", "b", "c" };
-        }
-        if ("target".equals(columnName)) {
-            h2oCol.domain = new String[25];
-            h2oCol.histogramBins = new long[25];
-            for (int i = 0; i < 25; i++) {
-                h2oCol.domain[i] = "domain: " + i;
-                h2oCol.histogramBins[i] = 120L + (long) (i * .5);
-            }
-        }
-        return columnType;
     }
 
     private ColumnSummary generateMetricColumnSummary(ColV3 h2oCol) {
