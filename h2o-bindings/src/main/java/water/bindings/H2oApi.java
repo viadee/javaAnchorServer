@@ -5,7 +5,6 @@
  */
 package water.bindings;
 
-import okhttp3.ResponseBody;
 import water.bindings.pojos.*;
 import water.bindings.proxies.retrofit.*;
 import retrofit2.*;
@@ -21,6 +20,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+
+import okhttp3.ResponseBody;
 
 
 @SuppressWarnings("unused")

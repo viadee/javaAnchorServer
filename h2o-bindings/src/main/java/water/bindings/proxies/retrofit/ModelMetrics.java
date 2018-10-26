@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface ModelMetrics {
 
@@ -41,22 +42,22 @@ public interface ModelMetrics {
   Call<ModelMetricsListSchemaV3> fetch(
     @Path("model") String model,
     @Path("frame") String frame,
-    @Field("predictions_frame") String predictions_frame,
-    @Field("deviances_frame") String deviances_frame,
-    @Field("reconstruction_error") boolean reconstruction_error,
-    @Field("reconstruction_error_per_feature") boolean reconstruction_error_per_feature,
-    @Field("deep_features_hidden_layer") int deep_features_hidden_layer,
-    @Field("deep_features_hidden_layer_name") String deep_features_hidden_layer_name,
-    @Field("reconstruct_train") boolean reconstruct_train,
-    @Field("project_archetypes") boolean project_archetypes,
-    @Field("reverse_transform") boolean reverse_transform,
-    @Field("leaf_node_assignment") boolean leaf_node_assignment,
-    @Field("leaf_node_assignment_type") ModelLeafNodeAssignmentLeafNodeAssignmentType leaf_node_assignment_type,
-    @Field("predict_staged_proba") boolean predict_staged_proba,
-    @Field("exemplar_index") int exemplar_index,
-    @Field("deviances") boolean deviances,
-    @Field("custom_metric_func") String custom_metric_func,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("predictions_frame") String predictions_frame,
+    @Query("deviances_frame") String deviances_frame,
+    @Query("reconstruction_error") boolean reconstruction_error,
+    @Query("reconstruction_error_per_feature") boolean reconstruction_error_per_feature,
+    @Query("deep_features_hidden_layer") int deep_features_hidden_layer,
+    @Query("deep_features_hidden_layer_name") String deep_features_hidden_layer_name,
+    @Query("reconstruct_train") boolean reconstruct_train,
+    @Query("project_archetypes") boolean project_archetypes,
+    @Query("reverse_transform") boolean reverse_transform,
+    @Query("leaf_node_assignment") boolean leaf_node_assignment,
+    @Query("leaf_node_assignment_type") ModelLeafNodeAssignmentLeafNodeAssignmentType leaf_node_assignment_type,
+    @Query("predict_staged_proba") boolean predict_staged_proba,
+    @Query("exemplar_index") int exemplar_index,
+    @Query("deviances") boolean deviances,
+    @Query("custom_metric_func") String custom_metric_func,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/ModelMetrics/models/{model}/frames/{frame}")
@@ -96,22 +97,22 @@ public interface ModelMetrics {
   Call<ModelMetricsListSchemaV3> delete(
     @Path("model") String model,
     @Path("frame") String frame,
-    @Field("predictions_frame") String predictions_frame,
-    @Field("deviances_frame") String deviances_frame,
-    @Field("reconstruction_error") boolean reconstruction_error,
-    @Field("reconstruction_error_per_feature") boolean reconstruction_error_per_feature,
-    @Field("deep_features_hidden_layer") int deep_features_hidden_layer,
-    @Field("deep_features_hidden_layer_name") String deep_features_hidden_layer_name,
-    @Field("reconstruct_train") boolean reconstruct_train,
-    @Field("project_archetypes") boolean project_archetypes,
-    @Field("reverse_transform") boolean reverse_transform,
-    @Field("leaf_node_assignment") boolean leaf_node_assignment,
-    @Field("leaf_node_assignment_type") ModelLeafNodeAssignmentLeafNodeAssignmentType leaf_node_assignment_type,
-    @Field("predict_staged_proba") boolean predict_staged_proba,
-    @Field("exemplar_index") int exemplar_index,
-    @Field("deviances") boolean deviances,
-    @Field("custom_metric_func") String custom_metric_func,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("predictions_frame") String predictions_frame,
+    @Query("deviances_frame") String deviances_frame,
+    @Query("reconstruction_error") boolean reconstruction_error,
+    @Query("reconstruction_error_per_feature") boolean reconstruction_error_per_feature,
+    @Query("deep_features_hidden_layer") int deep_features_hidden_layer,
+    @Query("deep_features_hidden_layer_name") String deep_features_hidden_layer_name,
+    @Query("reconstruct_train") boolean reconstruct_train,
+    @Query("project_archetypes") boolean project_archetypes,
+    @Query("reverse_transform") boolean reverse_transform,
+    @Query("leaf_node_assignment") boolean leaf_node_assignment,
+    @Query("leaf_node_assignment_type") ModelLeafNodeAssignmentLeafNodeAssignmentType leaf_node_assignment_type,
+    @Query("predict_staged_proba") boolean predict_staged_proba,
+    @Query("exemplar_index") int exemplar_index,
+    @Query("deviances") boolean deviances,
+    @Query("custom_metric_func") String custom_metric_func,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/3/ModelMetrics/models/{model}/frames/{frame}")

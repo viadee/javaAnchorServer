@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface WaterMeterIo {
 
@@ -19,7 +20,7 @@ public interface WaterMeterIo {
   @GET("/3/WaterMeterIo/{nodeidx}")
   Call<WaterMeterIoV3> fetch(
     @Path("nodeidx") int nodeidx,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/WaterMeterIo/{nodeidx}")
@@ -33,8 +34,8 @@ public interface WaterMeterIo {
    */
   @GET("/3/WaterMeterIo")
   Call<WaterMeterIoV3> fetch_all(
-    @Field("nodeidx") int nodeidx,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("nodeidx") int nodeidx,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/WaterMeterIo")

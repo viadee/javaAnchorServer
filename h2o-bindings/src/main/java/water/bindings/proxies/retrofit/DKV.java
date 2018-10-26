@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface DKV {
 
@@ -19,7 +20,7 @@ public interface DKV {
   @DELETE("/3/DKV/{key}")
   Call<RemoveV3> remove(
     @Path("key") String key,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/3/DKV/{key}")
@@ -31,7 +32,7 @@ public interface DKV {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @DELETE("/3/DKV")
-  Call<RemoveAllV3> removeAll(@Field("_exclude_fields") String _exclude_fields);
+  Call<RemoveAllV3> removeAll(@Query("_exclude_fields") String _exclude_fields);
 
   @DELETE("/3/DKV")
   Call<RemoveAllV3> removeAll();

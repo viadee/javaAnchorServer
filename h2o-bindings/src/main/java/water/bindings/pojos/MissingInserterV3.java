@@ -4,7 +4,7 @@
  */
 package water.bindings.pojos;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.*;
 
 
@@ -41,7 +41,7 @@ public class MissingInserterV3 extends RequestSchemaV3 {
      */
     public MissingInserterV3() {
         fraction = 0.0;
-        seed = 7464721546016418399L;
+        seed = 252056640312309221L;
         _excludeFields = "";
     }
 
@@ -50,7 +50,7 @@ public class MissingInserterV3 extends RequestSchemaV3 {
      */
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(this);
     }
 
 }

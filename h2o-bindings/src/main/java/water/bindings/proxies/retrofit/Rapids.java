@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Rapids {
 

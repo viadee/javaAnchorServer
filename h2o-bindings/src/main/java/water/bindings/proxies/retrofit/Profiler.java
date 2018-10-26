@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Profiler {
 
@@ -18,11 +19,11 @@ public interface Profiler {
    */
   @GET("/3/Profiler")
   Call<ProfilerV3> fetch(
-    @Field("depth") int depth,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("depth") int depth,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Profiler")
-  Call<ProfilerV3> fetch(@Field("depth") int depth);
+  Call<ProfilerV3> fetch(@Query("depth") int depth);
 
 }

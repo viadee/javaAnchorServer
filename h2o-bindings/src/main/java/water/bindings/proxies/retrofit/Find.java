@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Find {
 
@@ -21,17 +22,17 @@ public interface Find {
    */
   @GET("/3/Find")
   Call<FindV3> find(
-    @Field("key") FrameV3 key,
-    @Field("column") String column,
-    @Field("row") long row,
-    @Field("match") String match,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("key") FrameV3 key,
+    @Query("column") String column,
+    @Query("row") long row,
+    @Query("match") String match,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Find")
   Call<FindV3> find(
-    @Field("key") FrameV3 key,
-    @Field("row") long row
+    @Query("key") FrameV3 key,
+    @Query("row") long row
   );
 
 }

@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Word2VecTransform {
 
@@ -18,15 +19,15 @@ public interface Word2VecTransform {
    */
   @GET("/3/Word2VecTransform")
   Call<Word2VecTransformV3> transform(
-    @Field("model") String model,
-    @Field("words_frame") String words_frame,
-    @Field("aggregate_method") Word2VecModelAggregateMethod aggregate_method
+    @Query("model") String model,
+    @Query("words_frame") String words_frame,
+    @Query("aggregate_method") Word2VecModelAggregateMethod aggregate_method
   );
 
   @GET("/3/Word2VecTransform")
   Call<Word2VecTransformV3> transform(
-    @Field("model") String model,
-    @Field("words_frame") String words_frame
+    @Query("model") String model,
+    @Query("words_frame") String words_frame
   );
 
 }

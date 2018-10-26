@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Capabilities {
 
@@ -16,7 +17,7 @@ public interface Capabilities {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/Capabilities")
-  Call<CapabilitiesV3> listAll(@Field("_exclude_fields") String _exclude_fields);
+  Call<CapabilitiesV3> listAll(@Query("_exclude_fields") String _exclude_fields);
 
   @GET("/3/Capabilities")
   Call<CapabilitiesV3> listAll();
@@ -27,7 +28,7 @@ public interface Capabilities {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/Capabilities/Core")
-  Call<CapabilitiesV3> listCore(@Field("_exclude_fields") String _exclude_fields);
+  Call<CapabilitiesV3> listCore(@Query("_exclude_fields") String _exclude_fields);
 
   @GET("/3/Capabilities/Core")
   Call<CapabilitiesV3> listCore();
@@ -38,7 +39,7 @@ public interface Capabilities {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/Capabilities/API")
-  Call<CapabilitiesV3> listRest(@Field("_exclude_fields") String _exclude_fields);
+  Call<CapabilitiesV3> listRest(@Query("_exclude_fields") String _exclude_fields);
 
   @GET("/3/Capabilities/API")
   Call<CapabilitiesV3> listRest();

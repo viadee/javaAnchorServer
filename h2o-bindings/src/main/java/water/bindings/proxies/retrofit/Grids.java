@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Grids {
 
@@ -21,9 +22,9 @@ public interface Grids {
   @GET("/99/Grids/{grid_id}")
   Call<GridSchemaV99> fetch(
     @Path("grid_id") String grid_id,
-    @Field("sort_by") String sort_by,
-    @Field("decreasing") boolean decreasing,
-    @Field("model_ids") String[] model_ids
+    @Query("sort_by") String sort_by,
+    @Query("decreasing") boolean decreasing,
+    @Query("model_ids") String[] model_ids
   );
 
   @GET("/99/Grids/{grid_id}")

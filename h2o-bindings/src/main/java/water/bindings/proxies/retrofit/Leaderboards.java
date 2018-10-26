@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Leaderboards {
 
@@ -18,8 +19,8 @@ public interface Leaderboards {
    */
   @GET("/99/Leaderboards")
   Call<LeaderboardsV99> list(
-    @Field("project_name") String project_name,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("project_name") String project_name,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/99/Leaderboards")
@@ -34,7 +35,7 @@ public interface Leaderboards {
   @GET("/99/Leaderboards/{project_name}")
   Call<LeaderboardV99> fetch(
     @Path("project_name") String project_name,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/99/Leaderboards/{project_name}")

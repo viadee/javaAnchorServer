@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface SteamMetrics {
 
@@ -16,7 +17,7 @@ public interface SteamMetrics {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/SteamMetrics")
-  Call<SteamMetricsV3> fetch(@Field("_exclude_fields") String _exclude_fields);
+  Call<SteamMetricsV3> fetch(@Query("_exclude_fields") String _exclude_fields);
 
   @GET("/3/SteamMetrics")
   Call<SteamMetricsV3> fetch();

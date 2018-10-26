@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Logs {
 
@@ -23,7 +24,7 @@ public interface Logs {
   Call<LogsV3> fetch(
     @Path("nodeidx") String nodeidx,
     @Path("name") String name,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Logs/nodes/{nodeidx}/files/{name}")

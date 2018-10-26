@@ -8,6 +8,7 @@ import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
 import java.util.Map;
+import okhttp3.ResponseBody;
 
 public interface ModelBuilders {
 
@@ -4047,7 +4048,7 @@ public interface ModelBuilders {
   @GET("/3/ModelBuilders/{algo}")
   Call<ModelBuildersV3> fetch(
     @Path("algo") String algo,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/ModelBuilders/{algo}")
@@ -4061,8 +4062,8 @@ public interface ModelBuilders {
    */
   @GET("/3/ModelBuilders")
   Call<ModelBuildersV3> list(
-    @Field("algo") String algo,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("algo") String algo,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/ModelBuilders")

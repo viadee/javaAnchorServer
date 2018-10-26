@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface PartialDependence {
 
@@ -51,8 +52,8 @@ public interface PartialDependence {
   @GET("/3/PartialDependence/{name}")
   Call<PartialDependenceV3> fetchPartialDependence(
     @Path("name") String name,
-    @Field("type") String type,
-    @Field("URL") String URL
+    @Query("type") String type,
+    @Query("URL") String URL
   );
 
   @GET("/3/PartialDependence/{name}")

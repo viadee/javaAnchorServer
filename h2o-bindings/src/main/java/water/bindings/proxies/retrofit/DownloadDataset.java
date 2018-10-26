@@ -4,13 +4,14 @@
  */
 package water.bindings.proxies.retrofit;
 
-import okhttp3.ResponseBody;
+import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface DownloadDataset {
 
-  /**
+  /** 
    * Download dataset as a CSV.
    *   @param frame_id Frame to download
    *   @param hex_string Emit double values in a machine readable lossless format with Double.toHexString().
@@ -27,7 +28,7 @@ public interface DownloadDataset {
   @GET("/3/DownloadDataset")
   Call<ResponseBody> fetch(@Query("frame_id") String frame_id);
 
-  /**
+  /** 
    * Download dataset as a CSV.
    *   @param frame_id Frame to download
    *   @param hex_string Emit double values in a machine readable lossless format with Double.toHexString().

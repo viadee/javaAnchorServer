@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface InitID {
 
@@ -18,8 +19,8 @@ public interface InitID {
    */
   @GET("/3/InitID")
   Call<InitIDV3> startSession(
-    @Field("session_key") String session_key,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("session_key") String session_key,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/InitID")
@@ -33,8 +34,8 @@ public interface InitID {
    */
   @DELETE("/3/InitID")
   Call<InitIDV3> endSession(
-    @Field("session_key") String session_key,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("session_key") String session_key,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/3/InitID")

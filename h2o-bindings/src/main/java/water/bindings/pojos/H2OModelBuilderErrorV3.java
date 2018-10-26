@@ -4,7 +4,7 @@
  */
 package water.bindings.pojos;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.*;
 
 
@@ -82,7 +82,7 @@ public class H2OModelBuilderErrorV3 extends H2OErrorV3 {
      */
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(this);
     }
 
 }

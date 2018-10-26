@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface KillMinus3 {
 
@@ -16,7 +17,7 @@ public interface KillMinus3 {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/KillMinus3")
-  Call<KillMinus3V3> killm3(@Field("_exclude_fields") String _exclude_fields);
+  Call<KillMinus3V3> killm3(@Query("_exclude_fields") String _exclude_fields);
 
   @GET("/3/KillMinus3")
   Call<KillMinus3V3> killm3();

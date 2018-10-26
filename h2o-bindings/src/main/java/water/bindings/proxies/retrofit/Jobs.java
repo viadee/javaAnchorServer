@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Jobs {
 
@@ -18,8 +19,8 @@ public interface Jobs {
    */
   @GET("/3/Jobs")
   Call<JobsV3> list(
-    @Field("job_id") String job_id,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("job_id") String job_id,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Jobs")
@@ -34,7 +35,7 @@ public interface Jobs {
   @GET("/3/Jobs/{job_id}")
   Call<JobsV3> fetch(
     @Path("job_id") String job_id,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Jobs/{job_id}")
@@ -70,7 +71,7 @@ public interface Jobs {
   @GET("/4/jobs/{job_id}")
   Call<JobV4> getJob4(
     @Path("job_id") String job_id,
-    @Field("_fields") String _fields
+    @Query("_fields") String _fields
   );
 
   @GET("/4/jobs/{job_id}")

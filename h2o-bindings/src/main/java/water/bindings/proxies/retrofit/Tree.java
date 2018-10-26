@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Tree {
 
@@ -18,15 +19,15 @@ public interface Tree {
    */
   @GET("/3/Tree")
   Call<TreeV3> getTree(
-    @Field("model") String model,
-    @Field("tree_number") int tree_number,
-    @Field("tree_class") String tree_class
+    @Query("model") String model,
+    @Query("tree_number") int tree_number,
+    @Query("tree_class") String tree_class
   );
 
   @GET("/3/Tree")
   Call<TreeV3> getTree(
-    @Field("model") String model,
-    @Field("tree_number") int tree_number
+    @Query("model") String model,
+    @Query("tree_number") int tree_number
   );
 
 }

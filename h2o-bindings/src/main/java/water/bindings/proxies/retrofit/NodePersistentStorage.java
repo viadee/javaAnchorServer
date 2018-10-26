@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface NodePersistentStorage {
 
@@ -22,8 +23,8 @@ public interface NodePersistentStorage {
   Call<NodePersistentStorageV3> exists(
     @Path("category") String category,
     @Path("name") String name,
-    @Field("value") String value,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("value") String value,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/NodePersistentStorage/categories/{category}/names/{name}/exists")
@@ -42,10 +43,10 @@ public interface NodePersistentStorage {
    */
   @GET("/3/NodePersistentStorage/configured")
   Call<NodePersistentStorageV3> configured(
-    @Field("category") String category,
-    @Field("name") String name,
-    @Field("value") String value,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("category") String category,
+    @Query("name") String name,
+    @Query("value") String value,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/NodePersistentStorage/configured")
@@ -87,8 +88,8 @@ public interface NodePersistentStorage {
   Call<NodePersistentStorageV3> get_as_string(
     @Path("category") String category,
     @Path("name") String name,
-    @Field("value") String value,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("value") String value,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/NodePersistentStorage/{category}/{name}")
@@ -109,8 +110,8 @@ public interface NodePersistentStorage {
   Call<NodePersistentStorageV3> delete(
     @Path("category") String category,
     @Path("name") String name,
-    @Field("value") String value,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("value") String value,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/3/NodePersistentStorage/{category}/{name}")
@@ -151,9 +152,9 @@ public interface NodePersistentStorage {
   @GET("/3/NodePersistentStorage/{category}")
   Call<NodePersistentStorageV3> list(
     @Path("category") String category,
-    @Field("name") String name,
-    @Field("value") String value,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("name") String name,
+    @Query("value") String value,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/NodePersistentStorage/{category}")

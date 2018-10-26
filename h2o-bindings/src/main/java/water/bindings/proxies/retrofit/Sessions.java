@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Sessions {
 
@@ -36,7 +37,7 @@ public interface Sessions {
   @DELETE("/4/sessions/{session_key}")
   Call<InitIDV3> endSession(
     @Path("session_key") String session_key,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/4/sessions/{session_key}")

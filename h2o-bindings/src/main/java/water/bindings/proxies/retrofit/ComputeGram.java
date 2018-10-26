@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface ComputeGram {
 
@@ -20,14 +21,14 @@ public interface ComputeGram {
    */
   @GET("/3/ComputeGram")
   Call<GramV3> computeGram(
-    @Field("X") String X,
-    @Field("W") String W,
-    @Field("use_all_factor_levels") boolean use_all_factor_levels,
-    @Field("standardize") boolean standardize,
-    @Field("skip_missing") boolean skip_missing
+    @Query("X") String X,
+    @Query("W") String W,
+    @Query("use_all_factor_levels") boolean use_all_factor_levels,
+    @Query("standardize") boolean standardize,
+    @Query("skip_missing") boolean skip_missing
   );
 
   @GET("/3/ComputeGram")
-  Call<GramV3> computeGram(@Field("X") String X);
+  Call<GramV3> computeGram(@Query("X") String X);
 
 }

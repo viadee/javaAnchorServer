@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Models {
 
@@ -21,9 +22,9 @@ public interface Models {
   @GET("/3/Models/{model_id}")
   Call<ModelsV3> fetch(
     @Path("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Models/{model_id}")
@@ -39,10 +40,10 @@ public interface Models {
    */
   @GET("/3/Models")
   Call<ModelsV3> list(
-    @Field("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("model_id") String model_id,
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Models")
@@ -59,9 +60,9 @@ public interface Models {
   @DELETE("/3/Models/{model_id}")
   Call<ModelsV3> delete(
     @Path("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/3/Models/{model_id}")
@@ -77,10 +78,10 @@ public interface Models {
    */
   @DELETE("/3/Models")
   Call<ModelsV3> deleteAll(
-    @Field("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("model_id") String model_id,
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @DELETE("/3/Models")
@@ -97,9 +98,9 @@ public interface Models {
   @GET("/3/Models.java/{model_id}/preview")
   Call<StreamingSchema> fetchPreview(
     @Path("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Models.java/{model_id}/preview")
@@ -116,9 +117,9 @@ public interface Models {
   @GET("/3/Models.java/{model_id}")
   Call<StreamingSchema> fetchJavaCode(
     @Path("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Models.java/{model_id}")
@@ -136,9 +137,9 @@ public interface Models {
   @GET("/3/Models/{model_id}/mojo")
   Call<StreamingSchema> fetchMojo(
     @Path("model_id") String model_id,
-    @Field("preview") boolean preview,
-    @Field("find_compatible_frames") boolean find_compatible_frames,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("preview") boolean preview,
+    @Query("find_compatible_frames") boolean find_compatible_frames,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Models/{model_id}/mojo")
@@ -176,9 +177,9 @@ public interface Models {
   @GET("/99/Models.bin/{model_id}")
   Call<ModelExportV3> exportModel(
     @Path("model_id") String model_id,
-    @Field("dir") String dir,
-    @Field("force") boolean force,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("dir") String dir,
+    @Query("force") boolean force,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/99/Models.bin/{model_id}")
@@ -195,9 +196,9 @@ public interface Models {
   @GET("/99/Models.mojo/{model_id}")
   Call<ModelExportV3> exportMojo(
     @Path("model_id") String model_id,
-    @Field("dir") String dir,
-    @Field("force") boolean force,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("dir") String dir,
+    @Query("force") boolean force,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/99/Models.mojo/{model_id}")
@@ -214,9 +215,9 @@ public interface Models {
   @GET("/99/Models/{model_id}/json")
   Call<ModelExportV3> exportModelDetails(
     @Path("model_id") String model_id,
-    @Field("dir") String dir,
-    @Field("force") boolean force,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("dir") String dir,
+    @Query("force") boolean force,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/99/Models/{model_id}/json")

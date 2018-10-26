@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Assembly {
 
@@ -23,9 +24,9 @@ public interface Assembly {
   Call<AssemblyV99> toJava(
     @Path("assembly_id") String assembly_id,
     @Path("pojo_name") String pojo_name,
-    @Field("steps") String[] steps,
-    @Field("frame") String frame,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("steps") String[] steps,
+    @Query("frame") String frame,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/99/Assembly.java/{assembly_id}/{pojo_name}")

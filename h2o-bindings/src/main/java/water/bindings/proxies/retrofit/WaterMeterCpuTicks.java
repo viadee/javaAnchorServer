@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface WaterMeterCpuTicks {
 
@@ -19,7 +20,7 @@ public interface WaterMeterCpuTicks {
   @GET("/3/WaterMeterCpuTicks/{nodeidx}")
   Call<WaterMeterCpuTicksV3> fetch(
     @Path("nodeidx") int nodeidx,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/WaterMeterCpuTicks/{nodeidx}")

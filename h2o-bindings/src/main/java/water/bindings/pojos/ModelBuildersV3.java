@@ -4,7 +4,7 @@
  */
 package water.bindings.pojos;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.*;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class ModelBuildersV3 extends RequestSchemaV3 {
      */
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(this);
     }
 
 }

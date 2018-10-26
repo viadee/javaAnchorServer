@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Endpoints {
 
@@ -15,7 +16,7 @@ public interface Endpoints {
    *   @param __schema Url describing the schema of the current object.
    */
   @GET("/4/endpoints")
-  Call<EndpointsListV4> listRoutes4(@Field("__schema") String __schema);
+  Call<EndpointsListV4> listRoutes4(@Query("__schema") String __schema);
 
   @GET("/4/endpoints")
   Call<EndpointsListV4> listRoutes4();

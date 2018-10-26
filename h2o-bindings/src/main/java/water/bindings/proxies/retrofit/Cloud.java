@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Cloud {
 
@@ -18,8 +19,8 @@ public interface Cloud {
    */
   @GET("/3/Cloud")
   Call<CloudV3> status(
-    @Field("skip_ticks") boolean skip_ticks,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("skip_ticks") boolean skip_ticks,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Cloud")
@@ -33,8 +34,8 @@ public interface Cloud {
    */
   @HEAD("/3/Cloud")
   Call<CloudV3> head(
-    @Field("skip_ticks") boolean skip_ticks,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("skip_ticks") boolean skip_ticks,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @HEAD("/3/Cloud")

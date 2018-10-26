@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Word2VecSynonyms {
 
@@ -20,18 +21,18 @@ public interface Word2VecSynonyms {
    */
   @GET("/3/Word2VecSynonyms")
   Call<Word2VecSynonymsV3> findSynonyms(
-    @Field("model") String model,
-    @Field("word") String word,
-    @Field("count") int count,
-    @Field("synonyms") String[] synonyms,
-    @Field("scores") double[] scores
+    @Query("model") String model,
+    @Query("word") String word,
+    @Query("count") int count,
+    @Query("synonyms") String[] synonyms,
+    @Query("scores") double[] scores
   );
 
   @GET("/3/Word2VecSynonyms")
   Call<Word2VecSynonymsV3> findSynonyms(
-    @Field("model") String model,
-    @Field("word") String word,
-    @Field("count") int count
+    @Query("model") String model,
+    @Query("word") String word,
+    @Query("count") int count
   );
 
 }

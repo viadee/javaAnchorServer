@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Typeahead {
 
@@ -19,12 +20,12 @@ public interface Typeahead {
    */
   @GET("/3/Typeahead/files")
   Call<TypeaheadV3> files(
-    @Field("src") String src,
-    @Field("limit") int limit,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("src") String src,
+    @Query("limit") int limit,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Typeahead/files")
-  Call<TypeaheadV3> files(@Field("src") String src);
+  Call<TypeaheadV3> files(@Query("src") String src);
 
 }

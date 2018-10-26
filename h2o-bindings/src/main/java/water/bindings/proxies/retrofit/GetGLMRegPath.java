@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface GetGLMRegPath {
 
@@ -22,16 +23,16 @@ public interface GetGLMRegPath {
    */
   @GET("/3/GetGLMRegPath")
   Call<GLMRegularizationPathV3> extractRegularizationPath(
-    @Field("model") String model,
-    @Field("lambdas") double[] lambdas,
-    @Field("explained_deviance_train") double[] explained_deviance_train,
-    @Field("explained_deviance_valid") double[] explained_deviance_valid,
-    @Field("coefficients") double[][] coefficients,
-    @Field("coefficients_std") double[][] coefficients_std,
-    @Field("coefficient_names") String[] coefficient_names
+    @Query("model") String model,
+    @Query("lambdas") double[] lambdas,
+    @Query("explained_deviance_train") double[] explained_deviance_train,
+    @Query("explained_deviance_valid") double[] explained_deviance_valid,
+    @Query("coefficients") double[][] coefficients,
+    @Query("coefficients_std") double[][] coefficients_std,
+    @Query("coefficient_names") String[] coefficient_names
   );
 
   @GET("/3/GetGLMRegPath")
-  Call<GLMRegularizationPathV3> extractRegularizationPath(@Field("model") String model);
+  Call<GLMRegularizationPathV3> extractRegularizationPath(@Query("model") String model);
 
 }

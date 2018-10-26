@@ -4,7 +4,7 @@
  */
 package water.bindings.pojos;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.*;
 
 
@@ -50,7 +50,7 @@ public class TypeaheadV3 extends RequestSchemaV3 {
      */
     @Override
     public String toString() {
-        return new Gson().toJson(this);
+        return new GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(this);
     }
 
 }

@@ -7,6 +7,7 @@ package water.bindings.proxies.retrofit;
 import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
+import okhttp3.ResponseBody;
 
 public interface Metadata {
 
@@ -22,12 +23,12 @@ public interface Metadata {
    */
   @GET("/3/Metadata/endpoints")
   Call<MetadataV3> listRoutes(
-    @Field("num") int num,
-    @Field("http_method") String http_method,
-    @Field("path") String path,
-    @Field("classname") String classname,
-    @Field("schemaname") String schemaname,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("num") int num,
+    @Query("http_method") String http_method,
+    @Query("path") String path,
+    @Query("classname") String classname,
+    @Query("schemaname") String schemaname,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Metadata/endpoints")
@@ -46,11 +47,11 @@ public interface Metadata {
   @GET("/3/Metadata/endpoints/{path}")
   Call<MetadataV3> fetchRoute(
     @Path("path") String path,
-    @Field("num") int num,
-    @Field("http_method") String http_method,
-    @Field("classname") String classname,
-    @Field("schemaname") String schemaname,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("num") int num,
+    @Query("http_method") String http_method,
+    @Query("classname") String classname,
+    @Query("schemaname") String schemaname,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Metadata/endpoints/{path}")
@@ -69,11 +70,11 @@ public interface Metadata {
   @GET("/3/Metadata/schemaclasses/{classname}")
   Call<MetadataV3> fetchSchemaMetadataByClass(
     @Path("classname") String classname,
-    @Field("num") int num,
-    @Field("http_method") String http_method,
-    @Field("path") String path,
-    @Field("schemaname") String schemaname,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("num") int num,
+    @Query("http_method") String http_method,
+    @Query("path") String path,
+    @Query("schemaname") String schemaname,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Metadata/schemaclasses/{classname}")
@@ -92,11 +93,11 @@ public interface Metadata {
   @GET("/3/Metadata/schemas/{schemaname}")
   Call<MetadataV3> fetchSchemaMetadata(
     @Path("schemaname") String schemaname,
-    @Field("num") int num,
-    @Field("http_method") String http_method,
-    @Field("path") String path,
-    @Field("classname") String classname,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("num") int num,
+    @Query("http_method") String http_method,
+    @Query("path") String path,
+    @Query("classname") String classname,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Metadata/schemas/{schemaname}")
@@ -114,12 +115,12 @@ public interface Metadata {
    */
   @GET("/3/Metadata/schemas")
   Call<MetadataV3> listSchemas(
-    @Field("num") int num,
-    @Field("http_method") String http_method,
-    @Field("path") String path,
-    @Field("classname") String classname,
-    @Field("schemaname") String schemaname,
-    @Field("_exclude_fields") String _exclude_fields
+    @Query("num") int num,
+    @Query("http_method") String http_method,
+    @Query("path") String path,
+    @Query("classname") String classname,
+    @Query("schemaname") String schemaname,
+    @Query("_exclude_fields") String _exclude_fields
   );
 
   @GET("/3/Metadata/schemas")

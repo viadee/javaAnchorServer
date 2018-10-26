@@ -8,6 +8,7 @@ import water.bindings.pojos.*;
 import retrofit2.*;
 import retrofit2.http.*;
 import java.util.Map;
+import okhttp3.ResponseBody;
 
 public interface Grid {
 
