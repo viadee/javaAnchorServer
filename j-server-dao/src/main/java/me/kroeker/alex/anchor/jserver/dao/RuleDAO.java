@@ -10,6 +10,6 @@ import me.kroeker.alex.anchor.jserver.model.Rule;
  */
 public interface RuleDAO {
 
-    Rule randomRule(String modelId, String frameId, Collection<CaseSelectCondition> conditions);
+    Rule randomRule(String modelId, String frameId, Collection<? extends CaseSelectCondition> conditions);
 
 }
