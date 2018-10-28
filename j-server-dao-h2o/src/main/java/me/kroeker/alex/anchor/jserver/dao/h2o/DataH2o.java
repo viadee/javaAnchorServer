@@ -20,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
@@ -41,22 +44,20 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
     private static final int DOMAIN_MAX_ITEMS = 20;
 
     @Override
-    public Map<String, Map<Integer, String>> caseSelectConditions(String connectionName, String frameId)
+    public Map<String, Collection<? extends CaseSelectCondition>> caseSelectConditions(String connectionName, String frameId)
             throws DataAccessException {
         Collection<ColumnSummary<?>> columns = this.getFrame(connectionName, frameId).getColumn_summary_list();
 
-        Map<String, Map<Integer, String>> conditions = new HashMap<>();
+        Map<String, Collection<? extends CaseSelectCondition>> conditions = new HashMap<>();
         for (ColumnSummary column : columns) {
             String featureName = column.getLabel();
 
-            Map<Integer, String> columnConditions;
             if ("enum".equals(column.getColumn_type()) || "string".equals(column.getColumn_type())) {
-                columnConditions = computeEnumColumnConditions((CategoricalColumnSummary) column);
+                conditions.put(featureName, computeEnumColumnConditions((CategoricalColumnSummary) column));
             } else {
-                columnConditions = computeMetricColumnConditions((ContinuousColumnSummary) column, featureName);
+                conditions.put(featureName, computeMetricColumnConditions((ContinuousColumnSummary) column));
             }
 
-            conditions.put(featureName, columnConditions);
         }
         return conditions;
     }
@@ -167,7 +168,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                     1 - (double) coveredFreq / rowCount));
         }
 
-
         column.setUnique(domainLength);
         column.setCategories(categories);
         // TODO tail is missing
@@ -189,12 +189,12 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         String[] domain = h2oCol.domain;
 
         int domainLength = domain.length;
-        double freqCount = 0;
+        double coveredFreq = 0;
         List<CategoryFreq> categories = new ArrayList<>(domainLength);
         for (int i = 0; i < domainLength; i++) {
             double freq = (double) histogramBins[i] / rowCount;
             categories.add(new CategoryFreq(domain[i], freq));
-            freqCount += freq;
+            coveredFreq += freq;
         }
         categories.sort((a, b) -> Double.compare(b.getFreq(), a.getFreq()));
 
@@ -204,7 +204,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             categories = categories.subList(0, DOMAIN_MAX_ITEMS);
             categories.add(new CategoryFreq(
                     (domainLength - DOMAIN_MAX_ITEMS) + " more",
-                    1 - freqCount));
+                    1 - coveredFreq));
         }
 
         column.setCategories(categories);
@@ -212,8 +212,10 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         return column;
     }
 
-    private Map<Integer, String> computeMetricColumnConditions(ContinuousColumnSummary column, String featureName) {
-        Map<Integer, String> columnConditions = new HashMap<>();
+    private Collection<CaseSelectConditionMetric> computeMetricColumnConditions(ContinuousColumnSummary column) {
+        Collection<CaseSelectConditionMetric> columnConditions = new ArrayList<>();
+
+        // TODO make buckets configurable
         int buckets = 4;
         int columnMin = column.getColumn_min();
         int columnMax = column.getColumn_max();
@@ -223,17 +225,18 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             double conditionMin = columnMin + i * step;
             double conditionMax = columnMin + (i + 1) * step;
 
-            columnConditions.put(i, conditionMin + " <= " + featureName + " < " + conditionMax); // '{} <= {} < {}'.format(condition_min, column.label, condition_max));
+            columnConditions.add(new CaseSelectConditionMetric(column.getLabel(), conditionMin, conditionMax));
         }
 
         return columnConditions;
     }
 
-    private Map<Integer, String> computeEnumColumnConditions(CategoricalColumnSummary column) {
-        Map<Integer, String> columnConditions = new HashMap<>();
+    private Collection<CaseSelectConditionEnum> computeEnumColumnConditions(CategoricalColumnSummary column) {
+        Collection<CaseSelectConditionEnum> columnConditions = new ArrayList<>();
+
         List<CategoryFreq> categories = column.getCategories();
-        for (int i = 0; i < categories.size(); i++) {
-            columnConditions.put(i, categories.get(i).getName());
+        for (CategoryFreq category : categories) {
+            columnConditions.add(new CaseSelectConditionEnum(column.getLabel(), category.getName()));
         }
 
         return columnConditions;

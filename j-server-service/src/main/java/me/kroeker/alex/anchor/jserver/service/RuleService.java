@@ -2,6 +2,7 @@ package me.kroeker.alex.anchor.jserver.service;
 
 import java.util.Collection;
 
+import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
 import me.kroeker.alex.anchor.jserver.model.Rule;
 
 /**
@@ -9,5 +10,5 @@ import me.kroeker.alex.anchor.jserver.model.Rule;
  */
 public interface RuleService {
 
-    Rule createRule(String connectionName, String modelId, String frameId, Collection<String> conditions);
+    Rule createRule(String connectionName, String modelId, String frameId, Collection<CaseSelectCondition> conditions);
 }
