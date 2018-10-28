@@ -21,7 +21,7 @@
     <modules>
         <module>j-server-application</module>
         <module>j-server-model</module>
-        <module>j-server-service</module>
+        <module>j-server-api</module>
         <module>j-server-controller</module>
         <module>j-server-dao</module>
         <module>j-server-business</module>
@@ -52,7 +52,7 @@
             </dependency>
             <dependency>
                 <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-service</artifactId>
+                <artifactId>j-server-api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>

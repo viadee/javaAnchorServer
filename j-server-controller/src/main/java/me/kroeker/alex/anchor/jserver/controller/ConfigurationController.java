@@ -5,7 +5,7 @@ import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
 import me.kroeker.alex.anchor.jserver.model.TryConnectResponse;
-import me.kroeker.alex.anchor.jserver.service.ConfigurationService;
+import me.kroeker.alex.anchor.jserver.api.ConfigurationApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.Collection;
  * @author ak902764
  */
 @RestController
-public class ConfigurationController implements ConfigurationService {
+public class ConfigurationController implements ConfigurationApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 

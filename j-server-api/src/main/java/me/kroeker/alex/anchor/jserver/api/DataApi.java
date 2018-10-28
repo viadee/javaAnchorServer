@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.service;
+package me.kroeker.alex.anchor.jserver.api;
 
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionResponse;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
@@ -6,7 +6,7 @@ import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 /**
  * @author ak902764
  */
-public interface DataService {
+public interface DataApi {
 
     CaseSelectConditionResponse caseSelectConditions(String connectionName, String frameId);
 

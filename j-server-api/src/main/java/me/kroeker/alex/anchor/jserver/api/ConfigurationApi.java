@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.service;
+package me.kroeker.alex.anchor.jserver.api;
 
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * @author ak902764
  */
-public interface ConfigurationService {
+public interface ConfigurationApi {
 
     String getVersion();
 

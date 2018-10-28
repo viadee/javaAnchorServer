@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>
-            <artifactId>j-server-service</artifactId>
+            <artifactId>j-server-api</artifactId>
         </dependency>
         <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>

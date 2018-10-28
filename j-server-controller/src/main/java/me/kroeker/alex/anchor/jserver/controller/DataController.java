@@ -1,6 +1,5 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +18,13 @@ import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionResponse;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
-import me.kroeker.alex.anchor.jserver.service.DataService;
+import me.kroeker.alex.anchor.jserver.api.DataApi;
 
 /**
  * @author ak902764
  */
 @RestController
-public class DataController implements DataService {
+public class DataController implements DataApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataController.class);
 

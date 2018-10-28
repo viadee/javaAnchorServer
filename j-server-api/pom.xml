@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>j-server-service</artifactId>
+    <artifactId>j-server-api</artifactId>
     <packaging>jar</packaging>
 
     <name>anchor-j-server</name>
