@@ -20,4 +20,11 @@ public class BaseH2oAccess {
         return new H2oApi(H2O_SERVER.get(connectionName));
     }
 
+    boolean isEnumColumn(String columnType) {
+        return "enum".equals(columnType);
+    }
+
+    boolean isStringColumn(String columnType) {
+        return "string".equals(columnType) || "uuid".equals(columnType);
+    }
 }

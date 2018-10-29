@@ -51,7 +51,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         Map<String, Collection<? extends CaseSelectCondition>> conditions = new HashMap<>();
         for (ColumnSummary column : columns) {
             String featureName = column.getLabel();
-
+            // TODO strings as global constants
             if ("enum".equals(column.getColumn_type()) || "string".equals(column.getColumn_type())) {
                 conditions.put(featureName, computeEnumColumnConditions((CategoricalColumnSummary) column));
             } else {
@@ -66,8 +66,13 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
     public FrameSummary getFrame(String connectionName, String frameId) throws DataAccessException {
         FrameKeyV3 frameKey = new FrameKeyV3();
         frameKey.name = frameId;
+
+        File dataSet = null;
         try {
             H2oApi api = this.createH2o(connectionName);
+
+            dataSet = downloadDataSet(frameKey, api);
+
             FrameV3 h2oFrame = api.frameSummary(frameKey).frames[0];
             FrameSummary frame = new FrameSummary();
 
@@ -76,15 +81,16 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             frame.setRow_count(rowCount);
 
             Collection<ColumnSummary<?>> columns = new ArrayList<>(h2oFrame.columns.length);
+
             for (ColV3 h2oCol : h2oFrame.columns) {
                 final String columnName = h2oCol.label;
                 String columnType = h2oCol.type;
                 ColumnSummary column;
 
-                if ("enum".equals(columnType)) {
+                if (this.isEnumColumn(columnType)) {
                     column = generateEnumColumnSummary(rowCount, h2oCol);
-                } else if ("string".equals(columnType) || "uuid".equals(columnType)) {
-                    column = generateStringColumnSummary(api, frameKey, h2oCol, rowCount);
+                } else if (this.isStringColumn(columnType)) {
+                    column = generateStringColumnSummary(dataSet, h2oCol, rowCount);
                 } else {
                     column = generateMetricColumnSummary(h2oCol);
                 }
@@ -102,7 +108,20 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         } catch (IOException ioe) {
             throw new DataAccessException("Failed to retrieve frame summary of h2o with connection name: "
                     + connectionName + " and frame id: " + frameId, ioe);
+        } finally {
+            if (dataSet != null && !dataSet.delete()) {
+                dataSet.deleteOnExit();
+                LOG.error("failed to delete downloaded data set, try delete on exit: " + dataSet.getAbsolutePath());
+            }
         }
+    }
+
+    private File downloadDataSet(FrameKeyV3 frameKey, H2oApi api) throws IOException {
+        File dataSet = File.createTempFile("h2o_data_set", ".csv");
+        ResponseBody data = api._downloadDataset_fetch(frameKey);
+        FileUtils.copyInputStreamToFile(data.byteStream(), dataSet);
+
+        return dataSet;
     }
 
     private ColumnSummary generateMetricColumnSummary(ColV3 h2oCol) {
@@ -115,19 +134,16 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         return column;
     }
 
-    private ColumnSummary generateStringColumnSummary(H2oApi api, FrameKeyV3 frameKey, ColV3 h2oCol, long rowCount)
+    private ColumnSummary generateStringColumnSummary(File dataSet, ColV3 h2oCol, long rowCount)
             throws IOException {
         String columnName = h2oCol.label;
 
         CategoricalColumnSummary<String> column = new CategoricalColumnSummary<String>();
         column.setData(Arrays.asList(h2oCol.stringData));
 
-        File temp = File.createTempFile("h2o_data_set", ".csv");
-        ResponseBody data = api._downloadDataset_fetch(frameKey);
-        FileUtils.copyInputStreamToFile(data.byteStream(), temp);
-
+        // TODO refactor download of data set
         Map<String, Integer> dataColumn = new HashMap<>();
-        try (Reader in = new FileReader(temp)) {
+        try (Reader in = new FileReader(dataSet)) {
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
             CSVRecord columnNames = records.iterator().next();
             int indexOfColumn = -1;
@@ -139,11 +155,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             }
             for (CSVRecord record : records) {
                 countStringColumnCategory(dataColumn, record.get(indexOfColumn));
-            }
-        } finally {
-            if (!temp.delete()) {
-                temp.deleteOnExit();
-                LOG.error("failed to delete downloaded data set, try delete on exit: " + temp.getAbsolutePath());
             }
         }
 
