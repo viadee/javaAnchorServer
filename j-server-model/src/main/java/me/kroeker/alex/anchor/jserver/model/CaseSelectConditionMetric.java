@@ -11,6 +11,9 @@ public class CaseSelectConditionMetric extends CaseSelectCondition {
 
     private double conditionMax;
 
+    public CaseSelectConditionMetric() {
+    }
+
     public CaseSelectConditionMetric(String featureName, double conditionMin, double conditionMax) {
         super("metric", featureName);
         this.conditionMin = conditionMin;

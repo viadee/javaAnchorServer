@@ -11,6 +11,9 @@ public class CaseSelectCondition {
 
     private String featureName;
 
+    public CaseSelectCondition() {
+    }
+
     public CaseSelectCondition(String columnType) {
         this.columnType = columnType;
     }

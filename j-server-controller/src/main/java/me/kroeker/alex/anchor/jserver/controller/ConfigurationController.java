@@ -26,16 +26,22 @@ public class ConfigurationController implements ConfigurationApi {
     private ConfigurationDAO configuration;
 
     @Override
-    @RequestMapping(path = "/", method = RequestMethod.GET, headers = "Accept=application/json",
-            produces = MediaType.APPLICATION_JSON)
+    @RequestMapping(
+            path = "/",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
     public String getVersion() {
         // TODO get version implementieren
         return "hello";
     }
 
     @Override
-    @RequestMapping(path = "/{connectionName}/try_connect", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON)
+    @RequestMapping(
+            path = "/{connectionName}/try_connect",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
     public  TryConnectResponse tryConnect(@PathVariable String connectionName) {
         try {
             boolean canConnect = this.configuration.tryConnect(connectionName);
@@ -48,8 +54,11 @@ public class ConfigurationController implements ConfigurationApi {
     }
 
     @Override
-    @RequestMapping(path = "/{connectionName}/models", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON)
+    @RequestMapping(
+            path = "/{connectionName}/models",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
     public Collection<Model> getModels(@PathVariable String connectionName) {
         try {
             return this.configuration.getModels(connectionName);
@@ -61,8 +70,11 @@ public class ConfigurationController implements ConfigurationApi {
     }
 
     @Override
-    @RequestMapping(path = "/{connectionName}/frames", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON)
+    @RequestMapping(
+            path = "/{connectionName}/frames",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
     public Collection<DataFrame> getFrames(@PathVariable String connectionName) {
         try {
             return this.configuration.getFrames(connectionName);

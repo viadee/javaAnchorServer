@@ -8,6 +8,9 @@ import java.util.Objects;
 public class CaseSelectConditionEnum extends CaseSelectCondition {
     private String category;
 
+    public CaseSelectConditionEnum() {
+    }
+
     public CaseSelectConditionEnum(String featureName, String category) {
         super("string", featureName);
         this.category = category;

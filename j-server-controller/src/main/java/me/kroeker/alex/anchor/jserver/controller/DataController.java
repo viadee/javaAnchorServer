@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +34,11 @@ public class DataController implements DataApi {
     private DataDAO dataDAO;
 
     @Override
-    @RequestMapping(value = "/{connectionName}/frames/{frameId}", method = RequestMethod.GET, produces = {
-            "application/json" })
+    @RequestMapping(
+            value = "/{connectionName}/frames/{frameId}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
     public FrameSummary getFrame(@PathVariable String connectionName, @PathVariable String frameId) {
         try {
             return this.dataDAO.getFrame(connectionName, frameId);
@@ -45,8 +50,11 @@ public class DataController implements DataApi {
     }
 
     @Override
-    @RequestMapping(value = "/{connectionName}/frames/{frameId}/conditions", method = RequestMethod.GET, produces = {
-            "application/json" })
+    @RequestMapping(
+            value = "/{connectionName}/frames/{frameId}/conditions",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
     public CaseSelectConditionResponse caseSelectConditions(@PathVariable String connectionName,
                                                             @PathVariable String frameId) {
         try {

@@ -12,6 +12,9 @@ public class CaseSelectConditionResponse {
 
     private Map<String, Collection<CaseSelectConditionMetric>> metricConditions;
 
+    public CaseSelectConditionResponse() {
+    }
+
     public CaseSelectConditionResponse(
             Map<String, Collection<CaseSelectConditionEnum>> enumConditions,
             Map<String, Collection<CaseSelectConditionMetric>> metricConditions) {

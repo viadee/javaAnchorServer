@@ -1,6 +1,6 @@
 package me.kroeker.alex.anchor.jserver.api;
 
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionResponse;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 import me.kroeker.alex.anchor.jserver.model.Rule;
 
 /**
@@ -12,5 +12,6 @@ public interface RuleApi {
             String connectionName,
             String modelId,
             String frameId,
-            CaseSelectConditionResponse conditions);
+            CaseSelectConditionRequest conditions);
+
 }
