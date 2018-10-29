@@ -1,8 +1,7 @@
 package me.kroeker.alex.anchor.jserver.dao;
 
-import java.util.Collection;
-
-import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
+import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 import me.kroeker.alex.anchor.jserver.model.Rule;
 
 /**
@@ -10,6 +9,11 @@ import me.kroeker.alex.anchor.jserver.model.Rule;
  */
 public interface RuleDAO {
 
-    Rule randomRule(String modelId, String frameId, Collection<? extends CaseSelectCondition> conditions);
+    Rule randomRule(
+            String connectionName,
+            String modelId,
+            String frameId,
+            CaseSelectConditionRequest conditions
+    ) throws DataAccessException;
 
 }

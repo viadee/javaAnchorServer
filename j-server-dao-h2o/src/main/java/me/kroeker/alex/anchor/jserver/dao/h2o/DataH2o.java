@@ -1,9 +1,7 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,15 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.dao.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
@@ -28,7 +24,6 @@ import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
-import okhttp3.ResponseBody;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ColV3;
 import water.bindings.pojos.FrameKeyV3;
@@ -71,7 +66,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         try {
             H2oApi api = this.createH2o(connectionName);
 
-            dataSet = downloadDataSet(frameKey, api);
+            dataSet = H2oUtil.downloadDataSet(frameKey, api);
 
             FrameV3 h2oFrame = api.frameSummary(frameKey).frames[0];
             FrameSummary frame = new FrameSummary();
@@ -87,9 +82,9 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
                 String columnType = h2oCol.type;
                 ColumnSummary column;
 
-                if (this.isEnumColumn(columnType)) {
+                if (H2oUtil.isEnumColumn(columnType)) {
                     column = generateEnumColumnSummary(rowCount, h2oCol);
-                } else if (this.isStringColumn(columnType)) {
+                } else if (H2oUtil.isStringColumn(columnType)) {
                     column = generateStringColumnSummary(dataSet, h2oCol, rowCount);
                 } else {
                     column = generateMetricColumnSummary(h2oCol);
@@ -116,14 +111,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         }
     }
 
-    private File downloadDataSet(FrameKeyV3 frameKey, H2oApi api) throws IOException {
-        File dataSet = File.createTempFile("h2o_data_set", ".csv");
-        ResponseBody data = api._downloadDataset_fetch(frameKey);
-        FileUtils.copyInputStreamToFile(data.byteStream(), dataSet);
-
-        return dataSet;
-    }
-
     private ColumnSummary generateMetricColumnSummary(ColV3 h2oCol) {
         ColumnSummary column;
         column = new ContinuousColumnSummary();
@@ -138,25 +125,15 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             throws IOException {
         String columnName = h2oCol.label;
 
-        CategoricalColumnSummary<String> column = new CategoricalColumnSummary<String>();
+        CategoricalColumnSummary<String> column = new CategoricalColumnSummary<>();
         column.setData(Arrays.asList(h2oCol.stringData));
 
         // TODO refactor download of data set
         Map<String, Integer> dataColumn = new HashMap<>();
-        try (Reader in = new FileReader(dataSet)) {
-            Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
-            CSVRecord columnNames = records.iterator().next();
-            int indexOfColumn = -1;
-            for (int i = 0; i < columnNames.size(); i++) {
-                if (columnNames.get(i).equals(columnName)) {
-                    indexOfColumn = i;
-                    break;
-                }
-            }
-            for (CSVRecord record : records) {
-                countStringColumnCategory(dataColumn, record.get(indexOfColumn));
-            }
-        }
+        H2oUtil.iterateThroughCsvData(dataSet,
+                (record) ->
+                        countStringColumnCategory(dataColumn, record.get(columnName))
+        );
 
         List<CategoryFreq> categories = new ArrayList<>(dataColumn.size());
         for (Map.Entry<String, Integer> entry : dataColumn.entrySet()) {
@@ -169,7 +146,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         // allow only 20 items
         if (categories.size() > DOMAIN_MAX_ITEMS) {
             categories = categories.subList(0, DOMAIN_MAX_ITEMS);
-//            categories.stream().flatMapToDouble((cat) -> Stream.of(cat.getFreq()).reduce((accu, element) -> Double.sum(accu.doubleValue(), element.doubleValue()))
             int coveredFreq = 0;
             for (CategoryFreq cat : categories) {
                 coveredFreq += cat.getFreq();
@@ -181,7 +157,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
 
         column.setUnique(domainLength);
         column.setCategories(categories);
-        // TODO tail is missing
+
         return column;
     }
 
