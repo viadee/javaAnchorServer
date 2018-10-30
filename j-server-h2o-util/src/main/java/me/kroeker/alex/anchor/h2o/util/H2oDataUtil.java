@@ -4,8 +4,12 @@ import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import okhttp3.ResponseBody;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.FileUtils;
+import water.bindings.H2oApi;
+import water.bindings.pojos.FrameKeyV3;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,9 +22,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class DataUtil {
+public final class H2oDataUtil {
 
-    private DataUtil() {
+    private H2oDataUtil() {
     }
 
     public static TabularInstance getRandomInstance(CaseSelectConditionRequest conditions, File dataSet) throws IOException {
@@ -46,7 +50,7 @@ public final class DataUtil {
         }
 
         List<CSVRecord> acceptedRecords = new ArrayList<>();
-        DataUtil.iterateThroughCsvData(dataSet,
+        H2oDataUtil.iterateThroughCsvData(dataSet,
                 (record) -> {
                     if (filters.stream().allMatch(filter -> filter.apply(record))) {
                         acceptedRecords.add(record);

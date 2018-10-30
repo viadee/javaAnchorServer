@@ -1,7 +1,7 @@
 package me.kroeker.alex.anchor.jserver.dao;
 
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;

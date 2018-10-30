@@ -47,12 +47,4 @@ public final class H2oUtil {
         return "string".equals(columnType) || "uuid".equals(columnType);
     }
 
-    public static File downloadDataSet(FrameKeyV3 frameKey, H2oApi api) throws IOException {
-        File dataSet = File.createTempFile("h2o_data_set", ".csv");
-        ResponseBody data = api._downloadDataset_fetch(frameKey);
-        FileUtils.copyInputStreamToFile(data.byteStream(), dataSet);
-
-        return dataSet;
-    }
-
 }

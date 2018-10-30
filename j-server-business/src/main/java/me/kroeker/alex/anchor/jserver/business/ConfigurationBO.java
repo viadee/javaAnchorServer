@@ -1,7 +1,7 @@
 package me.kroeker.alex.anchor.jserver.business;
 
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,10 @@ public class ConfigurationBO {
 
     public boolean tryConnect(String connectionName) throws DataAccessException {
         return this.configuration.tryConnect(connectionName);
+    }
+
+    public Model getModel(String connectionName, String modelId) throws DataAccessException {
+        return this.configuration.getModel(connectionName, modelId);
     }
 
     public Collection<Model> getModels(String connectionName) throws DataAccessException {

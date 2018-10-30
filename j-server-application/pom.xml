@@ -22,10 +22,10 @@
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
-            <artifactId>j-server-dao</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>me.kroeker.alex.anchor</groupId>-->
+            <!--<artifactId>j-server-dao</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-business</artifactId>
@@ -37,6 +37,10 @@
         <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-dao-h2o</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>me.kroeker.alex.anchor</groupId>
+            <artifactId>j-server-anchor-h2o</artifactId>
         </dependency>
 
 

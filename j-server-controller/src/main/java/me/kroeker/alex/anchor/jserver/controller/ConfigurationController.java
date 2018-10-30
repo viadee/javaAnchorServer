@@ -1,8 +1,7 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
 import me.kroeker.alex.anchor.jserver.business.ConfigurationBO;
-import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
 import me.kroeker.alex.anchor.jserver.model.TryConnectResponse;

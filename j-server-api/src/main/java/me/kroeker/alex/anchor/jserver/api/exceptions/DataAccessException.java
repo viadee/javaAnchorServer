@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.dao.exceptions;
+package me.kroeker.alex.anchor.jserver.api.exceptions;
 
 import java.io.IOException;
 

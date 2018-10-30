@@ -19,6 +19,11 @@
             <artifactId>j-server-model</artifactId>
         </dependency>
         <dependency>
+            <groupId>me.kroeker.alex.anchor</groupId>
+            <artifactId>j-server-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>de.goerke.tobias</groupId>
             <artifactId>anchorj</artifactId>
         </dependency>

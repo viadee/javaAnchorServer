@@ -1,22 +1,18 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
-import javax.ws.rs.core.MediaType;
-
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.jserver.api.RuleApi;
 import me.kroeker.alex.anchor.jserver.business.DataBO;
-import me.kroeker.alex.anchor.jserver.dao.DataDAO;
+import me.kroeker.alex.anchor.jserver.business.RuleBO;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import me.kroeker.alex.anchor.jserver.api.RuleApi;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
-import me.kroeker.alex.anchor.jserver.model.Rule;
+import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.core.MediaType;
 
 /**
  * @author ak902764
@@ -28,6 +24,9 @@ public class RuleController implements RuleApi {
 
     @Autowired
     private DataBO dataBO;
+
+    @Autowired
+    private RuleBO ruleBO;
 
     @Override
     @RequestMapping(
@@ -44,7 +43,8 @@ public class RuleController implements RuleApi {
     ) {
         try {
             TabularInstance instance = dataBO.randomInstance(connectionName, modelId, frameId, conditions);
-            return null;
+
+            return this.ruleBO.computeRule(connectionName, modelId, frameId, instance);
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling

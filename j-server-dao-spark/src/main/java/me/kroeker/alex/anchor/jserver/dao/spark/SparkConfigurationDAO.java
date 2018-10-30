@@ -2,10 +2,11 @@ package me.kroeker.alex.anchor.jserver.dao.spark;
 
 import java.util.Collection;
 
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author ak902764
@@ -13,21 +14,26 @@ import me.kroeker.alex.anchor.jserver.model.Model;
 public class SparkConfigurationDAO implements ConfigurationDAO {
     @Override
     public boolean tryConnect(String h2oServer) {
-        return false;
+        throw new NotImplementedException();
     }
 
     @Override
     public Collection<String> getConnectionNames() {
-        return null;
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Model getModel(String connectionName, String modelId) throws DataAccessException {
+        throw new NotImplementedException();
     }
 
     @Override
     public Collection<Model> getModels(String connectionName) throws DataAccessException {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
     public Collection<DataFrame> getFrames(String connectionName) throws DataAccessException {
-        return null;
+        throw new NotImplementedException();
     }
 }

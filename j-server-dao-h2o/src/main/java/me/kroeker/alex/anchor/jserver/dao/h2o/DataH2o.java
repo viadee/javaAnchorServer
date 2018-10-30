@@ -1,12 +1,12 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.h2o.util.DataUtil;
+import me.kroeker.alex.anchor.h2o.util.H2oDataDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
 import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.*;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,6 @@ import java.util.*;
 @Component
 public class DataH2o extends BaseH2oAccess implements DataDAO {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataH2o.class);
     private static final int DOMAIN_MAX_ITEMS = 20;
 
     @Override
@@ -53,11 +52,10 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         FrameKeyV3 frameKey = new FrameKeyV3();
         frameKey.name = frameId;
 
-        File dataSet = null;
-        try {
+        try (H2oDataDownload h2oDownload = new H2oDataDownload()) {
             H2oApi api = H2oUtil.createH2o(connectionName);
 
-            dataSet = H2oUtil.downloadDataSet(frameKey, api);
+            File dataSet = h2oDownload.getFile(api, frameKey);
 
             FrameV3 h2oFrame = api.frameSummary(frameKey).frames[0];
             FrameSummary frame = new FrameSummary();
@@ -98,20 +96,15 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         } catch (IOException ioe) {
             throw new DataAccessException("Failed to retrieve frame summary of h2o with connection name: "
                     + connectionName + " and frame id: " + frameId, ioe);
-        } finally {
-            if (dataSet != null && !dataSet.delete()) {
-                dataSet.deleteOnExit();
-                LOG.error("failed to delete downloaded data set, try delete on exit: " + dataSet.getAbsolutePath());
-            }
         }
     }
 
     @Override
     public TabularInstance randomInstance(String connectionName, String modelId, String frameId, CaseSelectConditionRequest conditions) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
-        try {
-            File dataSet = H2oUtil.downloadDataSet(H2oApi.stringToFrameKey(frameId), api);
-            return DataUtil.getRandomInstance(conditions, dataSet);
+        try (H2oDataDownload h2oDownload = new H2oDataDownload()) {
+            File dataSet = h2oDownload.getFile(api, H2oApi.stringToFrameKey(frameId));
+            return H2oDataUtil.getRandomInstance(conditions, dataSet);
         } catch (IOException ioe) {
             throw new DataAccessException("Failed to retrieve frame summary of h2o with connection name: "
                     + connectionName + " and frame id: " + frameId, ioe);
@@ -137,7 +130,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
 
         // TODO refactor download of data set
         Map<String, Integer> dataColumn = new HashMap<>();
-        DataUtil.iterateThroughCsvData(dataSet,
+        H2oDataUtil.iterateThroughCsvData(dataSet,
                 (record) ->
                         countStringColumnCategory(dataColumn, record.get(columnName))
         );

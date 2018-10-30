@@ -1,8 +1,8 @@
 package me.kroeker.alex.anchor.jserver.business;
 
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

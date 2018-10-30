@@ -1,9 +1,5 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.ws.rs.core.MediaType;
 
 import me.kroeker.alex.anchor.jserver.business.DataBO;
@@ -14,10 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionResponse;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import me.kroeker.alex.anchor.jserver.api.DataApi;
