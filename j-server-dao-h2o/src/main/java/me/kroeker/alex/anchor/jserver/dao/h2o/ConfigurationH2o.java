@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import me.kroeker.alex.anchor.h2o.util.H2oUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class ConfigurationH2o extends BaseH2oAccess implements ConfigurationDAO 
     @Override
     public boolean tryConnect(String connectionName) throws DataAccessException {
         try {
-            AboutV3 about = this.createH2o(connectionName).about();
+            AboutV3 about = H2oUtil.createH2o(connectionName).about();
             return true;
         } catch (IOException | IllegalArgumentException ioe) {
             throw new DataAccessException("Failed to connect to h2o server with connection name: " +
@@ -38,13 +39,13 @@ public class ConfigurationH2o extends BaseH2oAccess implements ConfigurationDAO 
 
     @Override
     public Collection<String> getConnectionNames() {
-        return H2O_SERVER.keySet();
+        return H2oUtil.getH2oConnectionNames();
     }
 
     @Override
     public Collection<Model> getModels(String connectionName) throws DataAccessException {
         try {
-            ModelsV3 h2oModels = this.createH2o(connectionName).models();
+            ModelsV3 h2oModels = H2oUtil.createH2o(connectionName).models();
             Collection<Model> models = new ArrayList<>(h2oModels.models.length);
 
             for (ModelSchemaBaseV3 h2oModel : h2oModels.models) {
@@ -73,7 +74,7 @@ public class ConfigurationH2o extends BaseH2oAccess implements ConfigurationDAO 
     @Override
     public Collection<DataFrame> getFrames(String connectionName) throws DataAccessException {
         try {
-            FramesListV3 h2oFrames = this.createH2o(connectionName).frames();
+            FramesListV3 h2oFrames = H2oUtil.createH2o(connectionName).frames();
             Collection<DataFrame> frames = new ArrayList<>(h2oFrames.frames.length);
             for (FrameBaseV3 h2oFrame : h2oFrames.frames) {
                 DataFrame frame = new DataFrame();

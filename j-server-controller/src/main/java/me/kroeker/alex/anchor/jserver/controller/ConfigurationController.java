@@ -1,5 +1,6 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
+import me.kroeker.alex.anchor.jserver.business.ConfigurationBO;
 import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
@@ -9,6 +10,7 @@ import me.kroeker.alex.anchor.jserver.api.ConfigurationApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.core.MediaType;
@@ -18,12 +20,13 @@ import java.util.Collection;
  * @author ak902764
  */
 @RestController
+@Controller
 public class ConfigurationController implements ConfigurationApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 
     @Autowired
-    private ConfigurationDAO configuration;
+    private ConfigurationBO configuration;
 
     @Override
     @RequestMapping(
@@ -32,8 +35,7 @@ public class ConfigurationController implements ConfigurationApi {
             produces = MediaType.APPLICATION_JSON
     )
     public String getVersion() {
-        // TODO get version implementieren
-        return "hello";
+        return this.configuration.getVersion();
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ConfigurationController implements ConfigurationApi {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON
     )
-    public  TryConnectResponse tryConnect(@PathVariable String connectionName) {
+    public TryConnectResponse tryConnect(@PathVariable String connectionName) {
         try {
             boolean canConnect = this.configuration.tryConnect(connectionName);
             return new TryConnectResponse(canConnect);

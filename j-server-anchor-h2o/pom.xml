@@ -9,23 +9,27 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>j-server-business</artifactId>
+    <artifactId>j-server-anchor-h2o</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>
-            <artifactId>j-server-model</artifactId>
+            <artifactId>j-server-anchor</artifactId>
         </dependency>
         <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>
-            <artifactId>j-server-dao</artifactId>
+            <artifactId>j-server-model</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <groupId>de.goerke.tobias</groupId>
+            <artifactId>anchorj</artifactId>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>ai.h2o</groupId>
+            <artifactId>h2o-genmodel</artifactId>
+        </dependency>
 
+    </dependencies>
+    
 </project>

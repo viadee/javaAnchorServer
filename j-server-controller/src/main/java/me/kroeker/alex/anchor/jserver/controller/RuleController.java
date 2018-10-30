@@ -2,6 +2,9 @@ package me.kroeker.alex.anchor.jserver.controller;
 
 import javax.ws.rs.core.MediaType;
 
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.jserver.business.DataBO;
+import me.kroeker.alex.anchor.jserver.dao.DataDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import me.kroeker.alex.anchor.jserver.api.RuleApi;
-import me.kroeker.alex.anchor.jserver.dao.RuleDAO;
 import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 import me.kroeker.alex.anchor.jserver.model.Rule;
@@ -25,7 +27,7 @@ public class RuleController implements RuleApi {
     private static final Logger LOG = LoggerFactory.getLogger(RuleController.class);
 
     @Autowired
-    private RuleDAO ruleDAO;
+    private DataBO dataBO;
 
     @Override
     @RequestMapping(
@@ -41,7 +43,8 @@ public class RuleController implements RuleApi {
             @RequestBody CaseSelectConditionRequest conditions
     ) {
         try {
-            return ruleDAO.randomRule(connectionName, modelId, frameId, conditions);
+            TabularInstance instance = dataBO.randomInstance(connectionName, modelId, frameId, conditions);
+            return null;
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling

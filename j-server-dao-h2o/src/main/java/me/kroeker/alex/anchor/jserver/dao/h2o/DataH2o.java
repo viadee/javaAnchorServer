@@ -1,33 +1,24 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.h2o.util.DataUtil;
+import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.dao.DataDAO;
+import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.model.*;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import me.kroeker.alex.anchor.jserver.dao.DataDAO;
-import me.kroeker.alex.anchor.jserver.dao.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.dao.h2o.util.H2oUtil;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
-import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ColV3;
 import water.bindings.pojos.FrameKeyV3;
 import water.bindings.pojos.FrameV3;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author ak902764
@@ -64,7 +55,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
 
         File dataSet = null;
         try {
-            H2oApi api = this.createH2o(connectionName);
+            H2oApi api = H2oUtil.createH2o(connectionName);
 
             dataSet = H2oUtil.downloadDataSet(frameKey, api);
 
@@ -78,6 +69,10 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
             Collection<ColumnSummary<?>> columns = new ArrayList<>(h2oFrame.columns.length);
 
             for (ColV3 h2oCol : h2oFrame.columns) {
+                if (h2oCol.label.equals("weekday")) {
+                    h2oCol.type = "string";
+                    h2oCol.stringData = new String[]{""};
+                }
                 final String columnName = h2oCol.label;
                 String columnType = h2oCol.type;
                 ColumnSummary column;
@@ -111,6 +106,18 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         }
     }
 
+    @Override
+    public TabularInstance randomInstance(String connectionName, String modelId, String frameId, CaseSelectConditionRequest conditions) throws DataAccessException {
+        H2oApi api = H2oUtil.createH2o(connectionName);
+        try {
+            File dataSet = H2oUtil.downloadDataSet(H2oApi.stringToFrameKey(frameId), api);
+            return DataUtil.getRandomInstance(conditions, dataSet);
+        } catch (IOException ioe) {
+            throw new DataAccessException("Failed to retrieve frame summary of h2o with connection name: "
+                    + connectionName + " and frame id: " + frameId, ioe);
+        }
+    }
+
     private ColumnSummary generateMetricColumnSummary(ColV3 h2oCol) {
         ColumnSummary column;
         column = new ContinuousColumnSummary();
@@ -130,7 +137,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
 
         // TODO refactor download of data set
         Map<String, Integer> dataColumn = new HashMap<>();
-        H2oUtil.iterateThroughCsvData(dataSet,
+        DataUtil.iterateThroughCsvData(dataSet,
                 (record) ->
                         countStringColumnCategory(dataColumn, record.get(columnName))
         );
