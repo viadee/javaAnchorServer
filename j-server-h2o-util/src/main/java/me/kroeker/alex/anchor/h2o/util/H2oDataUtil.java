@@ -1,16 +1,5 @@
 package me.kroeker.alex.anchor.h2o.util;
 
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
-import okhttp3.ResponseBody;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.FileUtils;
-import water.bindings.H2oApi;
-import water.bindings.pojos.FrameKeyV3;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,9 +7,18 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 
 public final class H2oDataUtil {
 
@@ -65,12 +63,14 @@ public final class H2oDataUtil {
         return new TabularInstance(acceptedInstance.toMap().values().toArray());
     }
 
-    public static void iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {
+    public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {
         try (Reader in = new FileReader(file)) {
-            Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
+            CSVParser records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
                 recordConsumer.accept(record);
             }
+
+            return records.getHeaderMap();
         }
     }
 
