@@ -15,8 +15,11 @@ import java.util.Collection;
 @Component
 public class ConfigurationBO {
 
-    @Autowired
     private ConfigurationDAO configuration;
+
+    public ConfigurationBO(@Autowired ConfigurationDAO configuration) {
+        this.configuration = configuration;
+    }
 
     public String getVersion() {
         // TODO get version implementieren

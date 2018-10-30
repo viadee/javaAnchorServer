@@ -14,8 +14,11 @@ import java.util.Map;
 @Component
 public class DataBO {
 
-    @Autowired
     private DataDAO dataDAO;
+
+    public DataBO(@Autowired DataDAO dataDAO) {
+        this.dataDAO = dataDAO;
+    }
 
     public FrameSummary getFrame(String connectionName, String frameId) throws DataAccessException {
         return this.dataDAO.getFrame(connectionName, frameId);

@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RuleBO {
 
-    @Autowired
     private AnchorRule anchor;
+
+    public RuleBO(@Autowired AnchorRule anchor) {
+        this.anchor = anchor;
+    }
 
     public Rule computeRule(String connectionName,
                             String modelId,

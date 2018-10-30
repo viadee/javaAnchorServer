@@ -16,5 +16,9 @@
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-dao</artifactId>
         </dependency>
+        <dependency>
+            <groupId>me.kroeker.alex.anchor</groupId>
+            <artifactId>j-server-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

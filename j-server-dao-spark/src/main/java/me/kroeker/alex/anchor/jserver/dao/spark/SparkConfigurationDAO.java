@@ -1,12 +1,12 @@
 package me.kroeker.alex.anchor.jserver.dao.spark;
 
-import java.util.Collection;
-
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.ConfigurationDAO;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.Collection;
 
 /**
  * @author ak902764

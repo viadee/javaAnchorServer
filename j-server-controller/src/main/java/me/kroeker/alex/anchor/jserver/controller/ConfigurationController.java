@@ -24,8 +24,11 @@ public class ConfigurationController implements ConfigurationApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 
-    @Autowired
     private ConfigurationBO configuration;
+
+    public ConfigurationController(@Autowired ConfigurationBO configuration) {
+        this.configuration = configuration;
+    }
 
     @Override
     @RequestMapping(

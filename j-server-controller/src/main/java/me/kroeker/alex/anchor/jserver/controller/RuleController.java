@@ -2,9 +2,9 @@ package me.kroeker.alex.anchor.jserver.controller;
 
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.api.RuleApi;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.DataBO;
 import me.kroeker.alex.anchor.jserver.business.RuleBO;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 import me.kroeker.alex.anchor.jserver.model.Rule;
 import org.slf4j.Logger;
@@ -22,11 +22,14 @@ public class RuleController implements RuleApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(RuleController.class);
 
-    @Autowired
     private DataBO dataBO;
 
-    @Autowired
     private RuleBO ruleBO;
+
+    public RuleController(@Autowired DataBO dataBO, @Autowired RuleBO ruleBO) {
+        this.dataBO = dataBO;
+        this.ruleBO = ruleBO;
+    }
 
     @Override
     @RequestMapping(

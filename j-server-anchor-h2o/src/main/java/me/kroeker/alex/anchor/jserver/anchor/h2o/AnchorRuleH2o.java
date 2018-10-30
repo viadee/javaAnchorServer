@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jsever.anchor.h2o;
+package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 import de.goerke.tobias.anchorj.tabular.AnchorTabular;
 import de.goerke.tobias.anchorj.tabular.PercentileDiscretizer;
@@ -27,11 +27,14 @@ import java.util.Collection;
 @Component
 public class AnchorRuleH2o implements AnchorRule {
 
-    @Autowired
     private DataBO dataBO;
 
-    @Autowired
     private ConfigurationBO configurationBO;
+
+    public AnchorRuleH2o(@Autowired DataBO dataBO, @Autowired ConfigurationBO configurationBO) {
+        this.dataBO = dataBO;
+        this.configurationBO = configurationBO;
+    }
 
     @Override
     public Rule computeRule(String connectionName, String modelId, String frameId, TabularInstance instance) throws DataAccessException {

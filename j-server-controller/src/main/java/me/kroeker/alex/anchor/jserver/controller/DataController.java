@@ -23,8 +23,11 @@ public class DataController implements DataApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataController.class);
 
-    @Autowired
     private DataBO dataBO;
+
+    public DataController(@Autowired DataBO dataBO) {
+        this.dataBO = dataBO;
+    }
 
     @Override
     @RequestMapping(

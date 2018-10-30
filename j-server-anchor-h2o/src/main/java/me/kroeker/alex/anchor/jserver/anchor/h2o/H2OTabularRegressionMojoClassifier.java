@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jsever.anchor.h2o;
+package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 import de.goerke.tobias.anchorj.base.ClassificationFunction;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
