@@ -3959,11 +3959,11 @@ public class H2oApi {
    * Return the model in the MOJO format. This format can then be interpreted by gen_model.jar in order to perform
    * prediction / scoring. Currently works for GBM and DRF algos only.
    */
-  public StreamingSchema modelMojo(ModelKeyV3 modelId) throws IOException {
+  public ResponseBody modelMojo(ModelKeyV3 modelId) throws IOException {
     Models s = getService(Models.class);
     return s.fetchMojo(keyToString(modelId)).execute().body();
   }
-  public StreamingSchema modelMojo(ModelsV3 params) throws IOException {
+  public ResponseBody modelMojo(ModelsV3 params) throws IOException {
     Models s = getService(Models.class);
     return s.fetchMojo(
       keyToString(params.modelId),

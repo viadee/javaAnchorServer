@@ -1,21 +1,11 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.tabular.AnchorTabular;
-import de.goerke.tobias.anchorj.tabular.PercentileDiscretizer;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.h2o.util.H2oDataDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import de.goerke.tobias.anchorj.base.AnchorConstructionBuilder;
+import de.goerke.tobias.anchorj.base.AnchorResult;
+import de.goerke.tobias.anchorj.base.ClassificationFunction;
+import de.goerke.tobias.anchorj.base.exploration.BatchSAR;
+import de.goerke.tobias.anchorj.tabular.*;
+import me.kroeker.alex.anchor.h2o.util.*;
 import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.ConfigurationBO;
@@ -24,9 +14,15 @@ import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import me.kroeker.alex.anchor.jserver.model.Model;
 import me.kroeker.alex.anchor.jserver.model.Rule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import water.bindings.H2oApi;
-import water.bindings.pojos.ModelExportV3;
-import water.bindings.pojos.ModelKeyV3;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class AnchorRuleH2o implements AnchorRule {
@@ -44,20 +40,40 @@ public class AnchorRuleH2o implements AnchorRule {
     public Rule computeRule(String connectionName, String modelId, String frameId, TabularInstance instance) throws DataAccessException {
         AnchorTabular anchor = buildAnchor(connectionName, modelId, frameId);
 
-        ModelKeyV3 modelKey = new ModelKeyV3();
-        modelKey.name = modelId;
-        try {
-            ModelExportV3 mojo = H2oUtil.createH2o(connectionName).exportMojo(modelKey);
-            System.out.println(mojo._excludeFields);
+        // TODO fix
+        Object[] instance2 = instance.getInstance();
+        Object[] instanceWithoutTarget = new Object[instance2.length - 1];
+        for (int i = 0; i < instance2.length - 1; i++) {
+            instanceWithoutTarget[i] = instance2[i];
+        }
+        instance = new TabularInstance(instanceWithoutTarget);
+
+
+
+        try (H2oDownload mojoDownload = new H2oMojoDownload()) {
+            File mojoFile = mojoDownload.getFile(H2oUtil.createH2o(connectionName), modelId);
+
+            final ClassificationFunction<TabularInstance> classificationFunction = new H2OTabularMojoClassifier<>(
+                    new FileInputStream(mojoFile),
+                    anchor.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()));
+
+            TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(instance,
+                    anchor.getTabularInstances().toArray(new TabularInstance[0]));
+
+            final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
+                    tabularPerturbationFunction, instance,
+                    classificationFunction.predict(instance))
+                    .enableThreading(10, true)
+                    .setBestAnchorIdentification(new BatchSAR(20, 20))
+                    .setInitSampleCount(200)
+                    .setTau(0.8)
+                    .build().constructAnchor();
+
+            return null;
+
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + connectionName);
         }
-//        final ClassificationFunction<TabularInstance> classificationFunction = new H2OTabularRegressionMojoClassifier<>(
-//                FileReader.readResource("duni/gbm_grid_model_94.zip"),
-//                anchorTabular.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()));
-
-
-        return null;
     }
 
     private AnchorTabular buildAnchor(String connectionName, String modelId, String frameId) throws DataAccessException {
@@ -66,8 +82,8 @@ public class AnchorRuleH2o implements AnchorRule {
         Model model = configurationBO.getModel(connectionName, modelId);
 
         Map<String, Integer> header;
-        try (H2oDataDownload h2oDownload = new H2oDataDownload()) {
-            File dataSetFile = h2oDownload.getFile(api, H2oApi.stringToFrameKey(frameId));
+        try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
+            File dataSetFile = h2oDownload.getFile(api, frameId);
             Collection<String> newLine = new ArrayList<>();
             header = H2oDataUtil.iterateThroughCsvData(dataSetFile, (record) -> {
                         newLine.clear();
@@ -91,7 +107,8 @@ public class AnchorRuleH2o implements AnchorRule {
             String columnLabel = entry.getKey();
             ColumnSummary<?> column = findColumn(frameSummary.getColumn_summary_list(), columnLabel);
             if (columnLabel.equals(model.getTarget_column())) {
-                anchorBuilder.addTargetColumn(columnLabel);
+                anchorBuilder.addIgnoredColumn(columnLabel);
+                //anchorBuilder.addTargetColumn(columnLabel);
             } else if (H2oUtil.isStringColumn(column.getColumn_type()) || H2oUtil.isEnumColumn(column.getColumn_type())) {
                 anchorBuilder.addObjectColumn(columnLabel);
             } else {

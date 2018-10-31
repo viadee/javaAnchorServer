@@ -1,15 +1,13 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.h2o.util.H2oDataDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
 import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
 import me.kroeker.alex.anchor.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.DataDAO;
 import me.kroeker.alex.anchor.jserver.model.*;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ColV3;
@@ -52,10 +50,10 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         FrameKeyV3 frameKey = new FrameKeyV3();
         frameKey.name = frameId;
 
-        try (H2oDataDownload h2oDownload = new H2oDataDownload()) {
+        try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             H2oApi api = H2oUtil.createH2o(connectionName);
 
-            File dataSet = h2oDownload.getFile(api, frameKey);
+            File dataSet = h2oDownload.getFile(api, frameId);
 
             FrameV3 h2oFrame = api.frameSummary(frameKey).frames[0];
             FrameSummary frame = new FrameSummary();
@@ -102,8 +100,8 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
     @Override
     public TabularInstance randomInstance(String connectionName, String modelId, String frameId, CaseSelectConditionRequest conditions) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
-        try (H2oDataDownload h2oDownload = new H2oDataDownload()) {
-            File dataSet = h2oDownload.getFile(api, H2oApi.stringToFrameKey(frameId));
+        try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
+            File dataSet = h2oDownload.getFile(api, frameId);
             return H2oDataUtil.getRandomInstance(conditions, dataSet);
         } catch (IOException ioe) {
             throw new DataAccessException("Failed to retrieve frame summary of h2o with connection name: "

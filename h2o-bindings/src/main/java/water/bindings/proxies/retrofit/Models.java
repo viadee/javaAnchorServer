@@ -135,7 +135,7 @@ public interface Models {
    *                          "/3/Frames?_exclude_fields=frames/frame_id/URL,__meta"
    */
   @GET("/3/Models/{model_id}/mojo")
-  Call<StreamingSchema> fetchMojo(
+  Call<ResponseBody> fetchMojo(
     @Path("model_id") String model_id,
     @Query("preview") boolean preview,
     @Query("find_compatible_frames") boolean find_compatible_frames,
@@ -143,7 +143,7 @@ public interface Models {
   );
 
   @GET("/3/Models/{model_id}/mojo")
-  Call<StreamingSchema> fetchMojo(@Path("model_id") String model_id);
+  Call<ResponseBody> fetchMojo(@Path("model_id") String model_id);
 
   /** 
    * Import given binary model into H2O.

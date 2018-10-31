@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -48,7 +45,7 @@ public final class H2oDataUtil {
         }
 
         List<CSVRecord> acceptedRecords = new ArrayList<>();
-        H2oDataUtil.iterateThroughCsvData(dataSet,
+        Map<String, Integer> headerMapping = H2oDataUtil.iterateThroughCsvData(dataSet,
                 (record) -> {
                     if (filters.stream().allMatch(filter -> filter.apply(record))) {
                         acceptedRecords.add(record);
@@ -59,8 +56,15 @@ public final class H2oDataUtil {
         int randomNum = ThreadLocalRandom.current().nextInt(0, acceptedRecords.size());
         CSVRecord acceptedInstance = acceptedRecords.get(randomNum);
 
-        // TODO refactor csvrecord to tabular instance
-        return new TabularInstance(acceptedInstance.toMap().values().toArray());
+        String[] acceptedInstanceString = new String[headerMapping.size()];
+        List<Map.Entry<String, Integer>> headList = new ArrayList<>(headerMapping.size());
+        headList.addAll(headerMapping.entrySet());
+        headList.sort(Comparator.comparingInt(Map.Entry::getValue));
+        headList.forEach((entry) -> {
+            acceptedInstanceString[entry.getValue()] = acceptedInstance.get(entry.getKey());
+        });
+
+        return new TabularInstance(acceptedInstanceString);
     }
 
     public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {
