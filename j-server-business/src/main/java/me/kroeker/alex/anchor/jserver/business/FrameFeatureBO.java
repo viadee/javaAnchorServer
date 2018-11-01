@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FeatureCondition;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsResponse;
 
 /**
@@ -26,19 +26,19 @@ public class FrameFeatureBO {
 
     public FeatureConditionsResponse getFeatureConditions(String connectionName,
                                                           String frameId) throws DataAccessException {
-        Map<String, Collection<CaseSelectConditionEnum>> enumConditions = new HashMap<>();
-        Map<String, Collection<CaseSelectConditionMetric>> metricConditions = new HashMap<>();
+        Map<String, Collection<FeatureConditionEnum>> enumConditions = new HashMap<>();
+        Map<String, Collection<FeatureConditionMetric>> metricConditions = new HashMap<>();
 
-        Map<String, Collection<? extends CaseSelectCondition>> conditions = this.frameFeatureDAO.getFeatureConditions(connectionName, frameId);
-        for (Map.Entry<String, Collection<? extends CaseSelectCondition>> condition : conditions.entrySet()) {
+        Map<String, Collection<? extends FeatureCondition>> conditions = this.frameFeatureDAO.getFeatureConditions(connectionName, frameId);
+        for (Map.Entry<String, Collection<? extends FeatureCondition>> condition : conditions.entrySet()) {
             if (condition.getValue() == null || condition.getValue().size() <= 0) {
                 continue;
             }
-            CaseSelectCondition firstCondition = condition.getValue().iterator().next();
-            if (firstCondition instanceof CaseSelectConditionEnum) {
-                enumConditions.put(condition.getKey(), (Collection<CaseSelectConditionEnum>) condition.getValue());
-            } else if (firstCondition instanceof CaseSelectConditionMetric) {
-                metricConditions.put(condition.getKey(), (Collection<CaseSelectConditionMetric>) condition.getValue());
+            FeatureCondition firstCondition = condition.getValue().iterator().next();
+            if (firstCondition instanceof FeatureConditionEnum) {
+                enumConditions.put(condition.getKey(), (Collection<FeatureConditionEnum>) condition.getValue());
+            } else if (firstCondition instanceof FeatureConditionMetric) {
+                metricConditions.put(condition.getKey(), (Collection<FeatureConditionMetric>) condition.getValue());
             } else {
                 throw new IllegalArgumentException("type " + condition.getClass().getSimpleName() + " is not implemented");
             }

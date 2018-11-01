@@ -6,25 +6,25 @@ import java.util.Objects;
 /**
  */
 public class FeatureConditionsRequest {
-    private Map<String, CaseSelectConditionEnum> enumConditions;
-    private Map<String, CaseSelectConditionMetric> metricConditions;
+    private Map<String, FeatureConditionEnum> enumConditions;
+    private Map<String, FeatureConditionMetric> metricConditions;
 
     public FeatureConditionsRequest() {
     }
 
-    public Map<String, CaseSelectConditionEnum> getEnumConditions() {
+    public Map<String, FeatureConditionEnum> getEnumConditions() {
         return enumConditions;
     }
 
-    public void setEnumConditions(Map<String, CaseSelectConditionEnum> enumConditions) {
+    public void setEnumConditions(Map<String, FeatureConditionEnum> enumConditions) {
         this.enumConditions = enumConditions;
     }
 
-    public Map<String, CaseSelectConditionMetric> getMetricConditions() {
+    public Map<String, FeatureConditionMetric> getMetricConditions() {
         return metricConditions;
     }
 
-    public void setMetricConditions(Map<String, CaseSelectConditionMetric> metricConditions) {
+    public void setMetricConditions(Map<String, FeatureConditionMetric> metricConditions) {
         this.metricConditions = metricConditions;
     }
 

@@ -13,8 +13,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 
 public final class H2oDataUtil {
@@ -25,7 +25,7 @@ public final class H2oDataUtil {
     public static TabularInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
         Collection<Function<CSVRecord, Boolean>> filters = new ArrayList<>();
         if (conditions.getEnumConditions() != null) {
-            for (CaseSelectConditionEnum enumCondition : conditions.getEnumConditions().values()) {
+            for (FeatureConditionEnum enumCondition : conditions.getEnumConditions().values()) {
                 filters.add(
                         (record) ->
                                 record.get(enumCondition.getFeatureName()).equals(enumCondition.getCategory())
@@ -34,7 +34,7 @@ public final class H2oDataUtil {
         }
         // TODO handle metrics min max problem. wenn das maximum 20 ist und 20 als condition, sollte 20 inklusive sein
         if (conditions.getMetricConditions() != null) {
-            for (CaseSelectConditionMetric metricCondition : conditions.getMetricConditions().values()) {
+            for (FeatureConditionMetric metricCondition : conditions.getMetricConditions().values()) {
                 filters.add(
                         (record) -> {
                             double recordValue = Double.parseDouble(record.get(metricCondition.getFeatureName()));

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FeatureCondition;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
@@ -31,11 +31,11 @@ public class H2OFrameFeatureDAO implements FrameFeatureDAO {
     }
 
     @Override
-    public Map<String, Collection<? extends CaseSelectCondition>> getFeatureConditions(String connectionName, String frameId)
+    public Map<String, Collection<? extends FeatureCondition>> getFeatureConditions(String connectionName, String frameId)
             throws DataAccessException {
         Collection<ColumnSummary<?>> columns = this.frameDAO.getFrameSummary(connectionName, frameId).getColumn_summary_list();
 
-        Map<String, Collection<? extends CaseSelectCondition>> conditions = new HashMap<>();
+        Map<String, Collection<? extends FeatureCondition>> conditions = new HashMap<>();
         for (ColumnSummary column : columns) {
             String featureName = column.getLabel();
             // TODO strings as global constants
@@ -49,8 +49,8 @@ public class H2OFrameFeatureDAO implements FrameFeatureDAO {
         return conditions;
     }
 
-    private Collection<CaseSelectConditionMetric> computeMetricColumnConditions(ContinuousColumnSummary column) {
-        Collection<CaseSelectConditionMetric> columnConditions = new ArrayList<>();
+    private Collection<FeatureConditionMetric> computeMetricColumnConditions(ContinuousColumnSummary column) {
+        Collection<FeatureConditionMetric> columnConditions = new ArrayList<>();
 
         // TODO make buckets configurable
         int buckets = 4;
@@ -62,18 +62,18 @@ public class H2OFrameFeatureDAO implements FrameFeatureDAO {
             double conditionMin = columnMin + i * step;
             double conditionMax = columnMin + (i + 1) * step;
 
-            columnConditions.add(new CaseSelectConditionMetric(column.getLabel(), conditionMin, conditionMax));
+            columnConditions.add(new FeatureConditionMetric(column.getLabel(), conditionMin, conditionMax));
         }
 
         return columnConditions;
     }
 
-    private Collection<CaseSelectConditionEnum> computeEnumColumnConditions(CategoricalColumnSummary column) {
-        Collection<CaseSelectConditionEnum> columnConditions = new ArrayList<>();
+    private Collection<FeatureConditionEnum> computeEnumColumnConditions(CategoricalColumnSummary column) {
+        Collection<FeatureConditionEnum> columnConditions = new ArrayList<>();
 
         List<CategoryFreq> categories = column.getCategories();
         for (CategoryFreq category : categories) {
-            columnConditions.add(new CaseSelectConditionEnum(column.getLabel(), category.getName()));
+            columnConditions.add(new FeatureConditionEnum(column.getLabel(), category.getName()));
         }
 
         return columnConditions;

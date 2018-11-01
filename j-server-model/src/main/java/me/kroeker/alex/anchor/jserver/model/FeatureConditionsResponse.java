@@ -7,33 +7,33 @@ import java.util.Objects;
 /**
  */
 public class FeatureConditionsResponse {
-    private Map<String, Collection<CaseSelectConditionEnum>> enumConditions;
+    private Map<String, Collection<FeatureConditionEnum>> enumConditions;
 
-    private Map<String, Collection<CaseSelectConditionMetric>> metricConditions;
+    private Map<String, Collection<FeatureConditionMetric>> metricConditions;
 
     public FeatureConditionsResponse() {
     }
 
     public FeatureConditionsResponse(
-            Map<String, Collection<CaseSelectConditionEnum>> enumConditions,
-            Map<String, Collection<CaseSelectConditionMetric>> metricConditions) {
+            Map<String, Collection<FeatureConditionEnum>> enumConditions,
+            Map<String, Collection<FeatureConditionMetric>> metricConditions) {
         this.enumConditions = enumConditions;
         this.metricConditions = metricConditions;
     }
 
-    public Map<String, Collection<CaseSelectConditionEnum>> getEnumConditions() {
+    public Map<String, Collection<FeatureConditionEnum>> getEnumConditions() {
         return enumConditions;
     }
 
-    public void setEnumConditions(Map<String, Collection<CaseSelectConditionEnum>> enumConditions) {
+    public void setEnumConditions(Map<String, Collection<FeatureConditionEnum>> enumConditions) {
         this.enumConditions = enumConditions;
     }
 
-    public Map<String, Collection<CaseSelectConditionMetric>> getMetricConditions() {
+    public Map<String, Collection<FeatureConditionMetric>> getMetricConditions() {
         return metricConditions;
     }
 
-    public void setMetricConditions(Map<String, Collection<CaseSelectConditionMetric>> metricConditions) {
+    public void setMetricConditions(Map<String, Collection<FeatureConditionMetric>> metricConditions) {
         this.metricConditions = metricConditions;
     }
 

@@ -4,20 +4,20 @@ import java.util.Objects;
 
 /**
  */
-public class CaseSelectCondition {
+public class FeatureCondition {
 
     private String columnType;
 
     private String featureName;
 
-    public CaseSelectCondition() {
+    public FeatureCondition() {
     }
 
-    public CaseSelectCondition(String columnType) {
+    public FeatureCondition(String columnType) {
         this.columnType = columnType;
     }
 
-    public CaseSelectCondition(String columnType, String featureName) {
+    public FeatureCondition(String columnType, String featureName) {
         this.columnType = columnType;
         this.featureName = featureName;
     }
@@ -42,7 +42,7 @@ public class CaseSelectCondition {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CaseSelectCondition that = (CaseSelectCondition) o;
+        FeatureCondition that = (FeatureCondition) o;
         return Objects.equals(columnType, that.columnType) &&
                 Objects.equals(featureName, that.featureName);
     }
@@ -54,7 +54,7 @@ public class CaseSelectCondition {
 
     @Override
     public String toString() {
-        return "CaseSelectCondition{" +
+        return "FeatureCondition{" +
                 "columnType='" + columnType + '\'' +
                 ", featureName='" + featureName + '\'' +
                 '}';

@@ -4,13 +4,13 @@ import java.util.Objects;
 
 /**
  */
-public class CaseSelectConditionEnum extends CaseSelectCondition {
+public class FeatureConditionEnum extends FeatureCondition {
     private String category;
 
-    public CaseSelectConditionEnum() {
+    public FeatureConditionEnum() {
     }
 
-    public CaseSelectConditionEnum(String featureName, String category) {
+    public FeatureConditionEnum(String featureName, String category) {
         super("string", featureName);
         this.category = category;
     }
@@ -28,7 +28,7 @@ public class CaseSelectConditionEnum extends CaseSelectCondition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        CaseSelectConditionEnum that = (CaseSelectConditionEnum) o;
+        FeatureConditionEnum that = (FeatureConditionEnum) o;
         return Objects.equals(category, that.category);
     }
 
@@ -39,7 +39,7 @@ public class CaseSelectConditionEnum extends CaseSelectCondition {
 
     @Override
     public String toString() {
-        return "CaseSelectConditionEnum{" +
+        return "FeatureConditionEnum{" +
                 "category='" + category + '\'' +
                 "} " + super.toString();
     }

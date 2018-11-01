@@ -4,16 +4,16 @@ import java.util.Objects;
 
 /**
  */
-public class CaseSelectConditionMetric extends CaseSelectCondition {
+public class FeatureConditionMetric extends FeatureCondition {
 
     private double conditionMin;
 
     private double conditionMax;
 
-    public CaseSelectConditionMetric() {
+    public FeatureConditionMetric() {
     }
 
-    public CaseSelectConditionMetric(String featureName, double conditionMin, double conditionMax) {
+    public FeatureConditionMetric(String featureName, double conditionMin, double conditionMax) {
         super("metric", featureName);
         this.conditionMin = conditionMin;
         this.conditionMax = conditionMax;
@@ -40,7 +40,7 @@ public class CaseSelectConditionMetric extends CaseSelectCondition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        CaseSelectConditionMetric that = (CaseSelectConditionMetric) o;
+        FeatureConditionMetric that = (FeatureConditionMetric) o;
         return conditionMin == that.conditionMin &&
                 conditionMax == that.conditionMax;
     }
@@ -52,7 +52,7 @@ public class CaseSelectConditionMetric extends CaseSelectCondition {
 
     @Override
     public String toString() {
-        return "CaseSelectConditionMetric{" +
+        return "FeatureConditionMetric{" +
                 "conditionMin=" + conditionMin +
                 ", conditionMax=" + conditionMax +
                 "} " + super.toString();
