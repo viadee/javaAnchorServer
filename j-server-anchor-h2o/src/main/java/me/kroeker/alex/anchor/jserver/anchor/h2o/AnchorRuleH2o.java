@@ -1,43 +1,55 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import de.goerke.tobias.anchorj.base.AnchorConstructionBuilder;
 import de.goerke.tobias.anchorj.base.AnchorResult;
 import de.goerke.tobias.anchorj.base.ClassificationFunction;
 import de.goerke.tobias.anchorj.base.exploration.BatchSAR;
-import de.goerke.tobias.anchorj.tabular.*;
-import me.kroeker.alex.anchor.h2o.util.*;
+import de.goerke.tobias.anchorj.tabular.AnchorTabular;
+import de.goerke.tobias.anchorj.tabular.PercentileDiscretizer;
+import de.goerke.tobias.anchorj.tabular.TabularFeature;
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import de.goerke.tobias.anchorj.tabular.TabularPerturbationFunction;
+import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.h2o.util.H2oDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oMojoDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.ConfigurationBO;
-import me.kroeker.alex.anchor.jserver.business.DataBO;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.business.ModelBO;
+import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import me.kroeker.alex.anchor.jserver.model.Model;
-import me.kroeker.alex.anchor.jserver.model.Rule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import water.bindings.H2oApi;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class AnchorRuleH2o implements AnchorRule {
 
-    private DataBO dataBO;
+    private ModelBO modelBO;
 
-    private ConfigurationBO configurationBO;
+    private FrameBO frameBO;
 
-    public AnchorRuleH2o(@Autowired DataBO dataBO, @Autowired ConfigurationBO configurationBO) {
-        this.dataBO = dataBO;
-        this.configurationBO = configurationBO;
+    public AnchorRuleH2o(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO) {
+        this.modelBO = modelBO;
+        this.frameBO = frameBO;
     }
 
     @Override
-    public Rule computeRule(String connectionName, String modelId, String frameId, TabularInstance instance) throws DataAccessException {
+    public Anchor computeRule(String connectionName, String modelId, String frameId, TabularInstance instance) throws DataAccessException {
         AnchorTabular anchor = buildAnchor(connectionName, modelId, frameId);
 
         // TODO fix
@@ -47,7 +59,6 @@ public class AnchorRuleH2o implements AnchorRule {
             instanceWithoutTarget[i] = instance2[i];
         }
         instance = new TabularInstance(instanceWithoutTarget);
-
 
 
         try (H2oDownload mojoDownload = new H2oMojoDownload()) {
@@ -79,7 +90,7 @@ public class AnchorRuleH2o implements AnchorRule {
     private AnchorTabular buildAnchor(String connectionName, String modelId, String frameId) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         Collection<String[]> anchorData = new ArrayList<>();
-        Model model = configurationBO.getModel(connectionName, modelId);
+        Model model = this.modelBO.getModel(connectionName, modelId);
 
         Map<String, Integer> header;
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
@@ -98,7 +109,7 @@ public class AnchorRuleH2o implements AnchorRule {
 
         AnchorTabular.TabularPreprocessorBuilder anchorBuilder = new AnchorTabular.TabularPreprocessorBuilder(false, anchorData);
         final PercentileDiscretizer percentileDiscretizer = new PercentileDiscretizer(5);
-        FrameSummary frameSummary = this.dataBO.getFrame(connectionName, frameId);
+        FrameSummary frameSummary = this.frameBO.getFrameSummary(connectionName, frameId);
         List<Map.Entry<String, Integer>> headList = new ArrayList<>(header.size());
         headList.addAll(header.entrySet());
         headList.sort(Comparator.comparingInt(Map.Entry::getValue));

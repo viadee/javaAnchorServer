@@ -1,52 +1,66 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.dao.DataDAO;
-import me.kroeker.alex.anchor.jserver.model.*;
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.stereotype.Component;
-import water.bindings.H2oApi;
-import water.bindings.pojos.ColV3;
-import water.bindings.pojos.FrameKeyV3;
-import water.bindings.pojos.FrameV3;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.stereotype.Component;
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
+import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.DataFrame;
+import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+import water.bindings.H2oApi;
+import water.bindings.pojos.ColV3;
+import water.bindings.pojos.FrameBaseV3;
+import water.bindings.pojos.FrameKeyV3;
+import water.bindings.pojos.FrameV3;
+import water.bindings.pojos.FramesListV3;
 
 /**
- * @author ak902764
  */
 @Component
-public class DataH2o extends BaseH2oAccess implements DataDAO {
+public class H2oFrameDAO implements FrameDAO {
 
     private static final int DOMAIN_MAX_ITEMS = 20;
 
     @Override
-    public Map<String, Collection<? extends CaseSelectCondition>> caseSelectConditions(String connectionName, String frameId)
-            throws DataAccessException {
-        Collection<ColumnSummary<?>> columns = this.getFrame(connectionName, frameId).getColumn_summary_list();
+    public Collection<DataFrame> getFrames(String connectionName) throws DataAccessException {
+        try {
+            FramesListV3 h2oFrames = H2oUtil.createH2o(connectionName).frames();
+            Collection<DataFrame> frames = new ArrayList<>(h2oFrames.frames.length);
+            for (FrameBaseV3 h2oFrame : h2oFrames.frames) {
+                DataFrame frame = new DataFrame();
+                frame.setFrame_id(h2oFrame.frameId.name);
+                frame.setName(h2oFrame.frameId.name);
+                frame.setUrl(h2oFrame.frameId.url);
 
-        Map<String, Collection<? extends CaseSelectCondition>> conditions = new HashMap<>();
-        for (ColumnSummary column : columns) {
-            String featureName = column.getLabel();
-            // TODO strings as global constants
-            if ("enum".equals(column.getColumn_type()) || "string".equals(column.getColumn_type())) {
-                conditions.put(featureName, computeEnumColumnConditions((CategoricalColumnSummary) column));
-            } else {
-                conditions.put(featureName, computeMetricColumnConditions((ContinuousColumnSummary) column));
+                frames.add(frame);
             }
 
+            return frames;
+        } catch (IOException ioe) {
+            throw new DataAccessException("Failed to retrieve frames from " + connectionName + " due to: "
+                    + ioe.getMessage(), ioe);
         }
-        return conditions;
     }
 
     @Override
-    public FrameSummary getFrame(String connectionName, String frameId) throws DataAccessException {
+    public FrameSummary getFrameSummary(String connectionName, String frameId) throws DataAccessException {
         FrameKeyV3 frameKey = new FrameKeyV3();
         frameKey.name = frameId;
 
@@ -98,7 +112,7 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
     }
 
     @Override
-    public TabularInstance randomInstance(String connectionName, String modelId, String frameId, CaseSelectConditionRequest conditions) throws DataAccessException {
+    public TabularInstance randomInstance(String connectionName, String frameId, CaseSelectConditionRequest conditions) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSet = h2oDownload.getFile(api, frameId);
@@ -195,36 +209,6 @@ public class DataH2o extends BaseH2oAccess implements DataDAO {
         column.setCategories(categories);
         column.setUnique(categories.size());
         return column;
-    }
-
-    private Collection<CaseSelectConditionMetric> computeMetricColumnConditions(ContinuousColumnSummary column) {
-        Collection<CaseSelectConditionMetric> columnConditions = new ArrayList<>();
-
-        // TODO make buckets configurable
-        int buckets = 4;
-        int columnMin = column.getColumn_min();
-        int columnMax = column.getColumn_max();
-        double step = ((double) columnMax - columnMin) / buckets;
-
-        for (int i = 0; i < buckets; i++) {
-            double conditionMin = columnMin + i * step;
-            double conditionMax = columnMin + (i + 1) * step;
-
-            columnConditions.add(new CaseSelectConditionMetric(column.getLabel(), conditionMin, conditionMax));
-        }
-
-        return columnConditions;
-    }
-
-    private Collection<CaseSelectConditionEnum> computeEnumColumnConditions(CategoricalColumnSummary column) {
-        Collection<CaseSelectConditionEnum> columnConditions = new ArrayList<>();
-
-        List<CategoryFreq> categories = column.getCategories();
-        for (CategoryFreq category : categories) {
-            columnConditions.add(new CaseSelectConditionEnum(column.getLabel(), category.getName()));
-        }
-
-        return columnConditions;
     }
 
 }

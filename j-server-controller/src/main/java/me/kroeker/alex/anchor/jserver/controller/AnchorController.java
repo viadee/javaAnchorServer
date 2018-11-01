@@ -1,0 +1,62 @@
+package me.kroeker.alex.anchor.jserver.controller;
+
+import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import me.kroeker.alex.anchor.jserver.api.AnchorApi;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.business.AnchorBO;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+
+/**
+ * @author ak902764
+ */
+@RestController
+public class AnchorController implements AnchorApi {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AnchorController.class);
+
+    private FrameBO frameBO;
+
+    private AnchorBO anchorBO;
+
+    public AnchorController(@Autowired FrameBO frameBO, @Autowired AnchorBO anchorBO) {
+        this.frameBO = frameBO;
+        this.anchorBO = anchorBO;
+    }
+
+    @Override
+    @RequestMapping(
+            value = "/{connectionName}/anchors/{modelId}/{frameId}",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON
+    )
+    public Anchor computeAnchor(
+            @PathVariable String connectionName,
+            @PathVariable String modelId,
+            @PathVariable String frameId,
+            @RequestBody CaseSelectConditionRequest conditions
+    ) {
+        try {
+            TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
+
+            return this.anchorBO.computeRule(connectionName, modelId, frameId, instance);
+        } catch (DataAccessException dae) {
+            LOG.error(dae.getMessage(), dae);
+            // TODO add exception handling
+            return null;
+        }
+    }
+
+}

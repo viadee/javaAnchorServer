@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @author ak902764
  */
-public class Rule {
+public class Anchor {
 
     private String model_id;
     private String frame_id;
@@ -114,18 +114,18 @@ public class Rule {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Rule rule = (Rule) o;
-        return Double.compare(rule.precision, precision) == 0 &&
-                Double.compare(rule.coverage, coverage) == 0 &&
-                Objects.equals(model_id, rule.model_id) &&
-                Objects.equals(frame_id, rule.frame_id) &&
-                Objects.equals(instance, rule.instance) &&
-                Objects.equals(label_of_case, rule.label_of_case) &&
-                Objects.equals(prediction, rule.prediction) &&
-                Objects.equals(features, rule.features) &&
-                Objects.equals(names, rule.names) &&
-                Objects.equals(affected_rows, rule.affected_rows) &&
-                Objects.equals(created_at, rule.created_at);
+        Anchor anchor = (Anchor) o;
+        return Double.compare(anchor.precision, precision) == 0 &&
+                Double.compare(anchor.coverage, coverage) == 0 &&
+                Objects.equals(model_id, anchor.model_id) &&
+                Objects.equals(frame_id, anchor.frame_id) &&
+                Objects.equals(instance, anchor.instance) &&
+                Objects.equals(label_of_case, anchor.label_of_case) &&
+                Objects.equals(prediction, anchor.prediction) &&
+                Objects.equals(features, anchor.features) &&
+                Objects.equals(names, anchor.names) &&
+                Objects.equals(affected_rows, anchor.affected_rows) &&
+                Objects.equals(created_at, anchor.created_at);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class Rule {
 
     @Override
     public String toString() {
-        return "Rule{" +
+        return "Anchor{" +
                 "model_id='" + model_id + '\'' +
                 ", frame_id='" + frame_id + '\'' +
                 ", instance=" + instance +
