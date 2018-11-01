@@ -7,29 +7,29 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.dao.FrameColumnDAO;
+import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionResponse;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsResponse;
 
 /**
  */
 @Component
-public class FrameColumnBO {
+public class FrameFeatureBO {
 
-    private FrameColumnDAO frameColumnDAO;
+    private FrameFeatureDAO frameFeatureDAO;
 
-    public FrameColumnBO(@Autowired FrameColumnDAO frameColumnDAO) {
-        this.frameColumnDAO = frameColumnDAO;
+    public FrameFeatureBO(@Autowired FrameFeatureDAO frameFeatureDAO) {
+        this.frameFeatureDAO = frameFeatureDAO;
     }
 
-    public CaseSelectConditionResponse caseSelectConditions(String connectionName,
-                                                            String frameId) throws DataAccessException {
+    public FeatureConditionsResponse getFeatureConditions(String connectionName,
+                                                          String frameId) throws DataAccessException {
         Map<String, Collection<CaseSelectConditionEnum>> enumConditions = new HashMap<>();
         Map<String, Collection<CaseSelectConditionMetric>> metricConditions = new HashMap<>();
 
-        Map<String, Collection<? extends CaseSelectCondition>> conditions = this.frameColumnDAO.caseSelectConditions(connectionName, frameId);
+        Map<String, Collection<? extends CaseSelectCondition>> conditions = this.frameFeatureDAO.getFeatureConditions(connectionName, frameId);
         for (Map.Entry<String, Collection<? extends CaseSelectCondition>> condition : conditions.entrySet()) {
             if (condition.getValue() == null || condition.getValue().size() <= 0) {
                 continue;
@@ -44,7 +44,7 @@ public class FrameColumnBO {
             }
         }
 
-        return new CaseSelectConditionResponse(enumConditions, metricConditions);
+        return new FeatureConditionsResponse(enumConditions, metricConditions);
     }
 
 }

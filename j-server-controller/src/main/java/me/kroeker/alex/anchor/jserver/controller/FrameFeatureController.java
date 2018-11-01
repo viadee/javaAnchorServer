@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import me.kroeker.alex.anchor.jserver.api.FrameColumnApi;
+import me.kroeker.alex.anchor.jserver.api.FrameFeatureApi;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.FrameColumnBO;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionResponse;
+import me.kroeker.alex.anchor.jserver.business.FrameFeatureBO;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsResponse;
 
 /**
  */
 @RestController
-public class FrameColumnController implements FrameColumnApi {
+public class FrameFeatureController implements FrameFeatureApi {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FrameColumnController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FrameFeatureController.class);
 
-    private final FrameColumnBO frameColumnBO;
+    private final FrameFeatureBO frameFeatureBO;
 
-    public FrameColumnController(@Autowired FrameColumnBO frameColumnBO) {
-        this.frameColumnBO = frameColumnBO;
+    public FrameFeatureController(@Autowired FrameFeatureBO frameFeatureBO) {
+        this.frameFeatureBO = frameFeatureBO;
     }
 
     @Override
@@ -33,11 +33,11 @@ public class FrameColumnController implements FrameColumnApi {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON
     )
-    public CaseSelectConditionResponse getCaseSelectConditions(
+    public FeatureConditionsResponse getFeatureConditions(
             @PathVariable String connectionName,
             @PathVariable String frameId) {
         try {
-            return this.frameColumnBO.caseSelectConditions(connectionName, frameId);
+            return this.frameFeatureBO.getFeatureConditions(connectionName, frameId);
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling

@@ -15,14 +15,14 @@ import org.apache.commons.csv.CSVRecord;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 
 public final class H2oDataUtil {
 
     private H2oDataUtil() {
     }
 
-    public static TabularInstance getRandomInstance(CaseSelectConditionRequest conditions, File dataSet) throws IOException {
+    public static TabularInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
         Collection<Function<CSVRecord, Boolean>> filters = new ArrayList<>();
         if (conditions.getEnumConditions() != null) {
             for (CaseSelectConditionEnum enumCondition : conditions.getEnumConditions().values()) {

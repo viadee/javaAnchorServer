@@ -17,7 +17,7 @@ import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
 import me.kroeker.alex.anchor.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
@@ -112,7 +112,7 @@ public class H2oFrameDAO implements FrameDAO {
     }
 
     @Override
-    public TabularInstance randomInstance(String connectionName, String frameId, CaseSelectConditionRequest conditions) throws DataAccessException {
+    public TabularInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSet = h2oDownload.getFile(api, frameId);

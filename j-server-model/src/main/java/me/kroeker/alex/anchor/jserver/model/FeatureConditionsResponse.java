@@ -6,15 +6,15 @@ import java.util.Objects;
 
 /**
  */
-public class CaseSelectConditionResponse {
+public class FeatureConditionsResponse {
     private Map<String, Collection<CaseSelectConditionEnum>> enumConditions;
 
     private Map<String, Collection<CaseSelectConditionMetric>> metricConditions;
 
-    public CaseSelectConditionResponse() {
+    public FeatureConditionsResponse() {
     }
 
-    public CaseSelectConditionResponse(
+    public FeatureConditionsResponse(
             Map<String, Collection<CaseSelectConditionEnum>> enumConditions,
             Map<String, Collection<CaseSelectConditionMetric>> metricConditions) {
         this.enumConditions = enumConditions;
@@ -41,7 +41,7 @@ public class CaseSelectConditionResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CaseSelectConditionResponse that = (CaseSelectConditionResponse) o;
+        FeatureConditionsResponse that = (FeatureConditionsResponse) o;
         return Objects.equals(enumConditions, that.enumConditions) &&
                 Objects.equals(metricConditions, that.metricConditions);
     }
@@ -53,7 +53,7 @@ public class CaseSelectConditionResponse {
 
     @Override
     public String toString() {
-        return "CaseSelectConditionResponse{" +
+        return "FeatureConditionsResponse{" +
                 "enumConditions=" + enumConditions +
                 ", metricConditions=" + metricConditions +
                 '}';

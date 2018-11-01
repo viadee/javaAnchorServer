@@ -16,7 +16,7 @@ import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.AnchorBO;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 
 /**
  */
@@ -45,7 +45,7 @@ public class AnchorController implements AnchorApi {
             @PathVariable String connectionName,
             @PathVariable String modelId,
             @PathVariable String frameId,
-            @RequestBody CaseSelectConditionRequest conditions
+            @RequestBody FeatureConditionsRequest conditions
     ) {
         try {
             TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);

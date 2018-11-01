@@ -1,7 +1,7 @@
 package me.kroeker.alex.anchor.jserver.api;
 
 import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 
 /**
  * Definiert die Schnittstelle zur Berechnung von Anchor-Erklärungen.
@@ -21,6 +21,6 @@ public interface AnchorApi {
             String connectionName,
             String modelId,
             String frameId,
-            CaseSelectConditionRequest conditions);
+            FeatureConditionsRequest conditions);
 
 }

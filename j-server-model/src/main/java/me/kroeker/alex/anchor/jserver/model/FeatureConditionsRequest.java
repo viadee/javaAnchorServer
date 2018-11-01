@@ -5,11 +5,11 @@ import java.util.Objects;
 
 /**
  */
-public class CaseSelectConditionRequest {
+public class FeatureConditionsRequest {
     private Map<String, CaseSelectConditionEnum> enumConditions;
     private Map<String, CaseSelectConditionMetric> metricConditions;
 
-    public CaseSelectConditionRequest() {
+    public FeatureConditionsRequest() {
     }
 
     public Map<String, CaseSelectConditionEnum> getEnumConditions() {
@@ -32,7 +32,7 @@ public class CaseSelectConditionRequest {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CaseSelectConditionRequest that = (CaseSelectConditionRequest) o;
+        FeatureConditionsRequest that = (FeatureConditionsRequest) o;
         return Objects.equals(enumConditions, that.enumConditions) &&
                 Objects.equals(metricConditions, that.metricConditions);
     }
@@ -44,7 +44,7 @@ public class CaseSelectConditionRequest {
 
     @Override
     public String toString() {
-        return "CaseSelectConditionRequest{" +
+        return "FeatureConditionsRequest{" +
                 "enumConditions=" + enumConditions +
                 ", metricConditions=" + metricConditions +
                 '}';

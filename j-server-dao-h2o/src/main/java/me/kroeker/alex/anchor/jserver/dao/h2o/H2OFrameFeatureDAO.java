@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.dao.FrameColumnDAO;
+import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionEnum;
@@ -22,16 +22,16 @@ import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 /**
  */
 @Component
-public class H2oFrameColumnDAO implements FrameColumnDAO {
+public class H2OFrameFeatureDAO implements FrameFeatureDAO {
 
     private FrameDAO frameDAO;
 
-    public H2oFrameColumnDAO(@Autowired FrameDAO frameDAO) {
+    public H2OFrameFeatureDAO(@Autowired FrameDAO frameDAO) {
         this.frameDAO = frameDAO;
     }
 
     @Override
-    public Map<String, Collection<? extends CaseSelectCondition>> caseSelectConditions(String connectionName, String frameId)
+    public Map<String, Collection<? extends CaseSelectCondition>> getFeatureConditions(String connectionName, String frameId)
             throws DataAccessException {
         Collection<ColumnSummary<?>> columns = this.frameDAO.getFrameSummary(connectionName, frameId).getColumn_summary_list();
 

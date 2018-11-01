@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
-import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 
@@ -32,7 +32,7 @@ public class FrameBO {
 
     public TabularInstance randomInstance(String connectionName,
                                           String frameId,
-                                          CaseSelectConditionRequest conditions) throws DataAccessException {
+                                          FeatureConditionsRequest conditions) throws DataAccessException {
         return this.frameDAO.randomInstance(connectionName, frameId, conditions);
     }
 
