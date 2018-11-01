@@ -3,7 +3,6 @@ package me.kroeker.alex.anchor.jserver.model;
 import java.util.Objects;
 
 /**
- * @author ak902764
  */
 public class Model {
     private String model_id;

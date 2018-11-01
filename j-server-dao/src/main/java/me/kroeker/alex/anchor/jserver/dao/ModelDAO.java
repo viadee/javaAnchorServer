@@ -6,7 +6,6 @@ import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.Model;
 
 /**
- * @author ak902764
  */
 public interface ModelDAO {
 

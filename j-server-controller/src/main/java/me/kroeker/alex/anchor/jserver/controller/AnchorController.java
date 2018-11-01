@@ -19,7 +19,6 @@ import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectConditionRequest;
 
 /**
- * @author ak902764
  */
 @RestController
 public class AnchorController implements AnchorApi {

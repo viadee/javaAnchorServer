@@ -7,7 +7,6 @@ import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.CaseSelectCondition;
 
 /**
- * @author ak902764
  */
 public interface FrameColumnDAO {
 

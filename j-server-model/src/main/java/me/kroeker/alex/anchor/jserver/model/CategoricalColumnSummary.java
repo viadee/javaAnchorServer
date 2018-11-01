@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author ak902764
  */
 public class CategoricalColumnSummary<T extends Object> extends ColumnSummary<T> {
     private List<CategoryFreq> categories;

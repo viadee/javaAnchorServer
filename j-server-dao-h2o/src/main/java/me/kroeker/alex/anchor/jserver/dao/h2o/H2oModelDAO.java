@@ -15,7 +15,6 @@ import water.bindings.pojos.ModelSchemaBaseV3;
 import water.bindings.pojos.ModelsV3;
 
 /**
- * @author ak902764
  */
 @Component
 public class H2oModelDAO implements ModelDAO {

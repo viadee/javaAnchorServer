@@ -3,7 +3,6 @@ package me.kroeker.alex.anchor.jserver.api.exceptions;
 import java.io.IOException;
 
 /**
- * @author ak902764
  */
 public class DataAccessException extends IOException {
     public DataAccessException() {

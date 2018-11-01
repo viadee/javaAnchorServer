@@ -10,7 +10,6 @@ import me.kroeker.alex.anchor.jserver.dao.ClusterDAO;
 import water.bindings.pojos.AboutV3;
 
 /**
- * @author ak902764
  */
 @Component
 public class H2oClusterDAO implements ClusterDAO {

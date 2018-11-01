@@ -5,7 +5,6 @@ import java.util.Collection;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 
 /**
- * @author ak902764
  */
 public interface ClusterDAO {
 

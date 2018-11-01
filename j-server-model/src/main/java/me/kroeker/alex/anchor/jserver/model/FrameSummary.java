@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * @author ak902764
  */
 public class FrameSummary {
 

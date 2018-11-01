@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author ak902764
  */
 public class Anchor {
 
