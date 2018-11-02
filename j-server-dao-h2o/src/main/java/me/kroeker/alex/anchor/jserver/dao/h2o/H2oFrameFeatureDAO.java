@@ -22,11 +22,11 @@ import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 /**
  */
 @Component
-public class H2OFrameFeatureDAO implements FrameFeatureDAO {
+public class H2oFrameFeatureDAO implements FrameFeatureDAO {
 
     private FrameDAO frameDAO;
 
-    public H2OFrameFeatureDAO(@Autowired FrameDAO frameDAO) {
+    public H2oFrameFeatureDAO(@Autowired FrameDAO frameDAO) {
         this.frameDAO = frameDAO;
     }
 

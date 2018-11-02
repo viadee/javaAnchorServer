@@ -57,7 +57,7 @@ public class H2OTabularMojoClassifier<T extends TabularInstance> implements Clas
         }
 
         try {
-            int predictionValue = -1;
+            int predictionValue;
             AbstractPrediction prediction = this.getModelWrapper().predict(row);
             if (prediction instanceof RegressionModelPrediction) {
                 predictionValue = (int) ((RegressionModelPrediction) prediction).value;
@@ -65,6 +65,9 @@ public class H2OTabularMojoClassifier<T extends TabularInstance> implements Clas
                 predictionValue = ((BinomialModelPrediction) prediction).labelIndex;
             } else if (prediction instanceof MultinomialModelPrediction) {
                 predictionValue = ((MultinomialModelPrediction) prediction).labelIndex;
+            } else {
+                throw new UnsupportedOperationException("Prediction of type: " + prediction.getClass().getSimpleName()
+                        + "; not supported");
             }
 
             return predictionValue;
