@@ -3,9 +3,12 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,6 +56,7 @@ public class AnchorRuleH2o implements AnchorRule {
         AnchorTabular anchor = buildAnchor(connectionName, modelId, frameId);
 
         // TODO fix
+        Object labelOfCase = instance.getInstance()[instance.getInstance().length - 1];
         Object[] instance2 = instance.getInstance();
         Object[] instanceWithoutTarget = new Object[instance2.length - 1];
         for (int i = 0; i < instance2.length - 1; i++) {
@@ -80,8 +84,28 @@ public class AnchorRuleH2o implements AnchorRule {
                     .setTau(0.8)
                     .build().constructAnchor();
 
-            return null;
+            Anchor computedAnchor = new Anchor();
+            computedAnchor.setCoverage(anchorResult.getCoverage());
+            computedAnchor.setPrecision(anchorResult.getPrecision());
+            computedAnchor.setCreated_at(LocalDateTime.now());
+            computedAnchor.setFeatures(anchorResult.getOrderedFeatures());
+            computedAnchor.setFrame_id(frameId);
+            computedAnchor.setModel_id(modelId);
+            computedAnchor.setLabel_of_case(labelOfCase);
 
+            Map<String, Object> convertedInstance = new HashMap<>(instance.getFeatureCount());
+            for (int i = 0; i < instance.getFeatureCount(); i++) {
+                convertedInstance.put(anchor.getFeatures().get(i).getName(), instance.getFeature(i));
+            }
+            computedAnchor.setInstance(convertedInstance);
+
+            computedAnchor.setAffected_rows(1);
+            String prediction = ((H2OTabularMojoClassifier<TabularInstance>) classificationFunction).getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
+            computedAnchor.setPrediction(prediction);
+            computedAnchor.setNames(Arrays.asList(anchor.getVisualizer().instanceToText(anchorResult.getInstance())));
+            // TODO check if values of field Anchor and Instance are correct
+
+            return computedAnchor;
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + connectionName);
         }

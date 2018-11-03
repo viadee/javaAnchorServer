@@ -1,5 +1,11 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import de.goerke.tobias.anchorj.base.ClassificationFunction;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import hex.genmodel.ModelMojoReader;
@@ -8,17 +14,11 @@ import hex.genmodel.MojoReaderBackend;
 import hex.genmodel.MojoReaderBackendFactory;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 import hex.genmodel.easy.RowData;
-import hex.genmodel.easy.exception.PredictException;
 import hex.genmodel.easy.prediction.AbstractPrediction;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 import hex.genmodel.easy.prediction.RegressionModelPrediction;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
 public class H2OTabularMojoClassifier<T extends TabularInstance> implements ClassificationFunction<T> {
 
@@ -43,9 +43,6 @@ public class H2OTabularMojoClassifier<T extends TabularInstance> implements Clas
 
     @Override
     public int predict(T instance) {
-//        if (columnNames.size() != instance.getFeatureCount())
-//            throw new IllegalArgumentException("ColumnNames size does not match instance's feature count");
-
         RowData row = new RowData();
         int i = 0;
         for (String columnName : columnNames) {
@@ -71,15 +68,9 @@ public class H2OTabularMojoClassifier<T extends TabularInstance> implements Clas
             }
 
             return predictionValue;
-        } catch (PredictException e) {
-            e.printStackTrace();
+        } catch (hex.genmodel.easy.exception.PredictException e) {
+            throw new PredictException(e);
         }
-
-        return -1;
-    }
-
-    public int[] predict(T[] instances) {
-        return ClassificationFunction.super.predict(instances);
     }
 
     public EasyPredictModelWrapper getModelWrapper() {
