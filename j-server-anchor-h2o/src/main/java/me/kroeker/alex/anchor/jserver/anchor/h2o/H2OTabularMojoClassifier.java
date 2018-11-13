@@ -20,8 +20,7 @@ import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 import hex.genmodel.easy.prediction.RegressionModelPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
-public class H2OTabularMojoClassifier<T extends TabularInstance> implements ClassificationFunction<T> {
-
+public class H2OTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
 
     private final EasyPredictModelWrapper modelWrapper;
     private final List<String> columnNames;
@@ -42,7 +41,7 @@ public class H2OTabularMojoClassifier<T extends TabularInstance> implements Clas
     }
 
     @Override
-    public int predict(T instance) {
+    public int predict(TabularInstance instance) {
         RowData row = new RowData();
         int i = 0;
         for (String columnName : columnNames) {
