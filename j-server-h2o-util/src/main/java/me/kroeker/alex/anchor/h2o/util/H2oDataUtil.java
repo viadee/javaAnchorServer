@@ -64,7 +64,7 @@ public final class H2oDataUtil {
             acceptedInstanceString[entry.getValue()] = acceptedInstance.get(entry.getKey());
         });
 
-        return new TabularInstance(acceptedInstanceString);
+        return new TabularInstance(headerMapping, acceptedInstanceString);
     }
 
     public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {

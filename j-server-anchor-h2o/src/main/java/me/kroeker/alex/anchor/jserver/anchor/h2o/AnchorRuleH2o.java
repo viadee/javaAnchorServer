@@ -100,9 +100,8 @@ public class AnchorRuleH2o implements AnchorRule {
             computedAnchor.setFrame_id(frameId);
             computedAnchor.setModel_id(modelId);
 
-            // TODO fix
-            ColumnDescription targetColumn = anchorBuilder.getInternalColumns().stream().filter(ColumnDescription::isTargetFeature)
-                    .findFirst().orElseThrow(IllegalArgumentException::new);
+            ColumnDescription targetColumn = anchorBuilder.getColumnDescriptions().stream().filter(ColumnDescription::isTargetFeature)
+                    .findFirst().orElseThrow(() -> new IllegalArgumentException("no column with target definition found"));
             Object labelOfCase = instance.getInstance()[vh.header.get(targetColumn.getName())];
             computedAnchor.setLabel_of_case(labelOfCase);
 
@@ -143,9 +142,7 @@ public class AnchorRuleH2o implements AnchorRule {
             String columnLabel = entry.getKey();
             ColumnSummary<?> column = findColumn(frameSummary.getColumn_summary_list(), columnLabel);
             if (columnLabel.equals(model.getTarget_column())) {
-                anchorBuilder.addIgnoredColumn(columnLabel);
-                // FIXME cannot set column as target column. the removing of that column ends with exception due to wrong type of array
-                //anchorBuilder.addTargetColumn(columnLabel);
+                anchorBuilder.addTargetColumn(columnLabel);
             } else if (H2oUtil.isStringColumn(column.getColumn_type())
                     || H2oUtil.isEnumColumn(column.getColumn_type())) {
                 anchorBuilder.addObjectColumn(columnLabel);
