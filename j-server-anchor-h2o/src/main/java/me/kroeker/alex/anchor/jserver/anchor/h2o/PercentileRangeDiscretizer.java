@@ -46,6 +46,9 @@ public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>
                 return range.label;
             }
         }
+        if (NoValueHandler.isNumberNa(number)) {
+            return -999;
+        }
         // TODO improve exception explanation to list all ranges
         throw new IllegalArgumentException("Number " + number + " not handled");
     }

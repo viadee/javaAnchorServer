@@ -3959,9 +3959,9 @@ public class H2oApi {
    * Return the model in the MOJO format. This format can then be interpreted by gen_model.jar in order to perform
    * prediction / scoring. Currently works for GBM and DRF algos only.
    */
-  public ResponseBody modelMojo(ModelKeyV3 modelId) throws IOException {
+  public Response<ResponseBody> modelMojo(ModelKeyV3 modelId) throws IOException {
     Models s = getService(Models.class);
-    return s.fetchMojo(keyToString(modelId)).execute().body();
+    return s.fetchMojo(keyToString(modelId)).execute();
   }
   public ResponseBody modelMojo(ModelsV3 params) throws IOException {
     Models s = getService(Models.class);
@@ -4557,9 +4557,9 @@ public class H2oApi {
   /**
    * Download dataset as a CSV.
    */
-  public ResponseBody _downloadDataset_fetch(FrameKeyV3 frameId) throws IOException {
+  public Response<ResponseBody> _downloadDataset_fetch(FrameKeyV3 frameId) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);
-    return s.fetch(keyToString(frameId)).execute().body();
+    return s.fetch(keyToString(frameId)).execute();
   }
   public ResponseBody _downloadDataset_fetch(FrameKeyV3 frameId, boolean hexString) throws IOException {
     DownloadDataset s = getService(DownloadDataset.class);

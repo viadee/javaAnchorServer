@@ -2,10 +2,13 @@ package me.kroeker.alex.anchor.h2o.util;
 
 import okhttp3.ResponseBody;
 import org.apache.commons.io.FileUtils;
+import retrofit2.Response;
 import water.bindings.H2oApi;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 public abstract class H2oDownload implements AutoCloseable {
 
@@ -15,9 +18,15 @@ public abstract class H2oDownload implements AutoCloseable {
     }
 
     public File getFile(H2oApi api, String key) throws IOException {
+        key = URLEncoder.encode(key, Charset.defaultCharset().name());
+
         file = File.createTempFile("h2o_data_set", ".csv");
-        ResponseBody data = this.callRest(api, key);
-        FileUtils.copyInputStreamToFile(data.byteStream(), file);
+        Response<ResponseBody> response = this.callRest(api, key);
+        if (response.isSuccessful()) {
+            FileUtils.copyInputStreamToFile(response.body().byteStream(), file);
+        } else {
+            // TODO handle errors for every h2o request
+        }
 
         return file;
     }
@@ -29,5 +38,5 @@ public abstract class H2oDownload implements AutoCloseable {
         }
     }
 
-    protected abstract ResponseBody callRest(H2oApi api, String key) throws IOException;
+    protected abstract Response<ResponseBody> callRest(H2oApi api, String key) throws IOException;
 }

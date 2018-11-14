@@ -71,57 +71,60 @@ public class AnchorRuleH2o implements AnchorRule {
         String[] instanceAsStringArray = Arrays.asList(instance.getInstance()).toArray(new String[0]);
         Collection<String[]> anchorInstance = new ArrayList<>(1);
         anchorInstance.add(instanceAsStringArray);
+        this.handleNa(vh.header, anchorInstance, anchorBuilder);
         TabularInstance convertedInstance = anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
 
+        H2OTabularMojoClassifier classificationFunction;
         try (H2oDownload mojoDownload = new H2oMojoDownload()) {
             File mojoFile = mojoDownload.getFile(H2oUtil.createH2o(connectionName), modelId);
 
-            final H2OTabularMojoClassifier classificationFunction = new H2OTabularMojoClassifier(
+            classificationFunction = new H2OTabularMojoClassifier(
                     new FileInputStream(mojoFile),
                     anchor.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()));
-
-            TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(instance,
-                    anchor.getTabularInstances().toArray(new TabularInstance[0]));
-
-            final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
-                    tabularPerturbationFunction, convertedInstance,
-                    classificationFunction.predict(convertedInstance))
-                    .enableThreading(10, false)
-                    .setBestAnchorIdentification(new BatchSAR(20, 20))
-                    .setInitSampleCount(500)
-                    .setTau(0.8)
-                    .build().constructAnchor();
-
-            Anchor computedAnchor = new Anchor();
-            computedAnchor.setCoverage(anchorResult.getCoverage());
-            computedAnchor.setPrecision(anchorResult.getPrecision());
-            computedAnchor.setCreated_at(LocalDateTime.now());
-            computedAnchor.setFeatures(anchorResult.getOrderedFeatures());
-            computedAnchor.setFrame_id(frameId);
-            computedAnchor.setModel_id(modelId);
-
-            ColumnDescription targetColumn = anchorBuilder.getColumnDescriptions().stream().filter(ColumnDescription::isTargetFeature)
-                    .findFirst().orElseThrow(() -> new IllegalArgumentException("no column with target definition found"));
-            Object labelOfCase = instance.getInstance()[vh.header.get(targetColumn.getName())];
-            computedAnchor.setLabel_of_case(labelOfCase);
-
-            Map<String, Object> convertedInstanceMap = new HashMap<>(instance.getFeatureCount());
-            for (int i = 0; i < convertedInstance.getFeatureCount(); i++) {
-                convertedInstanceMap.put(anchor.getFeatures().get(i).getName(), instance.getFeature(i));
-            }
-            computedAnchor.setInstance(convertedInstanceMap);
-
-            final int affectedRows = (int) Math.round(vh.dataSet.size() * computedAnchor.getCoverage());
-            computedAnchor.setAffected_rows(affectedRows);
-
-            String prediction = classificationFunction.getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
-            computedAnchor.setPrediction(prediction);
-            computedAnchor.setNames(Arrays.asList(anchor.getVisualizer().getAnchorAsPredicateList(anchorResult)));
-
-            return computedAnchor;
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + connectionName);
         }
+
+        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(instance,
+                anchor.getTabularInstances().toArray(new TabularInstance[0]));
+
+        final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
+                tabularPerturbationFunction, convertedInstance,
+                classificationFunction.predict(convertedInstance))
+                .enableThreading(10, false)
+                .setBestAnchorIdentification(new BatchSAR(20, 20))
+                .setInitSampleCount(200)
+                .setTau(0.8)
+                .setAllowSuboptimalSteps(false)
+                .build().constructAnchor();
+
+        Anchor computedAnchor = new Anchor();
+        computedAnchor.setCoverage(anchorResult.getCoverage());
+        computedAnchor.setPrecision(anchorResult.getPrecision());
+        computedAnchor.setCreated_at(LocalDateTime.now());
+        computedAnchor.setFeatures(anchorResult.getOrderedFeatures());
+        computedAnchor.setFrame_id(frameId);
+        computedAnchor.setModel_id(modelId);
+
+        ColumnDescription targetColumn = anchorBuilder.getColumnDescriptions().stream().filter(ColumnDescription::isTargetFeature)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("no column with target definition found"));
+        Object labelOfCase = instance.getInstance()[vh.header.get(targetColumn.getName())];
+        computedAnchor.setLabel_of_case(labelOfCase);
+
+        Map<String, Object> convertedInstanceMap = new HashMap<>(instance.getFeatureCount());
+        for (int i = 0; i < convertedInstance.getFeatureCount(); i++) {
+            convertedInstanceMap.put(anchor.getFeatures().get(i).getName(), instance.getFeature(i));
+        }
+        computedAnchor.setInstance(convertedInstanceMap);
+
+        final int affectedRows = (int) Math.round(vh.dataSet.size() * computedAnchor.getCoverage());
+        computedAnchor.setAffected_rows(affectedRows);
+
+        String prediction = classificationFunction.getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
+        computedAnchor.setPrediction(prediction);
+        computedAnchor.setNames(Arrays.asList(anchor.getVisualizer().getAnchorAsPredicateList(anchorResult)));
+
+        return computedAnchor;
     }
 
     private AnchorTabular.TabularPreprocessorBuilder buildAnchor(String connectionName,
@@ -153,8 +156,22 @@ public class AnchorRuleH2o implements AnchorRule {
                 anchorBuilder.addNominalColumn(columnLabel, discretizer);
             }
         });
+        handleNa(vh.header, vh.dataSet, anchorBuilder);
 
         return anchorBuilder;
+    }
+
+    private void handleNa(Map<String, Integer> header, Collection<String[]> dataSet, AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
+        // TODO filter not needed for every entry in data set
+        dataSet.parallelStream().forEach((dataEntry) ->
+                anchorBuilder.getColumnDescriptions().stream().filter((predicate) -> predicate.getColumnType() == TabularFeature.ColumnType.NOMINAL)
+                        .forEach((description) -> {
+                            int columnIndex = header.get(description.getName());
+                            if (dataEntry[columnIndex].isEmpty()) {
+                                dataEntry[columnIndex] = NoValueHandler.getNumberNa();
+                            }
+                        })
+        );
     }
 
     private LoadDataSetVH loadDataSetFromH2o(String frameId, H2oApi api) throws IOException {
