@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.base.AnchorConstructionBuilder;
-import de.goerke.tobias.anchorj.base.AnchorResult;
-import de.goerke.tobias.anchorj.base.exploration.BatchSAR;
+import de.goerke.tobias.anchorj.AnchorConstructionBuilder;
+import de.goerke.tobias.anchorj.AnchorResult;
+import de.goerke.tobias.anchorj.exploration.BatchSAR;
 import de.goerke.tobias.anchorj.tabular.AnchorTabular;
 import de.goerke.tobias.anchorj.tabular.ColumnDescription;
 import de.goerke.tobias.anchorj.tabular.TabularFeature;
@@ -71,7 +71,7 @@ public class AnchorRuleH2o implements AnchorRule {
         String[] instanceAsStringArray = Arrays.asList(instance.getInstance()).toArray(new String[0]);
         Collection<String[]> anchorInstance = new ArrayList<>(1);
         anchorInstance.add(instanceAsStringArray);
-        this.handleNa(vh.header, anchorInstance, anchorBuilder);
+        this.handleNa(vh.header, anchorInstance, anchorBuilder.getColumnDescriptions());
         TabularInstance convertedInstance = anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
 
         H2OTabularMojoClassifier classificationFunction;
@@ -156,19 +156,29 @@ public class AnchorRuleH2o implements AnchorRule {
                 anchorBuilder.addNominalColumn(columnLabel, discretizer);
             }
         });
-        handleNa(vh.header, vh.dataSet, anchorBuilder);
+        handleNa(vh.header, vh.dataSet, anchorBuilder.getColumnDescriptions());
 
         return anchorBuilder;
     }
 
-    private void handleNa(Map<String, Integer> header, Collection<String[]> dataSet, AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
-        // TODO filter not needed for every entry in data set
+    /**
+     * Iterates through all nominal columns and replaces the empty strings with the value of @{@link NoValueHandler#getNumberNa()}
+     *
+     * @param header the list of header and their column index
+     * @param dataSet the data set
+     * @param columnDescriptions list of the columns
+     */
+    private void handleNa(Map<String, Integer> header, Collection<String[]> dataSet, List<ColumnDescription> columnDescriptions) {
+        final List<Integer> nominalColumnsIndexes = columnDescriptions.stream()
+                .filter((predicate) -> predicate.getColumnType() == TabularFeature.ColumnType.NOMINAL)
+                .mapToInt((description) -> header.get(description.getName()))
+                .boxed().collect(Collectors.toList());
+
         dataSet.parallelStream().forEach((dataEntry) ->
-                anchorBuilder.getColumnDescriptions().stream().filter((predicate) -> predicate.getColumnType() == TabularFeature.ColumnType.NOMINAL)
-                        .forEach((description) -> {
-                            int columnIndex = header.get(description.getName());
-                            if (dataEntry[columnIndex].isEmpty()) {
-                                dataEntry[columnIndex] = NoValueHandler.getNumberNa();
+                nominalColumnsIndexes
+                        .forEach((nominalColumnIndex) -> {
+                            if (dataEntry[nominalColumnIndex].isEmpty()) {
+                                dataEntry[nominalColumnIndex] = NoValueHandler.getNumberNa();
                             }
                         })
         );
@@ -200,8 +210,9 @@ public class AnchorRuleH2o implements AnchorRule {
         }
     }
 
-    private ColumnSummary<?> findColumn(Collection<ColumnSummary<?>> columns, String columnName) {
-        return columns.stream().filter((column) -> column.getLabel().equals(columnName)).findFirst().get();
+    private ColumnSummary<?> findColumn(final Collection<ColumnSummary<?>> columns, final String columnName) {
+        return columns.stream().filter((column) -> column.getLabel().equals(columnName)).findFirst().orElseThrow(
+                () -> new IllegalStateException("Column with name " + columnName + " not found"));
     }
 
 }

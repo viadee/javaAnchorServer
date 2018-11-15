@@ -38,6 +38,10 @@
             <artifactId>anchorj</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.goerke.tobias</groupId>
+            <artifactId>DefaultConfigsExtension</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ai.h2o</groupId>
             <artifactId>h2o-genmodel</artifactId>
         </dependency>

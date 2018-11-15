@@ -27,6 +27,11 @@
             <groupId>de.goerke.tobias</groupId>
             <artifactId>anchorj</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.goerke.tobias</groupId>
+            <artifactId>DefaultConfigsExtension</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

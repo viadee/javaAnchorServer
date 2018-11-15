@@ -21,6 +21,10 @@
             <artifactId>anchorj</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.goerke.tobias</groupId>
+            <artifactId>DefaultConfigsExtension</artifactId>
+        </dependency>
+        <dependency>
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-api</artifactId>
         </dependency>

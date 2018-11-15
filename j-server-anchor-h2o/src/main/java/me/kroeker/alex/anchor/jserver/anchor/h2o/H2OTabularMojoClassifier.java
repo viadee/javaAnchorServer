@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import de.goerke.tobias.anchorj.base.ClassificationFunction;
+import de.goerke.tobias.anchorj.ClassificationFunction;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
