@@ -17,7 +17,8 @@ public class Anchor {
     private double precision;
     private double coverage;
     private Collection<Integer> features;
-    private Collection<String> names;
+    private Map<Integer, FeatureConditionMetric> metricAnchor;
+    private Map<Integer, FeatureConditionEnum> enumAnchor;
     private Integer affected_rows;
     private LocalDateTime created_at;
 
@@ -85,14 +86,6 @@ public class Anchor {
         this.features = features;
     }
 
-    public Collection<String> getNames() {
-        return names;
-    }
-
-    public void setNames(Collection<String> names) {
-        this.names = names;
-    }
-
     public Integer getAffected_rows() {
         return affected_rows;
     }
@@ -109,6 +102,22 @@ public class Anchor {
         this.created_at = created_at;
     }
 
+    public Map<Integer, FeatureConditionMetric> getMetricAnchor() {
+        return metricAnchor;
+    }
+
+    public void setMetricAnchor(Map<Integer, FeatureConditionMetric> metricAnchor) {
+        this.metricAnchor = metricAnchor;
+    }
+
+    public Map<Integer, FeatureConditionEnum> getEnumAnchor() {
+        return enumAnchor;
+    }
+
+    public void setEnumAnchor(Map<Integer, FeatureConditionEnum> enumAnchor) {
+        this.enumAnchor = enumAnchor;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -122,14 +131,15 @@ public class Anchor {
                 Objects.equals(label_of_case, anchor.label_of_case) &&
                 Objects.equals(prediction, anchor.prediction) &&
                 Objects.equals(features, anchor.features) &&
-                Objects.equals(names, anchor.names) &&
+                Objects.equals(metricAnchor, anchor.metricAnchor) &&
+                Objects.equals(enumAnchor, anchor.enumAnchor) &&
                 Objects.equals(affected_rows, anchor.affected_rows) &&
                 Objects.equals(created_at, anchor.created_at);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(model_id, frame_id, instance, label_of_case, prediction, precision, coverage, features, names, affected_rows, created_at);
+        return Objects.hash(model_id, frame_id, instance, label_of_case, prediction, precision, coverage, features, metricAnchor, enumAnchor, affected_rows, created_at);
     }
 
     @Override
@@ -143,7 +153,8 @@ public class Anchor {
                 ", precision=" + precision +
                 ", coverage=" + coverage +
                 ", features=" + features +
-                ", names=" + names +
+                ", metricAnchor=" + metricAnchor +
+                ", enumAnchor=" + enumAnchor +
                 ", affected_rows=" + affected_rows +
                 ", created_at=" + created_at +
                 '}';
