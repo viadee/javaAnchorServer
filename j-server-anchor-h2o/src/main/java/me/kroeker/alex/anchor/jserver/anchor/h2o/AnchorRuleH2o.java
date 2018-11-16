@@ -139,20 +139,20 @@ public class AnchorRuleH2o implements AnchorRule {
         final Map<Integer, FeatureConditionMetric> metricConditions = new HashMap<>();
         for (Map.Entry<Integer, FeatureValueMapping> entry : anchor.getVisualizer().getAnchor(anchorResult).entrySet()) {
             final TabularFeature feature = entry.getValue().getFeature();
-            switch (feature.getColumnType()) {
-                case CATEGORICAL:
-                    enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
-                            ((CategoricalValueMapping) entry).getCategoricalValue().toString()));
-                    break;
-                case NATIVE:
-                    enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
-                            ((NativeValueMapping) entry).getValue().toString()));
-                    break;
-                case NOMINAL:
-                    MetricValueMapping metric = (MetricValueMapping) entry;
-                    metricConditions.put(entry.getKey(), new FeatureConditionMetric(feature.getName(),
-                            metric.getMinValue(), metric.getMaxValue()));
-                    break;
+            final FeatureValueMapping featureValueMapping = entry.getValue();
+            if (featureValueMapping instanceof CategoricalValueMapping) {
+                enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
+                        ((CategoricalValueMapping) featureValueMapping).getCategoricalValue().toString()));
+            } else if (featureValueMapping instanceof NativeValueMapping) {
+                enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
+                        ((NativeValueMapping) featureValueMapping).getValue().toString()));
+            } else if (featureValueMapping instanceof MetricValueMapping) {
+                MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
+                metricConditions.put(entry.getKey(), new FeatureConditionMetric(feature.getName(),
+                        metric.getMinValue(), metric.getMaxValue()));
+            } else {
+                throw new IllegalArgumentException("feature value mapping of type " +
+                        featureValueMapping.getClass().getSimpleName() + " not handeld");
             }
         }
         convertedAnchor.setEnumAnchor(enumConditions);
