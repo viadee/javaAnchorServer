@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import de.goerke.tobias.anchorj.AnchorConstructionBuilder;
 import de.goerke.tobias.anchorj.AnchorResult;
 import de.goerke.tobias.anchorj.exploration.BatchSAR;
+import de.goerke.tobias.anchorj.global.ModifiedSubmodularPick;
+import de.goerke.tobias.anchorj.global.SubmodularPickGoal;
 import de.goerke.tobias.anchorj.tabular.AnchorTabular;
 import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
 import de.goerke.tobias.anchorj.tabular.ColumnDescription;
@@ -59,27 +61,72 @@ public class AnchorRuleH2o implements AnchorRule {
     }
 
     @Override
+    public Collection<Anchor> runSubmodularPick(String connectionName,
+                                                String modelId,
+                                                String frameId,
+                                                TabularInstance instance) throws DataAccessException {
+        H2oApi api = H2oUtil.createH2o(connectionName);
+        LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
+        AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
+                buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
+        AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
+        H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchorTabular);
+        TabularInstance convertedInstance = handleInstanceToExplain(instance, vh, anchorBuilder);
+
+        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(convertedInstance,
+                anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
+
+
+        final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
+                tabularPerturbationFunction, convertedInstance);
+
+        ModifiedSubmodularPick subPick = new ModifiedSubmodularPick<>(anchorContructionBuilder, SubmodularPickGoal.FEATURE_APPEARANCE, 10);
+        List<AnchorResult<TabularInstance>> anchorResults = subPick.run(anchorTabular.getTabularInstances().getInstances(), 10);
+        Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
+        anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, instance, vh,
+                anchorBuilder, anchorTabular, convertedInstance, classificationFunction, anchor)));
+
+        return explanations;
+    }
+
+    @Override
     public Anchor computeRule(String connectionName, String modelId, String frameId, TabularInstance instance)
             throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
-
-        LoadDataSetVH vh;
-        try {
-            vh = loadDataSetFromH2o(frameId, api);
-        } catch (IOException ioe) {
-            throw new DataAccessException("Failed to load data set from h2o with connection name: "
-                    + connectionName + " and frame id: " + frameId, ioe);
-        }
+        LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
 
         AnchorTabular.TabularPreprocessorBuilder anchorBuilder = buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
         AnchorTabular anchor = anchorBuilder.build(vh.dataSet);
 
+        TabularInstance convertedInstance = handleInstanceToExplain(instance, vh, anchorBuilder);
+
+        H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchor);
+
+        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(convertedInstance,
+                anchor.getTabularInstances().toArray(new TabularInstance[0]));
+
+        final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
+                tabularPerturbationFunction, convertedInstance)
+                .enableThreading(10, false)
+                .setBestAnchorIdentification(new BatchSAR(20, 20))
+                .setInitSampleCount(200)
+                .setTau(0.8)
+                .setAllowSuboptimalSteps(false)
+                .build().constructAnchor();
+
+        return transformAnchor(modelId, frameId, instance, vh, anchorBuilder, anchor, convertedInstance,
+                classificationFunction, anchorResult);
+    }
+
+    private TabularInstance handleInstanceToExplain(TabularInstance instance, LoadDataSetVH vh, AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
         String[] instanceAsStringArray = Arrays.asList(instance.getInstance()).toArray(new String[0]);
         Collection<String[]> anchorInstance = new ArrayList<>(1);
         anchorInstance.add(instanceAsStringArray);
         this.handleNa(vh.header, anchorInstance, anchorBuilder.getColumnDescriptions());
-        TabularInstance convertedInstance = anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
+        return anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
+    }
 
+    private H2OTabularMojoClassifier generateH2oClassifier(String connectionName, String modelId, AnchorTabular anchor) throws DataAccessException {
         H2OTabularMojoClassifier classificationFunction;
         try (H2oDownload mojoDownload = new H2oMojoDownload()) {
             File mojoFile = mojoDownload.getFile(H2oUtil.createH2o(connectionName), modelId);
@@ -90,26 +137,13 @@ public class AnchorRuleH2o implements AnchorRule {
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + connectionName);
         }
-
-        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(instance,
-                anchor.getTabularInstances().toArray(new TabularInstance[0]));
-
-        final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
-                tabularPerturbationFunction, convertedInstance,
-                classificationFunction.predict(convertedInstance))
-                .enableThreading(10, false)
-                .setBestAnchorIdentification(new BatchSAR(20, 20))
-                .setInitSampleCount(200)
-                .setTau(0.8)
-                .setAllowSuboptimalSteps(false)
-                .build().constructAnchor();
-
-        Anchor convertedAnchor = transformAnchor(modelId, frameId, instance, vh, anchorBuilder, anchor, convertedInstance, classificationFunction, anchorResult);
-
-        return convertedAnchor;
+        return classificationFunction;
     }
 
-    private Anchor transformAnchor(String modelId, String frameId, TabularInstance instance, LoadDataSetVH vh, AnchorTabular.TabularPreprocessorBuilder anchorBuilder, AnchorTabular anchor, TabularInstance convertedInstance, H2OTabularMojoClassifier classificationFunction, AnchorResult<TabularInstance> anchorResult) {
+    private Anchor transformAnchor(String modelId, String frameId, TabularInstance instance, LoadDataSetVH vh,
+                                   AnchorTabular.TabularPreprocessorBuilder anchorBuilder, AnchorTabular anchor,
+                                   TabularInstance convertedInstance, H2OTabularMojoClassifier classificationFunction,
+                                   AnchorResult<TabularInstance> anchorResult) {
         Anchor convertedAnchor = new Anchor();
         convertedAnchor.setCoverage(anchorResult.getCoverage());
         convertedAnchor.setPrecision(anchorResult.getPrecision());
@@ -218,7 +252,7 @@ public class AnchorRuleH2o implements AnchorRule {
         );
     }
 
-    private LoadDataSetVH loadDataSetFromH2o(String frameId, H2oApi api) throws IOException {
+    private LoadDataSetVH loadDataSetFromH2o(String frameId, H2oApi api) throws DataAccessException {
         Collection<String[]> dataSet = new ArrayList<>();
         Map<String, Integer> header;
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
@@ -230,6 +264,8 @@ public class AnchorRuleH2o implements AnchorRule {
                         dataSet.add(newLine.toArray(new String[0]));
                     }
             );
+        } catch (IOException ioe) {
+            throw new DataAccessException("Failed to load data set from h2o with frame id: " + frameId, ioe);
         }
         return new LoadDataSetVH(header, dataSet);
     }

@@ -23,31 +23,12 @@ public final class H2oDataUtil {
     }
 
     public static TabularInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
-        Collection<Function<CSVRecord, Boolean>> filters = new ArrayList<>();
-        if (conditions.getEnumConditions() != null) {
-            for (FeatureConditionEnum enumCondition : conditions.getEnumConditions().values()) {
-                filters.add(
-                        (record) ->
-                                record.get(enumCondition.getFeatureName()).equals(enumCondition.getCategory())
-                );
-            }
-        }
-        // TODO handle metrics min max problem. wenn das maximum 20 ist und 20 als condition, sollte 20 inklusive sein
-        if (conditions.getMetricConditions() != null) {
-            for (FeatureConditionMetric metricCondition : conditions.getMetricConditions().values()) {
-                filters.add(
-                        (record) -> {
-                            double recordValue = Double.parseDouble(record.get(metricCondition.getFeatureName()));
-                            return metricCondition.getConditionMin() < recordValue && recordValue < metricCondition.getConditionMax();
-                        }
-                );
-            }
-        }
+        Collection<Function<CSVRecord, Boolean>> filters = calculateConditionsFilter(conditions);
 
         List<CSVRecord> acceptedRecords = new ArrayList<>();
         Map<String, Integer> headerMapping = H2oDataUtil.iterateThroughCsvData(dataSet,
                 (record) -> {
-                    if (filters.stream().allMatch(filter -> filter.apply(record))) {
+                    if (filters.isEmpty() || filters.stream().allMatch(filter -> filter.apply(record))) {
                         acceptedRecords.add(record);
                     }
                 }
@@ -65,6 +46,32 @@ public final class H2oDataUtil {
         });
 
         return new TabularInstance(headerMapping, acceptedInstanceString);
+    }
+
+    private static Collection<Function<CSVRecord, Boolean>> calculateConditionsFilter(FeatureConditionsRequest conditions) {
+        Collection<Function<CSVRecord, Boolean>> filters = new ArrayList<>();
+        if (conditions != null) {
+            if (conditions.getEnumConditions() != null) {
+                for (FeatureConditionEnum enumCondition : conditions.getEnumConditions().values()) {
+                    filters.add(
+                            (record) ->
+                                    record.get(enumCondition.getFeatureName()).equals(enumCondition.getCategory())
+                    );
+                }
+            }
+            // TODO handle metrics min max problem. wenn das maximum 20 ist und 20 als condition, sollte 20 inklusive sein
+            if (conditions.getMetricConditions() != null) {
+                for (FeatureConditionMetric metricCondition : conditions.getMetricConditions().values()) {
+                    filters.add(
+                            (record) -> {
+                                double recordValue = Double.parseDouble(record.get(metricCondition.getFeatureName()));
+                                return metricCondition.getConditionMin() < recordValue && recordValue < metricCondition.getConditionMax();
+                            }
+                    );
+                }
+            }
+        }
+        return filters;
     }
 
     public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {

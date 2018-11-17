@@ -1,5 +1,7 @@
 package me.kroeker.alex.anchor.jserver.api;
 
+import java.util.Collection;
+
 import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 
@@ -22,5 +24,9 @@ public interface AnchorApi {
             String modelId,
             String frameId,
             FeatureConditionsRequest conditions);
+
+    Collection<Anchor> runSubmodularPick(String connectionName,
+                                         String modelId,
+                                         String frameId);
 
 }

@@ -1,11 +1,18 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
+import java.util.Collection;
+
 import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.api.AnchorApi;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
@@ -47,6 +54,27 @@ public class AnchorController implements AnchorApi {
             TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
 
             return this.anchorBO.computeRule(connectionName, modelId, frameId, instance);
+        } catch (DataAccessException dae) {
+            LOG.error(dae.getMessage(), dae);
+            // TODO add exception handling
+            return null;
+        }
+    }
+
+    @Override
+    @RequestMapping(
+            value = "/{connectionName}/anchors/global",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
+    public Collection<Anchor> runSubmodularPick(
+            @PathVariable String connectionName,
+            @RequestHeader("Model-Id") String modelId,
+            @RequestHeader("Frame-Id") String frameId) {
+        try {
+            TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId);
+
+            return this.anchorBO.runSubmodularPick(connectionName, modelId, frameId, instance);
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
