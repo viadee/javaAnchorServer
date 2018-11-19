@@ -80,8 +80,15 @@ public class AnchorRuleH2o implements AnchorRule {
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, convertedInstance);
 
-        ModifiedSubmodularPick subPick = new ModifiedSubmodularPick<>(anchorContructionBuilder, SubmodularPickGoal.FEATURE_APPEARANCE, 10);
-        List<AnchorResult<TabularInstance>> anchorResults = subPick.run(anchorTabular.getTabularInstances().getInstances(), 10);
+        ModifiedSubmodularPick<TabularInstance> subPick = new ModifiedSubmodularPick<>(
+                anchorContructionBuilder,
+                SubmodularPickGoal.FEATURE_APPEARANCE,
+                10
+        );
+        List<AnchorResult<TabularInstance>> anchorResults = subPick.run(
+                anchorTabular.getTabularInstances().getInstances(),
+                3);
+
         Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, instance, vh,
                 anchorBuilder, anchorTabular, convertedInstance, classificationFunction, anchor)));
