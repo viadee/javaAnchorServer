@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import de.goerke.tobias.anchorj.AnchorConstructionBuilder;
@@ -21,6 +25,7 @@ import de.goerke.tobias.anchorj.AnchorResult;
 import de.goerke.tobias.anchorj.exploration.BatchSAR;
 import de.goerke.tobias.anchorj.global.ModifiedSubmodularPick;
 import de.goerke.tobias.anchorj.global.SubmodularPickGoal;
+import de.goerke.tobias.anchorj.spark.SparkBatchExplainer;
 import de.goerke.tobias.anchorj.tabular.AnchorTabular;
 import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
 import de.goerke.tobias.anchorj.tabular.ColumnDescription;
@@ -51,6 +56,8 @@ import water.bindings.H2oApi;
 @Component
 public class AnchorRuleH2o implements AnchorRule {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AnchorRuleH2o.class);
+
     private ModelBO modelBO;
 
     private FrameBO frameBO;
@@ -80,8 +87,29 @@ public class AnchorRuleH2o implements AnchorRule {
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, convertedInstance);
 
-        ModifiedSubmodularPick subPick = new ModifiedSubmodularPick<>(anchorContructionBuilder, SubmodularPickGoal.FEATURE_APPEARANCE, 10);
-        List<AnchorResult<TabularInstance>> anchorResults = subPick.run(anchorTabular.getTabularInstances().getInstances(), 10);
+        SparkConf sparkConf = new SparkConf().setAppName("anchorj").setMaster("spark://localhost:7077")
+                .set("spark.shuffle.service.enabled", "false")
+                .set("spark.dynamicAllocation.enabled", "false")
+//                .set("spark.io.compression.codec", "snappy")
+                .set("spark.rdd.compress", "true");
+
+        JavaSparkContext sc = new JavaSparkContext(sparkConf);
+        List<Integer> l = new ArrayList<>(2000);
+        for (int i = 0; i < 2000; i++) {
+            l.add(i);
+        }
+
+        long count = sc.parallelize(l).filter(i -> {
+            double x = Math.random();
+            double y = Math.random();
+            return x*x + y*y < 1;
+        }).count();
+        LOG.error("Spark count result: " + count);
+
+        SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(sc);
+        ModifiedSubmodularPick<TabularInstance> subSparkPick = new ModifiedSubmodularPick<>(explainer, anchorContructionBuilder, SubmodularPickGoal.FEATURE_PRECISION_WEIGHTED_COVERAGE);
+//        ModifiedSubmodularPick subPick = new ModifiedSubmodularPick<>(anchorContructionBuilder, SubmodularPickGoal.FEATURE_APPEARANCE, 10);
+        List<AnchorResult<TabularInstance>> anchorResults = subSparkPick.run(anchorTabular.getTabularInstances().getInstances(), 4);
         Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, instance, vh,
                 anchorBuilder, anchorTabular, convertedInstance, classificationFunction, anchor)));
