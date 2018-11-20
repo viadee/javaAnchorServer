@@ -18,4 +18,5 @@ public interface AnchorRule {
                        String frameId,
                        TabularInstance instance) throws DataAccessException;
 
+    Collection<AnchorConfigDescription> getAnchorConfigs(String connectionName) throws DataAccessException;
 }
