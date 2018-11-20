@@ -10,8 +10,8 @@ import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
-import me.kroeker.alex.anchor.jserver.model.DataInstance;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Component;
@@ -112,7 +112,7 @@ public class H2oFrameDAO implements FrameDAO {
     }
 
     @Override
-    public DataInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
+    public FrameInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSet = h2oDownload.getFile(api, frameId);

@@ -3,7 +3,7 @@ package me.kroeker.alex.anchor.jserver.business;
 import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.DataInstance;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,14 +21,14 @@ public class AnchorBO {
     public Anchor computeRule(String connectionName,
                               String modelId,
                               String frameId,
-                              DataInstance instance) throws DataAccessException {
+                              FrameInstance instance) throws DataAccessException {
         return anchor.computeRule(connectionName, modelId, frameId, instance);
     }
 
     public Collection<Anchor> runSubmodularPick(String connectionName,
                                                 String modelId,
                                                 String frameId,
-                                                DataInstance instance) throws DataAccessException {
+                                                FrameInstance instance) throws DataAccessException {
         return anchor.runSubmodularPick(connectionName, modelId, frameId, instance);
     }
 

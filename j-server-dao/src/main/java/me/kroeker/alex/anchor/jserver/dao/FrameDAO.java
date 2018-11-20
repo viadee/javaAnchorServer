@@ -2,8 +2,8 @@ package me.kroeker.alex.anchor.jserver.dao;
 
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
-import me.kroeker.alex.anchor.jserver.model.DataInstance;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 
 import java.util.Collection;
@@ -38,8 +38,8 @@ public interface FrameDAO {
      * @return eine zufällig ausgewählte Instanz
      * @throws DataAccessException wenn bei der Kommunikation mit dem Cluster Fehler aufgetreten sind
      */
-    DataInstance randomInstance(String connectionName,
-                                String frameId,
-                                FeatureConditionsRequest conditions) throws DataAccessException;
+    FrameInstance randomInstance(String connectionName,
+                                 String frameId,
+                                 FeatureConditionsRequest conditions) throws DataAccessException;
 
 }

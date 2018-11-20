@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-public class DataInstance {
+public class FrameInstance {
 
     private final Object[] instance;
 
     private final Map<String, Integer> featureNamesMapping;
 
-    public DataInstance(Map<String, Integer> featureNamesMapping, Object[] instance) {
+    public FrameInstance(Map<String, Integer> featureNamesMapping, Object[] instance) {
         this.instance = instance;
         this.featureNamesMapping = featureNamesMapping;
     }
@@ -27,7 +27,7 @@ public class DataInstance {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DataInstance that = (DataInstance) o;
+        FrameInstance that = (FrameInstance) o;
         return Arrays.equals(instance, that.instance) &&
                 Objects.equals(featureNamesMapping, that.featureNamesMapping);
     }
@@ -41,7 +41,7 @@ public class DataInstance {
 
     @Override
     public String toString() {
-        return "DataInstance{" +
+        return "FrameInstance{" +
                 "instance=" + Arrays.toString(instance) +
                 ", featureNames=" + featureNamesMapping +
                 '}';
