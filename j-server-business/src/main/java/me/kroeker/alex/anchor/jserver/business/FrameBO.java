@@ -1,15 +1,15 @@
 package me.kroeker.alex.anchor.jserver.business;
 
-import java.util.Collection;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
+import me.kroeker.alex.anchor.jserver.model.DataInstance;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
 
 /**
  */
@@ -30,14 +30,14 @@ public class FrameBO {
         return this.frameDAO.getFrameSummary(connectionName, frameId);
     }
 
-    public TabularInstance randomInstance(String connectionName,
-                                          String frameId) throws DataAccessException {
+    public DataInstance randomInstance(String connectionName,
+                                       String frameId) throws DataAccessException {
         return this.randomInstance(connectionName, frameId, null);
     }
 
-    public TabularInstance randomInstance(String connectionName,
-                                          String frameId,
-                                          FeatureConditionsRequest conditions) throws DataAccessException {
+    public DataInstance randomInstance(String connectionName,
+                                       String frameId,
+                                       FeatureConditionsRequest conditions) throws DataAccessException {
         return this.frameDAO.randomInstance(connectionName, frameId, conditions);
     }
 

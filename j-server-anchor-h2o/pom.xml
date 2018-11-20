@@ -34,7 +34,7 @@
         </dependency>
 
         <dependency>
-            <groupId>de.goerke.tobias</groupId>
+            <groupId>de.viadee</groupId>
             <artifactId>anchorj</artifactId>
         </dependency>
         <dependency>

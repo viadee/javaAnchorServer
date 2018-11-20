@@ -1,9 +1,12 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
-import java.util.Collection;
-
-import javax.ws.rs.core.MediaType;
-
+import me.kroeker.alex.anchor.jserver.api.AnchorApi;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.business.AnchorBO;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.DataInstance;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +16,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.jserver.api.AnchorApi;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.AnchorBO;
-import me.kroeker.alex.anchor.jserver.business.FrameBO;
-import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+
+import javax.ws.rs.core.MediaType;
+import java.util.Collection;
 
 /**
  */
@@ -51,7 +50,7 @@ public class AnchorController implements AnchorApi {
             @RequestBody FeatureConditionsRequest conditions
     ) {
         try {
-            TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
+            DataInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
 
             return this.anchorBO.computeRule(connectionName, modelId, frameId, instance);
         } catch (DataAccessException dae) {
@@ -72,7 +71,7 @@ public class AnchorController implements AnchorApi {
             @RequestHeader("Model-Id") String modelId,
             @RequestHeader("Frame-Id") String frameId) {
         try {
-            TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId);
+            DataInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 
             return this.anchorBO.runSubmodularPick(connectionName, modelId, frameId, instance);
         } catch (DataAccessException dae) {

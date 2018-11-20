@@ -1,5 +1,27 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
+import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
+import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
+import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.DataFrame;
+import me.kroeker.alex.anchor.jserver.model.DataInstance;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.stereotype.Component;
+import water.bindings.H2oApi;
+import water.bindings.pojos.ColV3;
+import water.bindings.pojos.FrameBaseV3;
+import water.bindings.pojos.FrameKeyV3;
+import water.bindings.pojos.FrameV3;
+import water.bindings.pojos.FramesListV3;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,28 +30,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
-import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
-import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.DataFrame;
-import me.kroeker.alex.anchor.jserver.model.FrameSummary;
-import water.bindings.H2oApi;
-import water.bindings.pojos.ColV3;
-import water.bindings.pojos.FrameBaseV3;
-import water.bindings.pojos.FrameKeyV3;
-import water.bindings.pojos.FrameV3;
-import water.bindings.pojos.FramesListV3;
 
 /**
  */
@@ -112,7 +112,7 @@ public class H2oFrameDAO implements FrameDAO {
     }
 
     @Override
-    public TabularInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
+    public DataInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSet = h2oDownload.getFile(api, frameId);

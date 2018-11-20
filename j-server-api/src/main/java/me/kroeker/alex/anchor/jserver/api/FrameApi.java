@@ -1,9 +1,9 @@
 package me.kroeker.alex.anchor.jserver.api;
 
-import java.util.Collection;
-
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+
+import java.util.Collection;
 
 /**
  */

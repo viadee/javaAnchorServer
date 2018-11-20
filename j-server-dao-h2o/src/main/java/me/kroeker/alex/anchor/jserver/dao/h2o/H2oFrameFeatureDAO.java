@@ -1,23 +1,23 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
+import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
+import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
+import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.FeatureCondition;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
-import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
-import me.kroeker.alex.anchor.jserver.model.FeatureCondition;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
-import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 
 /**
  */
