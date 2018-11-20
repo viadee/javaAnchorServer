@@ -48,7 +48,10 @@ public class AnchorController implements AnchorApi {
             @PathVariable String connectionName,
             @RequestHeader("Model-Id") String modelId,
             @RequestHeader("Frame-Id") String frameId,
-            @RequestBody FeatureConditionsRequest conditions
+            @RequestBody FeatureConditionsRequest conditions,
+            @RequestHeader("Anchor-Tau") String tau,
+            @RequestHeader("Anchor-Delta") String delta,
+            @RequestHeader("Anchor-Epsilon") String epsilon
     ) {
         try {
             TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
@@ -70,7 +73,11 @@ public class AnchorController implements AnchorApi {
     public Collection<Anchor> runSubmodularPick(
             @PathVariable String connectionName,
             @RequestHeader("Model-Id") String modelId,
-            @RequestHeader("Frame-Id") String frameId) {
+            @RequestHeader("Frame-Id") String frameId,
+            @RequestHeader("Anchor-Tau") String tau,
+            @RequestHeader("Anchor-Delta") String delta,
+            @RequestHeader("Anchor-Epsilon") String epsilon
+    ) {
         try {
             TabularInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 

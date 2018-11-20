@@ -23,10 +23,17 @@ public interface AnchorApi {
             String connectionName,
             String modelId,
             String frameId,
-            FeatureConditionsRequest conditions);
+            FeatureConditionsRequest conditions,
+            String tau,
+            String delta,
+            String epsilon);
 
     Collection<Anchor> runSubmodularPick(String connectionName,
                                          String modelId,
-                                         String frameId);
+                                         String frameId,
+                                         String tau,
+                                         String delta,
+                                         String epsilon
+    );
 
 }

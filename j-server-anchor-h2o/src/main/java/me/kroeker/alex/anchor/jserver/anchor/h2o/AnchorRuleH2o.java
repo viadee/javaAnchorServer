@@ -78,7 +78,12 @@ public class AnchorRuleH2o implements AnchorRule {
 
 
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
-                tabularPerturbationFunction, convertedInstance);
+                tabularPerturbationFunction, convertedInstance)
+                .enableThreading(10, false)
+                .setBestAnchorIdentification(new BatchSAR(20, 20))
+                .setInitSampleCount(200)
+                .setTau(0.9)
+                .setAllowSuboptimalSteps(false);
 
         ModifiedSubmodularPick<TabularInstance> subPick = new ModifiedSubmodularPick<>(
                 anchorContructionBuilder,
