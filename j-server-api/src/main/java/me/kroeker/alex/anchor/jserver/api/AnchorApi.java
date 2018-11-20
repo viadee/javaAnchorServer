@@ -1,9 +1,9 @@
 package me.kroeker.alex.anchor.jserver.api;
 
-import java.util.Collection;
-
 import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+
+import java.util.Collection;
 
 /**
  * Definiert die Schnittstelle zur Berechnung von Anchor-Erklärungen.

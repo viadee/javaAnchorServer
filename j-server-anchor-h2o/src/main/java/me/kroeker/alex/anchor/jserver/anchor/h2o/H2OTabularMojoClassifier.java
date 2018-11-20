@@ -1,13 +1,7 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import de.goerke.tobias.anchorj.ClassificationFunction;
 import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import de.viadee.anchorj.ClassificationFunction;
 import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
 import hex.genmodel.MojoReaderBackend;
@@ -19,6 +13,12 @@ import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 import hex.genmodel.easy.prediction.RegressionModelPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class H2OTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
 

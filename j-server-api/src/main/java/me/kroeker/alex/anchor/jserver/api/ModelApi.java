@@ -1,8 +1,8 @@
 package me.kroeker.alex.anchor.jserver.api;
 
-import java.util.Collection;
-
 import me.kroeker.alex.anchor.jserver.model.Model;
+
+import java.util.Collection;
 
 /**
  */

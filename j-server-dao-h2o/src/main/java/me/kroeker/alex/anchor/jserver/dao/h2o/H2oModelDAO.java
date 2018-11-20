@@ -1,18 +1,18 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.ModelDAO;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
 import me.kroeker.alex.anchor.jserver.model.Model;
+import org.springframework.stereotype.Component;
 import water.bindings.pojos.ModelKeyV3;
 import water.bindings.pojos.ModelSchemaBaseV3;
 import water.bindings.pojos.ModelsV3;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  */

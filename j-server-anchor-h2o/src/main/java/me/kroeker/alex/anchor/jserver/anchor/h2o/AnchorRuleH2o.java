@@ -1,5 +1,40 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
+import de.goerke.tobias.anchorj.tabular.AnchorTabular;
+import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
+import de.goerke.tobias.anchorj.tabular.ColumnDescription;
+import de.goerke.tobias.anchorj.tabular.FeatureValueMapping;
+import de.goerke.tobias.anchorj.tabular.MetricValueMapping;
+import de.goerke.tobias.anchorj.tabular.NativeValueMapping;
+import de.goerke.tobias.anchorj.tabular.TabularFeature;
+import de.goerke.tobias.anchorj.tabular.TabularInstance;
+import de.goerke.tobias.anchorj.tabular.TabularPerturbationFunction;
+import de.viadee.anchorj.AnchorConstructionBuilder;
+import de.viadee.anchorj.AnchorResult;
+import de.viadee.anchorj.exploration.BatchSAR;
+import de.viadee.anchorj.global.ModifiedSubmodularPick;
+import de.viadee.anchorj.global.SubmodularPickGoal;
+import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.h2o.util.H2oDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oMojoDownload;
+import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.business.ModelBO;
+import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.DataInstance;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+import me.kroeker.alex.anchor.jserver.model.Model;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import water.bindings.H2oApi;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,40 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.AnchorConstructionBuilder;
-import de.goerke.tobias.anchorj.AnchorResult;
-import de.goerke.tobias.anchorj.exploration.BatchSAR;
-import de.goerke.tobias.anchorj.global.ModifiedSubmodularPick;
-import de.goerke.tobias.anchorj.global.SubmodularPickGoal;
-import de.goerke.tobias.anchorj.tabular.AnchorTabular;
-import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
-import de.goerke.tobias.anchorj.tabular.ColumnDescription;
-import de.goerke.tobias.anchorj.tabular.FeatureValueMapping;
-import de.goerke.tobias.anchorj.tabular.MetricValueMapping;
-import de.goerke.tobias.anchorj.tabular.NativeValueMapping;
-import de.goerke.tobias.anchorj.tabular.TabularFeature;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import de.goerke.tobias.anchorj.tabular.TabularPerturbationFunction;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oMojoDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
-import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.FrameBO;
-import me.kroeker.alex.anchor.jserver.business.ModelBO;
-import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.FrameSummary;
-import me.kroeker.alex.anchor.jserver.model.Model;
-import water.bindings.H2oApi;
 
 @Component
 public class AnchorRuleH2o implements AnchorRule {
@@ -64,45 +65,46 @@ public class AnchorRuleH2o implements AnchorRule {
     public Collection<Anchor> runSubmodularPick(String connectionName,
                                                 String modelId,
                                                 String frameId,
-                                                TabularInstance instance) throws DataAccessException {
-        H2oApi api = H2oUtil.createH2o(connectionName);
-        LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
-        AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
+                                                DataInstance instance) throws DataAccessException {
+        final H2oApi api = H2oUtil.createH2o(connectionName);
+        final LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
+        final AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
                 buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
-        AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
-        H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchorTabular);
-        TabularInstance convertedInstance = handleInstanceToExplain(instance, vh, anchorBuilder);
+        final AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
+        final H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchorTabular);
+        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), instance.getInstance());
+        final TabularInstance cleanedInstance = handleInstanceToExplain(convertedInstance, vh, anchorBuilder);
 
-        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(convertedInstance,
+        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(cleanedInstance,
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
 
 
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
-                tabularPerturbationFunction, convertedInstance)
+                tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .enableThreading(10, false)
                 .setBestAnchorIdentification(new BatchSAR(20, 20))
                 .setInitSampleCount(200)
                 .setTau(0.9)
                 .setAllowSuboptimalSteps(false);
 
-        ModifiedSubmodularPick<TabularInstance> subPick = new ModifiedSubmodularPick<>(
+        final ModifiedSubmodularPick<TabularInstance> subPick = new ModifiedSubmodularPick<>(
                 anchorContructionBuilder,
                 SubmodularPickGoal.FEATURE_APPEARANCE,
                 10
         );
-        List<AnchorResult<TabularInstance>> anchorResults = subPick.run(
+        final List<AnchorResult<TabularInstance>> anchorResults = subPick.run(
                 anchorTabular.getTabularInstances().getInstances(),
                 3);
 
-        Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
-        anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, instance, vh,
-                anchorBuilder, anchorTabular, convertedInstance, classificationFunction, anchor)));
+        final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
+        anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, convertedInstance, vh,
+                anchorBuilder, anchorTabular, cleanedInstance, classificationFunction, anchor)));
 
         return explanations;
     }
 
     @Override
-    public Anchor computeRule(String connectionName, String modelId, String frameId, TabularInstance instance)
+    public Anchor computeRule(String connectionName, String modelId, String frameId, DataInstance instance)
             throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
@@ -110,15 +112,16 @@ public class AnchorRuleH2o implements AnchorRule {
         AnchorTabular.TabularPreprocessorBuilder anchorBuilder = buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
         AnchorTabular anchor = anchorBuilder.build(vh.dataSet);
 
-        TabularInstance convertedInstance = handleInstanceToExplain(instance, vh, anchorBuilder);
+        TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), instance.getInstance());
+        TabularInstance cleanedInstance = handleInstanceToExplain(convertedInstance, vh, anchorBuilder);
 
         H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchor);
 
-        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(convertedInstance,
+        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(cleanedInstance,
                 anchor.getTabularInstances().toArray(new TabularInstance[0]));
 
         final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
-                tabularPerturbationFunction, convertedInstance)
+                tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .enableThreading(10, false)
                 .setBestAnchorIdentification(new BatchSAR(20, 20))
                 .setInitSampleCount(200)
@@ -126,7 +129,7 @@ public class AnchorRuleH2o implements AnchorRule {
                 .setAllowSuboptimalSteps(false)
                 .build().constructAnchor();
 
-        return transformAnchor(modelId, frameId, instance, vh, anchorBuilder, anchor, convertedInstance,
+        return transformAnchor(modelId, frameId, convertedInstance, vh, anchorBuilder, anchor, cleanedInstance,
                 classificationFunction, anchorResult);
     }
 

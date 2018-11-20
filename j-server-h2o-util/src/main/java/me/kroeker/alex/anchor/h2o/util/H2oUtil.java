@@ -1,10 +1,10 @@
 package me.kroeker.alex.anchor.h2o.util;
 
+import water.bindings.H2oApi;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import water.bindings.H2oApi;
 
 /**
  */

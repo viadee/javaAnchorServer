@@ -1,17 +1,17 @@
 package me.kroeker.alex.anchor.jserver.business;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameFeatureDAO;
 import me.kroeker.alex.anchor.jserver.model.FeatureCondition;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  */
