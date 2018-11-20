@@ -5,8 +5,8 @@ import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.AnchorBO;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.DataInstance;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class AnchorController implements AnchorApi {
             @RequestHeader("Anchor-Epsilon") String epsilon
     ) {
         try {
-            DataInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
+            FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
 
             return this.anchorBO.computeRule(connectionName, modelId, frameId, instance);
         } catch (DataAccessException dae) {
@@ -78,7 +78,7 @@ public class AnchorController implements AnchorApi {
             @RequestHeader("Anchor-Epsilon") String epsilon
     ) {
         try {
-            DataInstance instance = this.frameBO.randomInstance(connectionName, frameId);
+            FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 
             return this.anchorBO.runSubmodularPick(connectionName, modelId, frameId, instance);
         } catch (DataAccessException dae) {

@@ -27,9 +27,9 @@ import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.DataInstance;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import me.kroeker.alex.anchor.jserver.model.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public class AnchorRuleH2o implements AnchorRule {
     public Collection<Anchor> runSubmodularPick(String connectionName,
                                                 String modelId,
                                                 String frameId,
-                                                DataInstance instance) throws DataAccessException {
+                                                FrameInstance instance) throws DataAccessException {
         final H2oApi api = H2oUtil.createH2o(connectionName);
         final LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
         final AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
@@ -105,7 +105,7 @@ public class AnchorRuleH2o implements AnchorRule {
     }
 
     @Override
-    public Anchor computeRule(String connectionName, String modelId, String frameId, DataInstance instance)
+    public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance)
             throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);

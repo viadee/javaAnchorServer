@@ -1,9 +1,9 @@
 package me.kroeker.alex.anchor.h2o.util;
 
-import me.kroeker.alex.anchor.jserver.model.DataInstance;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -26,7 +26,7 @@ public final class H2oDataUtil {
     private H2oDataUtil() {
     }
 
-    public static DataInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
+    public static FrameInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
         Collection<Function<CSVRecord, Boolean>> filters = calculateConditionsFilter(conditions);
 
         List<CSVRecord> acceptedRecords = new ArrayList<>();
@@ -49,7 +49,7 @@ public final class H2oDataUtil {
             acceptedInstanceString[entry.getValue()] = acceptedInstance.get(entry.getKey());
         });
 
-        return new DataInstance(headerMapping, acceptedInstanceString);
+        return new FrameInstance(headerMapping, acceptedInstanceString);
     }
 
     private static Collection<Function<CSVRecord, Boolean>> calculateConditionsFilter(FeatureConditionsRequest conditions) {
