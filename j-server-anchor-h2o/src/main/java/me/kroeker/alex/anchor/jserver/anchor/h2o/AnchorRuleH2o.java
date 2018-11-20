@@ -24,6 +24,7 @@ import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.business.ModelBO;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.DataInstance;
@@ -131,6 +132,11 @@ public class AnchorRuleH2o implements AnchorRule {
 
         return transformAnchor(modelId, frameId, convertedInstance, vh, anchorBuilder, anchor, cleanedInstance,
                 classificationFunction, anchorResult);
+    }
+
+    @Override
+    public Collection<AnchorConfigDescription> getAnchorConfigs(String connectionName) throws DataAccessException {
+        return null;
     }
 
     private TabularInstance handleInstanceToExplain(TabularInstance instance, LoadDataSetVH vh, AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
