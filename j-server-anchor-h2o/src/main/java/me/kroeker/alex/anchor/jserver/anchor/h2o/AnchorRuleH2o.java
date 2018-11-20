@@ -43,6 +43,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,18 @@ import java.util.stream.Collectors;
 
 @Component
 public class AnchorRuleH2o implements AnchorRule {
+
+    private static final String ANCHOR_TAU = "Anchor-Tau";
+
+    private static final Map<String, AnchorConfigDescription> DEFAULT_ANCHOR_PARAMS;
+
+    static {
+        DEFAULT_ANCHOR_PARAMS = new HashMap<>();
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_TAU, new AnchorConfigDescription(ANCHOR_TAU,
+                AnchorConfigDescription.ConfigInputType.DOUBLE,
+                Collections.singleton(0.9))
+        );
+    }
 
     private ModelBO modelBO;
 
@@ -66,7 +79,8 @@ public class AnchorRuleH2o implements AnchorRule {
     public Collection<Anchor> runSubmodularPick(String connectionName,
                                                 String modelId,
                                                 String frameId,
-                                                FrameInstance instance) throws DataAccessException {
+                                                FrameInstance instance,
+                                                Map<String, Object> anchorConfig) throws DataAccessException {
         final H2oApi api = H2oUtil.createH2o(connectionName);
         final LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
         final AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
@@ -80,12 +94,13 @@ public class AnchorRuleH2o implements AnchorRule {
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
 
 
+        double anchorTau = (Double) getAnchorFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .enableThreading(10, false)
                 .setBestAnchorIdentification(new BatchSAR(20, 20))
                 .setInitSampleCount(200)
-                .setTau(0.9)
+                .setTau(anchorTau)
                 .setAllowSuboptimalSteps(false);
 
         final ModifiedSubmodularPick<TabularInstance> subPick = new ModifiedSubmodularPick<>(
@@ -105,7 +120,8 @@ public class AnchorRuleH2o implements AnchorRule {
     }
 
     @Override
-    public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance)
+    public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance,
+                              Map<String, Object> anchorConfig)
             throws DataAccessException {
         H2oApi api = H2oUtil.createH2o(connectionName);
         LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
@@ -121,12 +137,13 @@ public class AnchorRuleH2o implements AnchorRule {
         TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(cleanedInstance,
                 anchor.getTabularInstances().toArray(new TabularInstance[0]));
 
+        double anchorTau = (Double) getAnchorFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
         final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .enableThreading(10, false)
                 .setBestAnchorIdentification(new BatchSAR(20, 20))
                 .setInitSampleCount(200)
-                .setTau(0.8)
+                .setTau(anchorTau)
                 .setAllowSuboptimalSteps(false)
                 .build().constructAnchor();
 
@@ -134,12 +151,17 @@ public class AnchorRuleH2o implements AnchorRule {
                 classificationFunction, anchorResult);
     }
 
+    private static Object getAnchorFromParamsOrDefault(Map<String, Object> anchorConfig, String paramName) {
+        return anchorConfig.getOrDefault(paramName, DEFAULT_ANCHOR_PARAMS.get(paramName));
+    }
+
     @Override
-    public Collection<AnchorConfigDescription> getAnchorConfigs(String connectionName) throws DataAccessException {
-        return null;
+    public Collection<AnchorConfigDescription> getAnchorConfigs() {
+        return DEFAULT_ANCHOR_PARAMS.values();
     }
 
     private TabularInstance handleInstanceToExplain(TabularInstance instance, LoadDataSetVH vh, AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
+        @SuppressWarnings("SuspiciousToArrayCall")
         String[] instanceAsStringArray = Arrays.asList(instance.getInstance()).toArray(new String[0]);
         Collection<String[]> anchorInstance = new ArrayList<>(1);
         anchorInstance.add(instanceAsStringArray);
