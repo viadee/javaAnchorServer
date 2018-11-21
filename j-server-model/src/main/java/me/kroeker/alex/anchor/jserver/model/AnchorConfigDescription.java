@@ -1,27 +1,20 @@
 package me.kroeker.alex.anchor.jserver.model;
 
-import java.util.Collection;
 import java.util.Objects;
 
 public class AnchorConfigDescription {
     private final String configName;
     private final ConfigInputType inputType;
-    private final Collection<Object> defaultValues;
+    private final Object defaultValue;
 
-    public AnchorConfigDescription(String configName, ConfigInputType inputType, Collection<Object> defaultValues) {
+    public AnchorConfigDescription(String configName, ConfigInputType inputType, Object defaultValue) {
         this.configName = configName;
         this.inputType = inputType;
-        this.defaultValues = defaultValues;
+        this.defaultValue = defaultValue;
     }
 
     public enum ConfigInputType {
-        INTEGER("int"), DOUBLE("double"), STRING("string"), ARRAY("array");
-
-        private final String name;
-
-        ConfigInputType(String name) {
-            this.name = name;
-        }
+        INTEGER, DOUBLE, STRING
     }
 
     public String getConfigName() {
@@ -32,8 +25,8 @@ public class AnchorConfigDescription {
         return inputType;
     }
 
-    public Collection<Object> getDefaultValues() {
-        return defaultValues;
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 
     @Override
@@ -43,12 +36,12 @@ public class AnchorConfigDescription {
         AnchorConfigDescription that = (AnchorConfigDescription) o;
         return Objects.equals(configName, that.configName) &&
                 inputType == that.inputType &&
-                Objects.equals(defaultValues, that.defaultValues);
+                Objects.equals(defaultValue, that.defaultValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(configName, inputType, defaultValues);
+        return Objects.hash(configName, inputType, defaultValue);
     }
 
     @Override
@@ -56,7 +49,7 @@ public class AnchorConfigDescription {
         return "AnchorConfigDescription{" +
                 "configName='" + configName + '\'' +
                 ", inputType=" + inputType +
-                ", defaultValues=" + defaultValues +
+                ", defaultValue=" + defaultValue +
                 '}';
     }
 }

@@ -1,5 +1,21 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import de.goerke.tobias.anchorj.tabular.AnchorTabular;
 import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
 import de.goerke.tobias.anchorj.tabular.ColumnDescription;
@@ -32,24 +48,7 @@ import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import me.kroeker.alex.anchor.jserver.model.Model;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import water.bindings.H2oApi;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 public class AnchorRuleH2o implements AnchorRule {
@@ -61,8 +60,7 @@ public class AnchorRuleH2o implements AnchorRule {
     static {
         DEFAULT_ANCHOR_PARAMS = new HashMap<>();
         DEFAULT_ANCHOR_PARAMS.put(ANCHOR_TAU, new AnchorConfigDescription(ANCHOR_TAU,
-                AnchorConfigDescription.ConfigInputType.DOUBLE,
-                Collections.singleton(0.9))
+                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.9)
         );
     }
 
@@ -152,7 +150,7 @@ public class AnchorRuleH2o implements AnchorRule {
     }
 
     private static Object getAnchorFromParamsOrDefault(Map<String, Object> anchorConfig, String paramName) {
-        return anchorConfig.getOrDefault(paramName, DEFAULT_ANCHOR_PARAMS.get(paramName));
+        return anchorConfig.getOrDefault(paramName, DEFAULT_ANCHOR_PARAMS.get(paramName).getDefaultValue());
     }
 
     @Override

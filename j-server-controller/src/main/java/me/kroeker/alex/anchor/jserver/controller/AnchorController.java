@@ -135,8 +135,6 @@ public class AnchorController implements AnchorApi {
                     case INTEGER:
                         anchorConfig.put(config.getConfigName(), Integer.valueOf(headerValue));
                         break;
-                    case ARRAY:
-                        // TODO implement array type
                     default:
                         throw new NotImplementedException();
                 }
