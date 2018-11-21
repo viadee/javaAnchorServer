@@ -46,7 +46,7 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
         RowData row = new RowData();
         int i = 0;
         for (String columnName : columnNames) {
-            Object value = instance.getInstance()[i++];
+            Object value = instance.getRealValues()[i++];
             if (value instanceof Integer) {
                 value = ((Integer) value).doubleValue();
             }

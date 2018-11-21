@@ -11,6 +11,7 @@ import de.viadee.anchorj.tabular.ColumnDescription;
 import de.viadee.anchorj.tabular.FeatureValueMapping;
 import de.viadee.anchorj.tabular.MetricValueMapping;
 import de.viadee.anchorj.tabular.NativeValueMapping;
+import de.viadee.anchorj.tabular.PercentileMedianDiscretizer;
 import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
 import de.viadee.anchorj.tabular.TabularPerturbationFunction;
@@ -94,7 +95,7 @@ public class AnchorRuleH2o implements AnchorRule {
         TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(cleanedInstance,
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
 
-        double anchorTau = (Double) getAnchorFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
+        double anchorTau = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .enableThreading(10, false)
@@ -137,7 +138,7 @@ public class AnchorRuleH2o implements AnchorRule {
         TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(cleanedInstance,
                 anchor.getTabularInstances().toArray(new TabularInstance[0]));
 
-        double anchorTau = (Double) getAnchorFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
+        double anchorTau = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
         final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .enableThreading(10, false)
@@ -151,7 +152,7 @@ public class AnchorRuleH2o implements AnchorRule {
                 classificationFunction, anchorResult);
     }
 
-    private static Object getAnchorFromParamsOrDefault(Map<String, Object> anchorConfig, String paramName) {
+    private static Object getAnchorOptionFromParamsOrDefault(Map<String, Object> anchorConfig, String paramName) {
         return anchorConfig.getOrDefault(paramName, DEFAULT_ANCHOR_PARAMS.get(paramName).getDefaultValue());
     }
 
@@ -277,7 +278,7 @@ public class AnchorRuleH2o implements AnchorRule {
             } else {
                 double min = ((ContinuousColumnSummary) column).getColumn_min();
                 double max = ((ContinuousColumnSummary) column).getColumn_max();
-                Function<Number[], Integer[]> discretizer = new PercentileRangeDiscretizer(5, min, max);
+                Function<Number[], Integer[]> discretizer = new PercentileMedianDiscretizer(5);
                 anchorBuilder.addNominalColumn(columnLabel, discretizer);
             }
         });
