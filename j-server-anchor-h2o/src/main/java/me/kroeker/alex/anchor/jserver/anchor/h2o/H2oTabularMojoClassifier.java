@@ -9,9 +9,6 @@ import hex.genmodel.MojoReaderBackendFactory;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 import hex.genmodel.easy.RowData;
 import hex.genmodel.easy.prediction.AbstractPrediction;
-import hex.genmodel.easy.prediction.BinomialModelPrediction;
-import hex.genmodel.easy.prediction.MultinomialModelPrediction;
-import hex.genmodel.easy.prediction.RegressionModelPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
 import java.io.IOException;
@@ -19,17 +16,21 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
-public class H2OTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
+public class H2oTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
 
     private final EasyPredictModelWrapper modelWrapper;
     private final List<String> columnNames;
+    private final Function<AbstractPrediction, Integer> predictionDiscretizer;
 
-    public H2OTabularMojoClassifier(InputStream mojoInputStream) throws IOException {
-        this(mojoInputStream, null);
+    public H2oTabularMojoClassifier(InputStream mojoInputStream, Function<AbstractPrediction, Integer> predictionDiscretizer) throws IOException {
+        this(mojoInputStream, predictionDiscretizer, null);
     }
 
-    public H2OTabularMojoClassifier(InputStream mojoInputStream, List<String> columnNames) throws IOException {
+    public H2oTabularMojoClassifier(InputStream mojoInputStream, Function<AbstractPrediction, Integer> predictionDiscretizer, List<String> columnNames) throws IOException {
+        this.predictionDiscretizer = predictionDiscretizer;
+
         final MojoReaderBackend reader = MojoReaderBackendFactory.createReaderBackend(mojoInputStream,
                 MojoReaderBackendFactory.CachingStrategy.MEMORY);
         final MojoModel model = ModelMojoReader.readFrom(reader);
@@ -53,20 +54,8 @@ public class H2OTabularMojoClassifier implements ClassificationFunction<TabularI
         }
 
         try {
-            int predictionValue;
             AbstractPrediction prediction = this.getModelWrapper().predict(row);
-            if (prediction instanceof RegressionModelPrediction) {
-                predictionValue = (int) ((RegressionModelPrediction) prediction).value;
-            } else if (prediction instanceof BinomialModelPrediction) {
-                predictionValue = ((BinomialModelPrediction) prediction).labelIndex;
-            } else if (prediction instanceof MultinomialModelPrediction) {
-                predictionValue = ((MultinomialModelPrediction) prediction).labelIndex;
-            } else {
-                throw new UnsupportedOperationException("Prediction of type: " + prediction.getClass().getSimpleName()
-                        + "; not supported");
-            }
-
-            return predictionValue;
+            return predictionDiscretizer.apply(prediction);
         } catch (hex.genmodel.easy.exception.PredictException e) {
             throw new PredictException(e);
         }

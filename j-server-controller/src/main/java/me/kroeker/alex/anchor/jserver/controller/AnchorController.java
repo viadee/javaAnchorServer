@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
@@ -136,7 +135,7 @@ public class AnchorController implements AnchorApi {
                         anchorConfig.put(config.getConfigName(), Integer.valueOf(headerValue));
                         break;
                     default:
-                        throw new NotImplementedException();
+                        throw new RuntimeException("input type " + config.getInputType() + " is not handled");
                 }
             }
         }
