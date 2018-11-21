@@ -1,7 +1,7 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import de.viadee.anchorj.ClassificationFunction;
+import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
 import hex.genmodel.MojoReaderBackend;

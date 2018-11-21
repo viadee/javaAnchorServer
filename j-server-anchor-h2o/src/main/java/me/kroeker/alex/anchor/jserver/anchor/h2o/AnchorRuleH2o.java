@@ -1,19 +1,19 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import de.goerke.tobias.anchorj.tabular.AnchorTabular;
-import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
-import de.goerke.tobias.anchorj.tabular.ColumnDescription;
-import de.goerke.tobias.anchorj.tabular.FeatureValueMapping;
-import de.goerke.tobias.anchorj.tabular.MetricValueMapping;
-import de.goerke.tobias.anchorj.tabular.NativeValueMapping;
-import de.goerke.tobias.anchorj.tabular.TabularFeature;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import de.goerke.tobias.anchorj.tabular.TabularPerturbationFunction;
 import de.viadee.anchorj.AnchorConstructionBuilder;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.exploration.BatchSAR;
 import de.viadee.anchorj.global.ModifiedSubmodularPick;
 import de.viadee.anchorj.global.SubmodularPickGoal;
+import de.viadee.anchorj.tabular.AnchorTabular;
+import de.viadee.anchorj.tabular.CategoricalValueMapping;
+import de.viadee.anchorj.tabular.ColumnDescription;
+import de.viadee.anchorj.tabular.FeatureValueMapping;
+import de.viadee.anchorj.tabular.MetricValueMapping;
+import de.viadee.anchorj.tabular.NativeValueMapping;
+import de.viadee.anchorj.tabular.TabularFeature;
+import de.viadee.anchorj.tabular.TabularInstance;
+import de.viadee.anchorj.tabular.TabularPerturbationFunction;
 import hex.genmodel.easy.prediction.AbstractPrediction;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
@@ -93,7 +93,6 @@ public class AnchorRuleH2o implements AnchorRule {
 
         TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(cleanedInstance,
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
-
 
         double anchorTau = (Double) getAnchorFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
         final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
@@ -233,11 +232,11 @@ public class AnchorRuleH2o implements AnchorRule {
             final TabularFeature feature = entry.getValue().getFeature();
             final FeatureValueMapping featureValueMapping = entry.getValue();
             if (featureValueMapping instanceof CategoricalValueMapping) {
-                String value = ((CategoricalValueMapping) featureValueMapping).getCategoricalValue().toString();
+                String value = featureValueMapping.getValue().toString();
                 enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(), value));
             } else if (featureValueMapping instanceof NativeValueMapping) {
                 enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
-                        ((NativeValueMapping) featureValueMapping).getValue().toString()));
+                        featureValueMapping.getValue().toString()));
             } else if (featureValueMapping instanceof MetricValueMapping) {
                 MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
                 metricConditions.put(entry.getKey(), new FeatureConditionMetric(feature.getName(),

@@ -38,7 +38,7 @@
             <artifactId>anchorj</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.goerke.tobias</groupId>
+            <groupId>de.viadee</groupId>
             <artifactId>DefaultConfigsExtension</artifactId>
         </dependency>
         <dependency>
