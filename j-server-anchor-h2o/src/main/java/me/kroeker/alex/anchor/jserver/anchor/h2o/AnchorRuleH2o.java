@@ -278,7 +278,7 @@ public class AnchorRuleH2o implements AnchorRule {
             } else {
                 double min = ((ContinuousColumnSummary) column).getColumn_min();
                 double max = ((ContinuousColumnSummary) column).getColumn_max();
-                Function<Number[], Integer[]> discretizer = new PercentileMedianDiscretizer(5);
+                Function<Number[], Integer[]> discretizer = new PercentileRangeDiscretizer(5, min, max);
                 anchorBuilder.addNominalColumn(columnLabel, discretizer);
             }
         });

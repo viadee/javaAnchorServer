@@ -1,5 +1,14 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.viadee.anchorj.ClassificationFunction;
 import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.ModelMojoReader;
@@ -11,14 +20,9 @@ import hex.genmodel.easy.RowData;
 import hex.genmodel.easy.prediction.AbstractPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
 public class H2oTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(H2oTabularMojoClassifier.class);
 
     private final EasyPredictModelWrapper modelWrapper;
     private final List<String> columnNames;
@@ -43,10 +47,19 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
 
     @Override
     public int predict(TabularInstance instance) {
+        Object[] instanceValues;
+        if (instance.getOriginalInstance() != null) {
+            instanceValues = instance.getOriginalInstance();
+        } else {
+            LOG.warn("Trying to predict with h2o model and the discretized " +
+                    "instance values since the original instance is null");
+            instanceValues = instance.getInstance();
+        }
+
         RowData row = new RowData();
         int i = 0;
         for (String columnName : columnNames) {
-            Object value = instance.getRealValues()[i++];
+            Object value = instanceValues[i++];
             if (value instanceof Integer) {
                 value = ((Integer) value).doubleValue();
             }
