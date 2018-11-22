@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <name>anchor-j-server</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Provides Anchors-Explanations for Machine Learning Models as a Service</description>
 
     <modules>
         <module>j-server-application</module>
