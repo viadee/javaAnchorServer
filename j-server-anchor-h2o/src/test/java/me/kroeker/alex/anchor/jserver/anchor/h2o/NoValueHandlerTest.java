@@ -20,7 +20,7 @@ public class NoValueHandlerTest {
 
     @Test
     public void testGetNumberNa() {
-        assertEquals("-999", NoValueHandler.getNumberNa());
+        assertEquals(-999, NoValueHandler.getNumberNa());
     }
 
 }

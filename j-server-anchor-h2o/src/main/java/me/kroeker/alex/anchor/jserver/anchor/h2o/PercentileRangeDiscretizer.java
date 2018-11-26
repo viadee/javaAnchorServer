@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * @author ak902764
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]> {
 
@@ -47,7 +46,7 @@ public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>
             }
         }
         if (NoValueHandler.isNumberNa(number)) {
-            return -999;
+            return NoValueHandler.getNumberNa();
         }
         // TODO improve exception explanation to list all ranges
         throw new IllegalArgumentException("Number " + number + " not handled");

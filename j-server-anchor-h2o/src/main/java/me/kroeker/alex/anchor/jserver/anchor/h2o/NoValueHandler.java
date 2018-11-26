@@ -2,7 +2,7 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 class NoValueHandler {
 
-    private static final int MIN = -999;
+    private static final int NA_VALUE = -999;
 
     private NoValueHandler() {
 
@@ -12,17 +12,17 @@ class NoValueHandler {
         final double dValue = value.doubleValue();
         double dif;
         if (dValue < 0) {
-            final double max = Double.max(Math.abs(dValue), Math.abs(MIN));
-            final double min = Double.min(Math.abs(dValue), Math.abs(MIN));
+            final double max = Double.max(Math.abs(dValue), Math.abs(NA_VALUE));
+            final double min = Double.min(Math.abs(dValue), Math.abs(NA_VALUE));
             dif = max - min;
         } else {
-            dif = dValue - MIN;
+            dif = dValue - NA_VALUE;
         }
         return dif < 0.001;
     }
 
-    static String getNumberNa() {
-        return String.valueOf(MIN);
+    static int getNumberNa() {
+        return NA_VALUE;
     }
 
 }

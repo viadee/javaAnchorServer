@@ -1,7 +1,6 @@
 package me.kroeker.alex.anchor.jserver.anchor;
 
 /**
- * @author ak902764
  */
 public class PredictException extends RuntimeException {
     public PredictException() {

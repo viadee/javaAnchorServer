@@ -308,7 +308,7 @@ public class AnchorRuleH2o implements AnchorRule {
                 nominalColumnsIndexes
                         .forEach((nominalColumnIndex) -> {
                             if (dataEntry[nominalColumnIndex].isEmpty()) {
-                                dataEntry[nominalColumnIndex] = NoValueHandler.getNumberNa();
+                                dataEntry[nominalColumnIndex] = String.valueOf(NoValueHandler.getNumberNa());
                             }
                         })
         );
