@@ -28,10 +28,6 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
     private final List<String> columnNames;
     private final Function<AbstractPrediction, Integer> predictionDiscretizer;
 
-    public H2oTabularMojoClassifier(InputStream mojoInputStream, Function<AbstractPrediction, Integer> predictionDiscretizer) throws IOException {
-        this(mojoInputStream, predictionDiscretizer, null);
-    }
-
     public H2oTabularMojoClassifier(InputStream mojoInputStream, Function<AbstractPrediction, Integer> predictionDiscretizer, List<String> columnNames) throws IOException {
         this.predictionDiscretizer = predictionDiscretizer;
 

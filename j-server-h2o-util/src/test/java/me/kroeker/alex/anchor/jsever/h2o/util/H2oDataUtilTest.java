@@ -26,7 +26,7 @@ public class H2oDataUtilTest {
         FeatureConditionsRequest request = new FeatureConditionsRequest();
         FrameInstance frame = H2oDataUtil.getRandomInstance(
                 request,
-                new File(this.getClass().getClassLoader().getResource(TestResources.SIMPLE_CSV_FILE_STRING).getFile())
+                new File(this.getClass().getClassLoader().getResource(Resources.SIMPLE_CSV_FILE_STRING).getFile())
         );
 
         assertEquals(12, frame.getFeatureNamesMapping().size());
@@ -47,7 +47,7 @@ public class H2oDataUtilTest {
 
         FrameInstance frame = H2oDataUtil.getRandomInstance(
                 request,
-                TestResources.SIMPLE_CSV_FILE
+                Resources.SIMPLE_CSV_FILE
         );
 
         assertEquals(12, frame.getFeatureNamesMapping().size());
@@ -57,7 +57,7 @@ public class H2oDataUtilTest {
     @Test
     public void testIterateThroughCsvData() throws IOException {
         final Collection<CSVRecord> records = new ArrayList<>(4);
-        H2oDataUtil.iterateThroughCsvData(TestResources.SIMPLE_CSV_FILE, records::add);
+        H2oDataUtil.iterateThroughCsvData(Resources.SIMPLE_CSV_FILE, records::add);
 
         assertEquals(4, records.size());
     }

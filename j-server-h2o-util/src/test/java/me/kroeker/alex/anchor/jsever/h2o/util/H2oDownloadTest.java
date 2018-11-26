@@ -37,7 +37,7 @@ public class H2oDownloadTest {
     public void setUp() throws IOException {
         when(response.isSuccessful()).thenReturn(true);
         when(body.byteStream()).thenReturn(
-                this.getClass().getResourceAsStream("/" + TestResources.SIMPLE_CSV_FILE_STRING)
+                this.getClass().getResourceAsStream("/" + Resources.SIMPLE_CSV_FILE_STRING)
         );
         when(response.body()).thenReturn(body);
         when(api._downloadDataset_fetch(any())).thenReturn(response);
