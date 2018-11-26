@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.h2o.util;
+package me.kroeker.alex.anchor.jserver.h2o.util;
 
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;

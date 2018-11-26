@@ -1,6 +1,6 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.dao.ClusterDAO;
 import org.springframework.stereotype.Component;
 import water.bindings.pojos.AboutV3;

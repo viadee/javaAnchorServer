@@ -1,45 +1,5 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import de.viadee.anchorj.AnchorConstructionBuilder;
-import de.viadee.anchorj.AnchorResult;
-import de.viadee.anchorj.exploration.BatchSAR;
-import de.viadee.anchorj.global.ModifiedSubmodularPick;
-import de.viadee.anchorj.global.SubmodularPickGoal;
-import de.viadee.anchorj.tabular.AnchorTabular;
-import de.viadee.anchorj.tabular.CategoricalValueMapping;
-import de.viadee.anchorj.tabular.ColumnDescription;
-import de.viadee.anchorj.tabular.FeatureValueMapping;
-import de.viadee.anchorj.tabular.MetricValueMapping;
-import de.viadee.anchorj.tabular.NativeValueMapping;
-import de.viadee.anchorj.tabular.PercentileMedianDiscretizer;
-import de.viadee.anchorj.tabular.TabularFeature;
-import de.viadee.anchorj.tabular.TabularInstance;
-import de.viadee.anchorj.tabular.TabularPerturbationFunction;
-import hex.genmodel.easy.prediction.AbstractPrediction;
-import hex.genmodel.easy.prediction.BinomialModelPrediction;
-import hex.genmodel.easy.prediction.MultinomialModelPrediction;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oMojoDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
-import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.FrameBO;
-import me.kroeker.alex.anchor.jserver.business.ModelBO;
-import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
-import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.FrameInstance;
-import me.kroeker.alex.anchor.jserver.model.FrameSummary;
-import me.kroeker.alex.anchor.jserver.model.Model;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import water.bindings.H2oApi;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -53,6 +13,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import de.viadee.anchorj.AnchorConstructionBuilder;
+import de.viadee.anchorj.AnchorResult;
+import de.viadee.anchorj.exploration.BatchSAR;
+import de.viadee.anchorj.global.ModifiedSubmodularPick;
+import de.viadee.anchorj.global.SubmodularPickGoal;
+import de.viadee.anchorj.tabular.AnchorTabular;
+import de.viadee.anchorj.tabular.CategoricalValueMapping;
+import de.viadee.anchorj.tabular.ColumnDescription;
+import de.viadee.anchorj.tabular.FeatureValueMapping;
+import de.viadee.anchorj.tabular.MetricValueMapping;
+import de.viadee.anchorj.tabular.NativeValueMapping;
+import de.viadee.anchorj.tabular.TabularFeature;
+import de.viadee.anchorj.tabular.TabularInstance;
+import de.viadee.anchorj.tabular.TabularPerturbationFunction;
+import hex.genmodel.easy.prediction.AbstractPrediction;
+import hex.genmodel.easy.prediction.BinomialModelPrediction;
+import hex.genmodel.easy.prediction.MultinomialModelPrediction;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.business.ModelBO;
+import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
+import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
+import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+import me.kroeker.alex.anchor.jserver.model.Model;
+import water.bindings.H2oApi;
 
 @Component
 public class AnchorRuleH2o implements AnchorRule {
@@ -185,6 +184,11 @@ public class AnchorRuleH2o implements AnchorRule {
         return classificationFunction;
     }
 
+    /**
+     * Handles {@link BinomialModelPrediction} and {@link MultinomialModelPrediction}.
+     *
+     * @return a function to extract the labelIndex value of the predictions
+     */
     private Function<AbstractPrediction, Integer> generateH2oPredictor() {
         return (prediction) -> {
             if (prediction instanceof BinomialModelPrediction) {

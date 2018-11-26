@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.h2o.util;
+package me.kroeker.alex.anchor.jserver.h2o.util;
 
 import okhttp3.ResponseBody;
 import org.apache.commons.io.FileUtils;

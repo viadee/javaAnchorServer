@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.h2o.util;
+package me.kroeker.alex.anchor.jserver.h2o.util;
 
 import water.bindings.H2oApi;
 
@@ -29,11 +29,11 @@ public final class H2oUtil {
     }
 
     public static boolean isEnumColumn(String columnType) {
-        return "enum".equals(columnType);
+        return "enum".equalsIgnoreCase(columnType);
     }
 
     public static boolean isStringColumn(String columnType) {
-        return "string".equals(columnType) || "uuid".equals(columnType);
+        return "string".equalsIgnoreCase(columnType) || "uuid".equalsIgnoreCase(columnType);
     }
 
 }

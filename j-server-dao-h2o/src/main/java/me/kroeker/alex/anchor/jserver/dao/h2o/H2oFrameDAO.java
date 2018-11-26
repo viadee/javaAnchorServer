@@ -1,8 +1,8 @@
 package me.kroeker.alex.anchor.jserver.dao.h2o;
 
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
 import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
