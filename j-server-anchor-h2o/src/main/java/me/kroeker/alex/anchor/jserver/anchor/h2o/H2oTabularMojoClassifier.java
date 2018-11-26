@@ -3,6 +3,7 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -27,9 +28,11 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
     private final EasyPredictModelWrapper modelWrapper;
     private final List<String> columnNames;
     private final Function<AbstractPrediction, Integer> predictionDiscretizer;
+    private final Collection<String> indexOfCategoricalColumns;
 
-    public H2oTabularMojoClassifier(InputStream mojoInputStream, Function<AbstractPrediction, Integer> predictionDiscretizer, List<String> columnNames) throws IOException {
+    public H2oTabularMojoClassifier(InputStream mojoInputStream, Function<AbstractPrediction, Integer> predictionDiscretizer, List<String> columnNames, Collection<String> indexOfCategoricalValues) throws IOException {
         this.predictionDiscretizer = predictionDiscretizer;
+        this.indexOfCategoricalColumns = indexOfCategoricalValues;
 
         final MojoReaderBackend reader = MojoReaderBackendFactory.createReaderBackend(mojoInputStream,
                 MojoReaderBackendFactory.CachingStrategy.MEMORY);
@@ -56,7 +59,9 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
         int i = 0;
         for (String columnName : columnNames) {
             Object value = instanceValues[i++];
-            if (value instanceof Integer) {
+            if (indexOfCategoricalColumns.contains(columnName)) {
+                value = String.valueOf(value);
+            } else if (value instanceof Integer) {
                 value = ((Integer) value).doubleValue();
             }
             row.put(columnName, value);
