@@ -3,22 +3,22 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
- * @author ak902764
+ *
  */
-class H2oTabularMojoClassifierTest {
+public class H2oTabularMojoClassifierTest {
 
     private Object[] instance;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         instance = new Object[31];
         instance[0] = 1987;
         instance[1] = 10;
@@ -54,7 +54,7 @@ class H2oTabularMojoClassifierTest {
     }
 
     @Test
-    void testPredictAirline() throws IOException {
+    public void testPredictAirline() throws IOException {
         H2oTabularMojoClassifier classifier = new H2oTabularMojoClassifier(
                 this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
                 (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,

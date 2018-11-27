@@ -8,16 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
+ *
  */
 public class H2oDataUtilTest {
 

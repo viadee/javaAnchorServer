@@ -1,11 +1,12 @@
 package me.kroeker.alex.anchor.jsever.h2o.util;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertTrue;
 
 /**
+ *
  */
 public class H2oUtilTest {
 

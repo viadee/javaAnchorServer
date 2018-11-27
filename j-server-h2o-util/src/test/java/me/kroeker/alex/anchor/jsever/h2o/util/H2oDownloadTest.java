@@ -3,11 +3,11 @@ package me.kroeker.alex.anchor.jsever.h2o.util;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.powermock.modules.junit4.PowerMockRunner;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
 import okhttp3.ResponseBody;
@@ -15,8 +15,8 @@ import retrofit2.Response;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ModelKeyV3;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 /**
  *
  */
-@ExtendWith(MockitoExtension.class)
+@RunWith(PowerMockRunner.class)
 public class H2oDownloadTest {
 
     @Mock
@@ -33,7 +33,7 @@ public class H2oDownloadTest {
     @Mock
     private Response<ResponseBody> response;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         ResponseBody body = mock(ResponseBody.class);
         when(response.isSuccessful()).thenReturn(true);

@@ -1,9 +1,8 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -43,12 +42,10 @@ public class PercentileRangeDiscretizerTest {
         assertEquals(-999, ranges[0].intValue());
     }
 
-    @Test
-    void testValueNotHandled() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testValueNotHandled() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
-        assertThrows(IllegalArgumentException.class, () -> {
-            discretizer.apply(new Number[]{6});
-        });
+        discretizer.apply(new Number[]{6});
     }
 
 }
