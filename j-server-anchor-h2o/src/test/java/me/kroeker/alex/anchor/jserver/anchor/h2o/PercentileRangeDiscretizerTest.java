@@ -3,15 +3,17 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
+ *
  */
 public class PercentileRangeDiscretizerTest {
 
     @Test
     public void testHasFiveClassesWithDiffOfFive() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
-        Number[] numbers = new Number[] {0, 1, 2, 3, 4, 5};
+        Number[] numbers = new Number[]{0, 1, 2, 3, 4, 5};
         Integer[] ranges = discretizer.apply(numbers);
 
         assertEquals(0, ranges[0].intValue());
@@ -24,7 +26,7 @@ public class PercentileRangeDiscretizerTest {
     @Test
     public void testFiveClassesWithDiffOfThree() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 3);
-        Number[] numbers = new Number[] {0, 1, 2, 3};
+        Number[] numbers = new Number[]{0, 1, 2, 3};
         Integer[] ranges = discretizer.apply(numbers);
 
         assertEquals(0, ranges[0].intValue());
@@ -35,10 +37,18 @@ public class PercentileRangeDiscretizerTest {
     @Test
     public void testValueIsNa() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
-        Number[] numbers = new Number[] {-999};
+        Number[] numbers = new Number[]{-999};
         Integer[] ranges = discretizer.apply(numbers);
 
         assertEquals(-999, ranges[0].intValue());
+    }
+
+    @Test
+    void testValueNotHandled() {
+        PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
+        assertThrows(IllegalArgumentException.class, () -> {
+            discretizer.apply(new Number[]{6});
+        });
     }
 
 }

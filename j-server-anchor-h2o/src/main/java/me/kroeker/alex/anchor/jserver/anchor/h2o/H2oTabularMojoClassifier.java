@@ -2,7 +2,6 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,10 +36,8 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
         final MojoReaderBackend reader = MojoReaderBackendFactory.createReaderBackend(mojoInputStream,
                 MojoReaderBackendFactory.CachingStrategy.MEMORY);
         final MojoModel model = ModelMojoReader.readFrom(reader);
+
         this.modelWrapper = new EasyPredictModelWrapper(model);
-        if (columnNames == null) {
-            columnNames = Arrays.asList(model.getNames());
-        }
         this.columnNames = Collections.unmodifiableList(columnNames);
     }
 
@@ -59,7 +56,7 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
         int i = 0;
         for (String columnName : columnNames) {
             Object value = instanceValues[i++];
-            if (indexOfCategoricalColumns.contains(columnName)) {
+            if (indexOfCategoricalColumns != null && indexOfCategoricalColumns.contains(columnName)) {
                 value = String.valueOf(value);
             } else if (value instanceof Integer) {
                 value = ((Integer) value).doubleValue();

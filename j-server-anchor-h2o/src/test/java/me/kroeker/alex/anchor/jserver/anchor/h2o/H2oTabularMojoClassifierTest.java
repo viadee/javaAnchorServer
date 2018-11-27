@@ -3,6 +3,7 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
@@ -12,18 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author ak902764
  */
-public class H2oTabularMojoClassifierTest {
+class H2oTabularMojoClassifierTest {
 
-    @Test
-    public void test() throws IOException {
-        H2oTabularMojoClassifier classifier = new H2oTabularMojoClassifier(
-                this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
-                (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,
-                Resources.AIRLINE_FEATURES,
-                Arrays.asList("Origin")
-        );
+    private Object[] instance;
 
-        Object[] instance = new Object[31];
+    @BeforeEach
+    void setUp() {
+        instance = new Object[31];
         instance[0] = 1987;
         instance[1] = 10;
         instance[2] = 14;
@@ -55,6 +51,17 @@ public class H2oTabularMojoClassifierTest {
         instance[28] = null;
         instance[29] = "YES";
         instance[30] = "YES";
+    }
+
+    @Test
+    void testPredictAirline() throws IOException {
+        H2oTabularMojoClassifier classifier = new H2oTabularMojoClassifier(
+                this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
+                (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,
+                Resources.AIRLINE_FEATURES,
+                Arrays.asList("Origin")
+        );
+
         TabularInstance predictInstance = new TabularInstance(Resources.AIRLINE_FEATURE_MAPPING, null, instance);
 
         assertEquals(1, classifier.predict(predictInstance));
