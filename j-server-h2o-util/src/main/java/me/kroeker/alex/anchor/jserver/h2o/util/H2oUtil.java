@@ -1,16 +1,19 @@
 package me.kroeker.alex.anchor.jserver.h2o.util;
 
-import water.bindings.H2oApi;
-
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
+ *
  */
 public final class H2oUtil {
 
-    static final Map<String, String> H2O_SERVER = new HashMap<>();
+    private static final Map<String, String> H2O_SERVER = new HashMap<>();
+
+    private static final String H2O_ENUM_COLUMN = "enum";
+    private static final String H2O_UUID_COLUMN = "uuid";
+    private static final String H2O_STRING_COLUMN = "string";
 
     // TODO make list of servers configurable
     static {
@@ -20,20 +23,20 @@ public final class H2oUtil {
     private H2oUtil() {
     }
 
-    public static Collection<String> getH2oConnectionNames() {
+    public static Set<String> getH2oConnectionNames() {
         return H2O_SERVER.keySet();
     }
 
-    public static H2oApi createH2o(String connectionName) {
-        return new H2oApi(H2O_SERVER.get(connectionName));
+    public static String getH2oConnectionName(String connectionName) {
+        return H2O_SERVER.get(connectionName);
     }
 
     public static boolean isEnumColumn(String columnType) {
-        return "enum".equalsIgnoreCase(columnType);
+        return H2O_ENUM_COLUMN.equalsIgnoreCase(columnType);
     }
 
     public static boolean isStringColumn(String columnType) {
-        return "string".equalsIgnoreCase(columnType) || "uuid".equalsIgnoreCase(columnType);
+        return H2O_STRING_COLUMN.equalsIgnoreCase(columnType) || H2O_UUID_COLUMN.equalsIgnoreCase(columnType);
     }
 
 }

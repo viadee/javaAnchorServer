@@ -18,6 +18,7 @@ class NoValueHandler {
         } else {
             dif = dValue - NA_VALUE;
         }
+
         return dif < 0.001;
     }
 

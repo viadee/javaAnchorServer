@@ -36,6 +36,7 @@ import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.business.ModelBO;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oConnector;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
@@ -53,7 +54,7 @@ import me.kroeker.alex.anchor.jserver.model.Model;
 import water.bindings.H2oApi;
 
 @Component
-public class AnchorRuleH2o implements AnchorRule {
+public class AnchorRuleH2o implements AnchorRule, H2oConnector {
 
     private static final String ANCHOR_TAU = "Anchor-Tau";
 
@@ -81,7 +82,7 @@ public class AnchorRuleH2o implements AnchorRule {
                                                 String frameId,
                                                 FrameInstance instance,
                                                 Map<String, Object> anchorConfig) throws DataAccessException {
-        final H2oApi api = H2oUtil.createH2o(connectionName);
+        final H2oApi api = this.createH2o(connectionName);
         final LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
         final AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
                 buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
@@ -121,7 +122,7 @@ public class AnchorRuleH2o implements AnchorRule {
     public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance,
                               Map<String, Object> anchorConfig)
             throws DataAccessException {
-        H2oApi api = H2oUtil.createH2o(connectionName);
+        H2oApi api = this.createH2o(connectionName);
         LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
 
         AnchorTabular.TabularPreprocessorBuilder anchorBuilder = buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
@@ -145,7 +146,7 @@ public class AnchorRuleH2o implements AnchorRule {
                 .setAllowSuboptimalSteps(false)
                 .build().constructAnchor();
 
-        return transformAnchor(modelId, frameId, convertedInstance, vh, anchorBuilder, anchor, cleanedInstance,
+        return transformAnchor(modelId, frameId, cleanedInstance, vh, anchorBuilder, anchor, convertedInstance,
                 classificationFunction, anchorResult);
     }
 
@@ -170,7 +171,7 @@ public class AnchorRuleH2o implements AnchorRule {
     private H2oTabularMojoClassifier generateH2oClassifier(String connectionName, String modelId, AnchorTabular anchor) throws DataAccessException {
         H2oTabularMojoClassifier classificationFunction;
         try (H2oDownload mojoDownload = new H2oMojoDownload()) {
-            File mojoFile = mojoDownload.getFile(H2oUtil.createH2o(connectionName), modelId);
+            File mojoFile = mojoDownload.getFile(this.createH2o(connectionName), modelId);
 
             classificationFunction = new H2oTabularMojoClassifier(
                     new FileInputStream(mojoFile),
@@ -201,7 +202,7 @@ public class AnchorRuleH2o implements AnchorRule {
         };
     }
 
-    private Anchor transformAnchor(String modelId, String frameId, TabularInstance instance, LoadDataSetVH vh,
+    private Anchor transformAnchor(String modelId, String frameId, TabularInstance cleanedInstnace, LoadDataSetVH vh,
                                    AnchorTabular.TabularPreprocessorBuilder anchorBuilder, AnchorTabular anchor,
                                    TabularInstance convertedInstance, H2oTabularMojoClassifier classificationFunction,
                                    AnchorResult<TabularInstance> anchorResult) {
@@ -215,14 +216,14 @@ public class AnchorRuleH2o implements AnchorRule {
 
         ColumnDescription targetColumn = anchorBuilder.getColumnDescriptions().stream().filter(ColumnDescription::isTargetFeature)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("no column with target definition found"));
-        Object labelOfCase = instance.getInstance()[vh.header.get(targetColumn.getName())];
+        Object labelOfCase = convertedInstance.getInstance()[vh.header.get(targetColumn.getName())];
         convertedAnchor.setLabel_of_case(labelOfCase);
 
-        Map<String, Object> convertedInstanceMap = new HashMap<>(instance.getFeatureCount());
-        for (int i = 0; i < convertedInstance.getFeatureCount(); i++) {
-            convertedInstanceMap.put(anchor.getFeatures().get(i).getName(), instance.getValue(i));
+        Map<String, Object> cleanedInstanceMap = new HashMap<>(cleanedInstnace.getFeatureCount());
+        for (int i = 0; i < cleanedInstnace.getFeatureCount(); i++) {
+            cleanedInstanceMap.put(anchor.getFeatures().get(i).getName(), cleanedInstnace.getOriginalValue(i));
         }
-        convertedAnchor.setInstance(convertedInstanceMap);
+        convertedAnchor.setInstance(cleanedInstanceMap);
 
         final int affectedRows = (int) Math.round(vh.dataSet.size() * convertedAnchor.getCoverage());
         convertedAnchor.setAffected_rows(affectedRows);
@@ -260,7 +261,6 @@ public class AnchorRuleH2o implements AnchorRule {
                                                                              String frameId,
                                                                              LoadDataSetVH vh) throws DataAccessException {
         Model model = this.modelBO.getModel(connectionName, modelId);
-
         AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
                 new AnchorTabular.TabularPreprocessorBuilder();
 
@@ -274,6 +274,8 @@ public class AnchorRuleH2o implements AnchorRule {
             ColumnSummary<?> column = findColumn(frameSummary.getColumn_summary_list(), columnLabel);
             if (columnLabel.equals(model.getTarget_column())) {
                 anchorBuilder.addTargetColumn(columnLabel);
+            } else if (model.getIgnoredColumns().contains(columnLabel)) {
+                anchorBuilder.addIgnoredColumn(columnLabel);
             } else if (H2oUtil.isEnumColumn(column.getColumn_type())) {
                 anchorBuilder.addCategoricalColumn(columnLabel);
             } else if (H2oUtil.isStringColumn(column.getColumn_type())) {
