@@ -5,12 +5,12 @@ import java.util.Objects;
 public class AnchorConfigDescription {
     private final String configName;
     private final ConfigInputType inputType;
-    private final Object defaultValue;
+    private final Object value;
 
-    public AnchorConfigDescription(String configName, ConfigInputType inputType, Object defaultValue) {
+    public AnchorConfigDescription(String configName, ConfigInputType inputType, Object value) {
         this.configName = configName;
         this.inputType = inputType;
-        this.defaultValue = defaultValue;
+        this.value = value;
     }
 
     public enum ConfigInputType {
@@ -25,8 +25,8 @@ public class AnchorConfigDescription {
         return inputType;
     }
 
-    public Object getDefaultValue() {
-        return defaultValue;
+    public Object getValue() {
+        return value;
     }
 
     @Override
@@ -36,12 +36,12 @@ public class AnchorConfigDescription {
         AnchorConfigDescription that = (AnchorConfigDescription) o;
         return Objects.equals(configName, that.configName) &&
                 inputType == that.inputType &&
-                Objects.equals(defaultValue, that.defaultValue);
+                Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(configName, inputType, defaultValue);
+        return Objects.hash(configName, inputType, value);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AnchorConfigDescription {
         return "AnchorConfigDescription{" +
                 "configName='" + configName + '\'' +
                 ", inputType=" + inputType +
-                ", defaultValue=" + defaultValue +
+                ", value=" + value +
                 '}';
     }
 }
