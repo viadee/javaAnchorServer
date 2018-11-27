@@ -81,10 +81,6 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
             Collection<ColumnSummary<?>> columns = new ArrayList<>(h2oFrame.columns.length);
 
             for (ColV3 h2oCol : h2oFrame.columns) {
-                if (h2oCol.label.equals("weekday")) {
-                    h2oCol.type = "string";
-                    h2oCol.stringData = new String[]{""};
-                }
                 final String columnName = h2oCol.label;
                 String columnType = h2oCol.type;
                 ColumnSummary column;
