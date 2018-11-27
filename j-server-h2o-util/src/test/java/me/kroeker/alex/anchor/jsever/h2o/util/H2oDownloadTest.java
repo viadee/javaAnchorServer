@@ -13,38 +13,40 @@ import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import water.bindings.H2oApi;
+import water.bindings.pojos.ModelKeyV3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
+ *
  */
 @ExtendWith(MockitoExtension.class)
 public class H2oDownloadTest {
 
     @Mock
-    H2oApi api;
+    private H2oApi api;
 
     @Mock
-    Response<ResponseBody> response;
-
-    @Mock
-    ResponseBody body;
+    private Response<ResponseBody> response;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
+        ResponseBody body = mock(ResponseBody.class);
         when(response.isSuccessful()).thenReturn(true);
         when(body.byteStream()).thenReturn(
                 this.getClass().getResourceAsStream("/" + Resources.SIMPLE_CSV_FILE_STRING)
         );
         when(response.body()).thenReturn(body);
-        when(api._downloadDataset_fetch(any())).thenReturn(response);
     }
 
     @Test
     public void testLoadCsvAndRemove() throws IOException {
+        when(api._downloadDataset_fetch(any())).thenReturn(response);
+
         File csvFile;
         try (H2oFrameDownload h2oFrame = new H2oFrameDownload()) {
             csvFile = h2oFrame.getFile(api, "frame-key");
@@ -55,10 +57,12 @@ public class H2oDownloadTest {
 
     @Test
     public void testLoadMojoAndRemove() throws IOException {
+        when(api.modelMojo(any(ModelKeyV3.class))).thenReturn(response);
+
         File csvFile;
         // TODO test with dummy MOJO file
-        try (H2oMojoDownload h2oFrame = new H2oMojoDownload()) {
-            csvFile = h2oFrame.getFile(api, "frame-key");
+        try (H2oMojoDownload h2oMojo = new H2oMojoDownload()) {
+            csvFile = h2oMojo.getFile(api, "frame-key");
             assertEquals(460L, csvFile.length());
         }
         assertFalse(csvFile.exists());

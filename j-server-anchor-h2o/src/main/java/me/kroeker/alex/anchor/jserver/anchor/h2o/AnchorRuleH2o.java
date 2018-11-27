@@ -20,7 +20,6 @@ import de.viadee.anchorj.AnchorConstructionBuilder;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.exploration.BatchSAR;
 import de.viadee.anchorj.global.ModifiedSubmodularPick;
-import de.viadee.anchorj.global.SubmodularPickGoal;
 import de.viadee.anchorj.tabular.AnchorTabular;
 import de.viadee.anchorj.tabular.CategoricalValueMapping;
 import de.viadee.anchorj.tabular.ColumnDescription;
@@ -33,15 +32,15 @@ import de.viadee.anchorj.tabular.TabularPerturbationFunction;
 import hex.genmodel.easy.prediction.AbstractPrediction;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
+import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.business.ModelBO;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
-import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.FrameBO;
-import me.kroeker.alex.anchor.jserver.business.ModelBO;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
@@ -105,7 +104,6 @@ public class AnchorRuleH2o implements AnchorRule {
 
         final ModifiedSubmodularPick<TabularInstance> subPick = new ModifiedSubmodularPick<>(
                 anchorContructionBuilder,
-                SubmodularPickGoal.FEATURE_APPEARANCE,
                 10
         );
         final List<AnchorResult<TabularInstance>> anchorResults = subPick.run(

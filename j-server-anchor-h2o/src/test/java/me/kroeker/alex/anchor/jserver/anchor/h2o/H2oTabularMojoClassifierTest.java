@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import de.viadee.anchorj.tabular.TabularInstance;
-import hex.genmodel.easy.prediction.RegressionModelPrediction;
+import hex.genmodel.easy.prediction.BinomialModelPrediction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,7 +18,7 @@ public class H2oTabularMojoClassifierTest {
     public void test() throws IOException {
         H2oTabularMojoClassifier classifier = new H2oTabularMojoClassifier(
                 this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
-                (prediction) -> (int) ((RegressionModelPrediction) prediction).value,
+                (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,
                 Resources.AIRLINE_FEATURES,
                 Arrays.asList("Origin")
         );
@@ -38,26 +38,26 @@ public class H2oTabularMojoClassifierTest {
         instance[11] = 91;
         instance[12] = 79;
         instance[13] = null;
-        instance[14] = null;
-        instance[15] = 23;
-        instance[16] = 11;
-        instance[17] = "SAN";
-        instance[18] = "SFO";
-        instance[19] = 447;
+        instance[14] = 23;
+        instance[15] = 11;
+        instance[16] = "SAN";
+        instance[17] = "SFO";
+        instance[18] = 447;
+        instance[19] = null;
         instance[20] = null;
-        instance[21] = null;
-        instance[22] = 0;
-        instance[23] = "NA";
-        instance[24] = 0;
+        instance[21] = 0;
+        instance[22] = "NA";
+        instance[23] = 0;
+        instance[24] = null;
         instance[25] = null;
         instance[26] = null;
         instance[27] = null;
         instance[28] = null;
-        instance[29] = null;
+        instance[29] = "YES";
         instance[30] = "YES";
         TabularInstance predictInstance = new TabularInstance(Resources.AIRLINE_FEATURE_MAPPING, null, instance);
 
-        assertEquals(0, classifier.predict(predictInstance));
+        assertEquals(1, classifier.predict(predictInstance));
     }
 
 }
