@@ -295,28 +295,28 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
         String prediction = classificationFunction.getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
         convertedAnchor.setPrediction(prediction);
 
-        final Map<Integer, FeatureConditionEnum> enumConditions = new HashMap<>();
-        final Map<Integer, FeatureConditionMetric> metricConditions = new HashMap<>();
+        final Map<Integer, FeatureConditionEnum> enumAnchors = new HashMap<>();
+        final Map<Integer, FeatureConditionMetric> metricAnchors = new HashMap<>();
         for (Map.Entry<Integer, FeatureValueMapping> entry : anchor.getVisualizer().getAnchor(anchorResult).entrySet()) {
             final TabularFeature feature = entry.getValue().getFeature();
             final FeatureValueMapping featureValueMapping = entry.getValue();
             if (featureValueMapping instanceof CategoricalValueMapping) {
                 String value = featureValueMapping.getValue().toString();
-                enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(), value));
+                enumAnchors.put(entry.getKey(), new FeatureConditionEnum(feature.getName(), value));
             } else if (featureValueMapping instanceof NativeValueMapping) {
-                enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
+                enumAnchors.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
                         featureValueMapping.getValue().toString()));
             } else if (featureValueMapping instanceof MetricValueMapping) {
                 MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
-                metricConditions.put(entry.getKey(), new FeatureConditionMetric(feature.getName(),
+                metricAnchors.put(entry.getKey(), new FeatureConditionMetric(feature.getName(),
                         metric.getMinValue(), metric.getMaxValue()));
             } else {
                 throw new IllegalArgumentException("feature value mapping of type " +
-                        featureValueMapping.getClass().getSimpleName() + " not handeld");
+                        featureValueMapping.getClass().getSimpleName() + " not handled");
             }
         }
-        convertedAnchor.setEnumAnchor(enumConditions);
-        convertedAnchor.setMetricAnchor(metricConditions);
+        convertedAnchor.setEnumAnchor(enumAnchors);
+        convertedAnchor.setMetricAnchor(metricAnchors);
         return convertedAnchor;
     }
 

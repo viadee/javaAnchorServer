@@ -93,6 +93,15 @@ public class AnchorController implements AnchorApi {
             @RequestHeader("Frame-Id") String frameId
     ) {
         try {
+            File anchorsSer = new File("test-anchors" + modelId + ".obj");
+            boolean cache = true;
+            if (cache && anchorsSer.exists() && anchorsSer.length() > 0) {
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(anchorsSer))) {
+                    return (SubmodularPickResult) ois.readObject();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 
             Collection<AnchorConfigDescription> configDescription = this.anchorBO.getAnchorConfigs();
@@ -103,6 +112,14 @@ public class AnchorController implements AnchorApi {
                     instance,
                     this.getAnchorConfig(configDescription)
             );
+            if (cache) {
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(anchorsSer))) {
+                    oos.writeObject(anchors);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return anchors;
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
