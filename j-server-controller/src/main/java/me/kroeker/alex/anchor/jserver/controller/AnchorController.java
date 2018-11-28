@@ -1,13 +1,17 @@
 package me.kroeker.alex.anchor.jserver.controller;
 
-import me.kroeker.alex.anchor.jserver.api.AnchorApi;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.business.AnchorBO;
-import me.kroeker.alex.anchor.jserver.business.FrameBO;
-import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
-import me.kroeker.alex.anchor.jserver.model.FrameInstance;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +21,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import me.kroeker.alex.anchor.jserver.api.AnchorApi;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.business.AnchorBO;
+import me.kroeker.alex.anchor.jserver.business.FrameBO;
+import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
+import me.kroeker.alex.anchor.jserver.model.SubmodularPickResult;
 
 /**
  */
@@ -80,7 +87,7 @@ public class AnchorController implements AnchorApi {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON
     )
-    public Collection<Anchor> runSubmodularPick(
+    public SubmodularPickResult runSubmodularPick(
             @PathVariable String connectionName,
             @RequestHeader("Model-Id") String modelId,
             @RequestHeader("Frame-Id") String frameId
@@ -89,7 +96,7 @@ public class AnchorController implements AnchorApi {
             FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 
             Collection<AnchorConfigDescription> configDescription = this.anchorBO.getAnchorConfigs();
-            return this.anchorBO.runSubmodularPick(
+            SubmodularPickResult anchors = this.anchorBO.runSubmodularPick(
                     connectionName,
                     modelId,
                     frameId,

@@ -1,5 +1,6 @@
 package me.kroeker.alex.anchor.jserver.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.Objects;
 
 /**
  */
-public class Anchor {
+public class Anchor implements Serializable {
 
     private String model_id;
     private String frame_id;

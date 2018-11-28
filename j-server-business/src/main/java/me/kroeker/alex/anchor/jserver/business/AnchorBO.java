@@ -1,15 +1,16 @@
 package me.kroeker.alex.anchor.jserver.business;
 
+import java.util.Collection;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.Map;
+import me.kroeker.alex.anchor.jserver.model.SubmodularPickResult;
 
 @Component
 public class AnchorBO {
@@ -28,11 +29,11 @@ public class AnchorBO {
         return this.anchor.computeRule(connectionName, modelId, frameId, instance, anchorConfig);
     }
 
-    public Collection<Anchor> runSubmodularPick(String connectionName,
-                                                String modelId,
-                                                String frameId,
-                                                FrameInstance instance,
-                                                Map<String, Object> anchorConfig) throws DataAccessException {
+    public SubmodularPickResult runSubmodularPick(String connectionName,
+                                                  String modelId,
+                                                  String frameId,
+                                                  FrameInstance instance,
+                                                  Map<String, Object> anchorConfig) throws DataAccessException {
         return this.anchor.runSubmodularPick(connectionName, modelId, frameId, instance, anchorConfig);
     }
 

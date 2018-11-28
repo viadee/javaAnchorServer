@@ -1,10 +1,11 @@
 package me.kroeker.alex.anchor.jserver.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  */
-public class FeatureCondition {
+public class FeatureCondition implements Serializable {
 
     private String columnType;
 
