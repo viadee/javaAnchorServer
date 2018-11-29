@@ -3,16 +3,20 @@ package me.kroeker.alex.anchor.jserver.model;
 import java.util.Objects;
 
 /**
+ *
  */
-public class FeatureConditionEnum extends FeatureCondition {
+public class AnchorRuleEnum extends AnchorRule {
+
+    private static final String COLUMN_TYPE = "string";
 
     private String category;
 
-    public FeatureConditionEnum() {
+    public AnchorRuleEnum() {
+        super(COLUMN_TYPE);
     }
 
-    public FeatureConditionEnum(String featureName, String category) {
-        super("string", featureName);
+    public AnchorRuleEnum(String featureName, String category, double precision, double coverage) {
+        super(COLUMN_TYPE, featureName, precision, coverage);
         this.category = category;
     }
 
@@ -29,7 +33,7 @@ public class FeatureConditionEnum extends FeatureCondition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        FeatureConditionEnum that = (FeatureConditionEnum) o;
+        AnchorRuleEnum that = (AnchorRuleEnum) o;
         return Objects.equals(category, that.category);
     }
 
@@ -40,9 +44,8 @@ public class FeatureConditionEnum extends FeatureCondition {
 
     @Override
     public String toString() {
-        return "FeatureConditionEnum{" +
+        return "AnchorRuleEnum{" +
                 "category='" + category + '\'' +
                 "} " + super.toString();
     }
-
 }

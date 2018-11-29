@@ -18,8 +18,8 @@ public class Anchor implements Serializable {
     private double precision;
     private double coverage;
     private Collection<Integer> features;
-    private Map<Integer, FeatureConditionMetric> metricAnchor;
-    private Map<Integer, FeatureConditionEnum> enumAnchor;
+    private Map<Integer, AnchorRuleMetric> metricAnchor;
+    private Map<Integer, AnchorRuleEnum> enumAnchor;
     private Integer affected_rows;
     private LocalDateTime created_at;
 
@@ -103,19 +103,19 @@ public class Anchor implements Serializable {
         this.created_at = created_at;
     }
 
-    public Map<Integer, FeatureConditionMetric> getMetricAnchor() {
+    public Map<Integer, AnchorRuleMetric> getMetricAnchor() {
         return metricAnchor;
     }
 
-    public void setMetricAnchor(Map<Integer, FeatureConditionMetric> metricAnchor) {
+    public void setMetricAnchor(Map<Integer, AnchorRuleMetric> metricAnchor) {
         this.metricAnchor = metricAnchor;
     }
 
-    public Map<Integer, FeatureConditionEnum> getEnumAnchor() {
+    public Map<Integer, AnchorRuleEnum> getEnumAnchor() {
         return enumAnchor;
     }
 
-    public void setEnumAnchor(Map<Integer, FeatureConditionEnum> enumAnchor) {
+    public void setEnumAnchor(Map<Integer, AnchorRuleEnum> enumAnchor) {
         this.enumAnchor = enumAnchor;
     }
 
