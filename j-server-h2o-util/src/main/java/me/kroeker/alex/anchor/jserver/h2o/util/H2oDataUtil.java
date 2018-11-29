@@ -81,6 +81,7 @@ public final class H2oDataUtil {
     public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {
         try (Reader in = new FileReader(file)) {
             CSVParser records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
+
             for (CSVRecord record : records) {
                 recordConsumer.accept(record);
             }

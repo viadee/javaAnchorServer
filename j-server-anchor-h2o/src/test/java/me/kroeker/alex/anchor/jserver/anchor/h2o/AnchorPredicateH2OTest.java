@@ -25,7 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(MockitoJUnitRunner.class)
 @PrepareForTest({H2oUtil.class})
 @Ignore
-public class AnchorRuleH2oTest {
+public class AnchorPredicateH2OTest {
 
     @Mock
     private H2oApi api;

@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author ak902764
  */
-public class AnchorRuleMetric extends AnchorRule {
+public class AnchorPredicateMetric extends AnchorPredicate {
 
     private static final String COLUMN_TYPE = "metric";
 
@@ -13,11 +13,11 @@ public class AnchorRuleMetric extends AnchorRule {
 
     private double conditionMax;
 
-    public AnchorRuleMetric() {
+    public AnchorPredicateMetric() {
         super(COLUMN_TYPE);
     }
 
-    public AnchorRuleMetric(String featureName, double conditionMin, double conditionMax, double precision, double coverage) {
+    public AnchorPredicateMetric(String featureName, double conditionMin, double conditionMax, double precision, double coverage) {
         super(COLUMN_TYPE, featureName, precision, coverage);
         this.conditionMin = conditionMin;
         this.conditionMax = conditionMax;
@@ -44,7 +44,7 @@ public class AnchorRuleMetric extends AnchorRule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        AnchorRuleMetric that = (AnchorRuleMetric) o;
+        AnchorPredicateMetric that = (AnchorPredicateMetric) o;
         return Double.compare(that.conditionMin, conditionMin) == 0 &&
                 Double.compare(that.conditionMax, conditionMax) == 0;
     }
@@ -56,7 +56,7 @@ public class AnchorRuleMetric extends AnchorRule {
 
     @Override
     public String toString() {
-        return "AnchorRuleMetric{" +
+        return "AnchorPredicateMetric{" +
                 "conditionMin=" + conditionMin +
                 ", conditionMax=" + conditionMax +
                 "} " + super.toString();

@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
@@ -53,8 +54,9 @@ import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
 import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
-import me.kroeker.alex.anchor.jserver.model.AnchorRuleEnum;
-import me.kroeker.alex.anchor.jserver.model.AnchorRuleMetric;
+import me.kroeker.alex.anchor.jserver.model.AnchorPredicate;
+import me.kroeker.alex.anchor.jserver.model.AnchorPredicateEnum;
+import me.kroeker.alex.anchor.jserver.model.AnchorPredicateMetric;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
@@ -160,18 +162,39 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
         anchorResults.forEach((anchorResult) -> explanations.add(transformAnchor(modelId, frameId,
                 dataSetSize, anchorBuilder, anchorTabular, classificationFunction, anchorResult)));
 
-        Set<TabularInstance> filteredInstances = new HashSet<>();
-        this.runParallel(anchorTabular.getTabularInstances(), (item) -> {
-            anchorResults.forEach((result) -> {
-                result.getOrderedFeatures().forEach((featureIndex) -> {
-                    if (item.getValue(featureIndex).equals(result.getInstance().getValue(featureIndex))) {
-                        filteredInstances.add(item);
-                    }
+        final Set<TabularInstance> globalCoverageInstances = new HashSet<>();
+        this.runParallel(() -> {
+            anchorTabular.getTabularInstances().parallelStream().forEach(item -> {
+                anchorResults.forEach((result) -> {
+                    result.getOrderedFeatures().forEach((featureIndex) -> {
+                        if (item.getValue(featureIndex).equals(result.getInstance().getValue(featureIndex))) {
+                            globalCoverageInstances.add(item);
+                        }
+                    });
                 });
             });
+
+            return null;
         });
 
-        final double aggregatedCoverage = filteredInstances.size() / (double) dataSetSize;
+        final Map<String, Double> predicateCoverage = new HashMap<>();
+        final Consumer<AnchorPredicate> calculateCoverage = predicate -> {
+            final String featureName = predicate.getFeatureName();
+            double exactCoverage;
+            if (!predicateCoverage.containsKey(featureName)) {
+                exactCoverage = this.computeExactCoverage(anchorTabular.getTabularInstances(), predicate);
+                predicateCoverage.put(featureName, exactCoverage);
+            } else {
+                exactCoverage = predicateCoverage.get(featureName);
+            }
+            predicate.setExactCoverage(exactCoverage);
+        };
+        explanations.forEach((expl) -> {
+            expl.getEnumPredicate().values().forEach(calculateCoverage);
+            expl.getMetricPredicate().values().forEach(calculateCoverage);
+        });
+
+        final double aggregatedCoverage = globalCoverageInstances.size() / (double) dataSetSize;
         return new SubmodularPickResult(explanations, aggregatedCoverage);
     }
 
@@ -204,8 +227,23 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
                 classificationFunction, anchorResult);
     }
 
+    private double computeExactCoverage(List<TabularInstance> instances, AnchorPredicate rule) {
+        long count = instances.stream().filter((instance) -> {
+            if (rule instanceof AnchorPredicateEnum) {
+                return instance.getOriginalValue(rule.getFeatureName()).equals(((AnchorPredicateEnum) rule).getCategory());
+            } else if (rule instanceof AnchorPredicateMetric) {
+                double instanceValue = Double.valueOf(instance.getOriginalValue(rule.getFeatureName()).toString());
+                return instanceValue >= ((AnchorPredicateMetric) rule).getConditionMin() && instanceValue < ((AnchorPredicateMetric) rule).getConditionMax();
+            } else {
+                throw new IllegalArgumentException("Rule of class " + rule.getClass().getSimpleName() + " not handled");
+            }
+        }).count();
+
+        return (double) count / instances.size();
+    }
+
     private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(AnchorTabular anchorTabular, H2oTabularMojoClassifier classificationFunction, TabularInstance cleanedInstance, Map<String, Object> anchorConfig) {
-        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularPertubationWithOriginalDataFunction(cleanedInstance,
+        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(cleanedInstance,
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
 
         final double anchorTau = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
@@ -305,8 +343,8 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
         String prediction = classificationFunction.getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
         convertedAnchor.setPrediction(prediction);
 
-        final Map<Integer, AnchorRuleEnum> enumAnchors = new HashMap<>();
-        final Map<Integer, AnchorRuleMetric> metricAnchors = new HashMap<>();
+        final Map<Integer, AnchorPredicateEnum> enumAnchors = new HashMap<>();
+        final Map<Integer, AnchorPredicateMetric> metricAnchors = new HashMap<>();
         for (Map.Entry<Integer, FeatureValueMapping> entry : anchor.getVisualizer().getAnchor(anchorResult).entrySet()) {
             final TabularFeature feature = entry.getValue().getFeature();
 
@@ -324,21 +362,21 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
             final FeatureValueMapping featureValueMapping = entry.getValue();
             if (featureValueMapping instanceof CategoricalValueMapping) {
                 String value = featureValueMapping.getValue().toString();
-                enumAnchors.put(entry.getKey(), new AnchorRuleEnum(feature.getName(), value, addedPrecision, addedCoverage));
+                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), value, addedPrecision, addedCoverage));
             } else if (featureValueMapping instanceof NativeValueMapping) {
-                enumAnchors.put(entry.getKey(), new AnchorRuleEnum(feature.getName(),
+                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(),
                         featureValueMapping.getValue().toString(), addedPrecision, addedCoverage));
             } else if (featureValueMapping instanceof MetricValueMapping) {
                 MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
-                metricAnchors.put(entry.getKey(), new AnchorRuleMetric(feature.getName(),
+                metricAnchors.put(entry.getKey(), new AnchorPredicateMetric(feature.getName(),
                         metric.getMinValue(), metric.getMaxValue(), addedPrecision, addedCoverage));
             } else {
                 throw new IllegalArgumentException("feature value mapping of type " +
                         featureValueMapping.getClass().getSimpleName() + " not handled");
             }
         }
-        convertedAnchor.setEnumAnchor(enumAnchors);
-        convertedAnchor.setMetricAnchor(metricAnchors);
+        convertedAnchor.setEnumPredicate(enumAnchors);
+        convertedAnchor.setMetricPredicate(metricAnchors);
         return convertedAnchor;
     }
 
@@ -402,16 +440,20 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
                 .mapToInt((description) -> header.get(description.getName()))
                 .boxed().collect(Collectors.toList());
 
-        this.runParallel(dataSet, (dataEntry) ->
-                nominalColumnsIndexes.forEach((nominalColumnIndex) -> {
-                    if (dataEntry[nominalColumnIndex].isEmpty()) {
-                        dataEntry[nominalColumnIndex] = String.valueOf(NoValueHandler.getNumberNa());
-                    }
-                })
+        this.runParallel(() -> {
+                    dataSet.forEach((dataEntry) -> {
+                        nominalColumnsIndexes.forEach((nominalColumnIndex) -> {
+                            if (dataEntry[nominalColumnIndex].isEmpty()) {
+                                dataEntry[nominalColumnIndex] = String.valueOf(NoValueHandler.getNumberNa());
+                            }
+                        });
+                    });
+                    return null;
+                }
         );
     }
 
-    private <T> void runParallel(Collection<T> list, Consumer<T> consumer) {
+    private <T> T runParallel(Callable<T> call) {
         ForkJoinPool fjp = new ForkJoinPool(10, ForkJoinPool.defaultForkJoinWorkerThreadFactory, new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
@@ -419,14 +461,14 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
             }
         }, false);
         try {
-            fjp.submit(() -> {
-                list.parallelStream().forEach(consumer);
-            }).get();
+            return fjp.submit(call).get();
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("interrupted filter", e);
+            LOG.error("interrupted filter: " + e.getMessage(), e);
         } finally {
             fjp.shutdown();
         }
+
+        return null;
     }
 
     private LoadDataSetVH loadDataSetFromH2o(String frameId, H2oApi api) throws DataAccessException {

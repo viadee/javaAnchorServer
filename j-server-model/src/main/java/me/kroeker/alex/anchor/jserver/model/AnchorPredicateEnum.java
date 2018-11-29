@@ -5,17 +5,17 @@ import java.util.Objects;
 /**
  *
  */
-public class AnchorRuleEnum extends AnchorRule {
+public class AnchorPredicateEnum extends AnchorPredicate {
 
     private static final String COLUMN_TYPE = "string";
 
     private String category;
 
-    public AnchorRuleEnum() {
+    public AnchorPredicateEnum() {
         super(COLUMN_TYPE);
     }
 
-    public AnchorRuleEnum(String featureName, String category, double precision, double coverage) {
+    public AnchorPredicateEnum(String featureName, String category, double precision, double coverage) {
         super(COLUMN_TYPE, featureName, precision, coverage);
         this.category = category;
     }
@@ -33,7 +33,7 @@ public class AnchorRuleEnum extends AnchorRule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        AnchorRuleEnum that = (AnchorRuleEnum) o;
+        AnchorPredicateEnum that = (AnchorPredicateEnum) o;
         return Objects.equals(category, that.category);
     }
 
@@ -44,7 +44,7 @@ public class AnchorRuleEnum extends AnchorRule {
 
     @Override
     public String toString() {
-        return "AnchorRuleEnum{" +
+        return "AnchorPredicateEnum{" +
                 "category='" + category + '\'' +
                 "} " + super.toString();
     }

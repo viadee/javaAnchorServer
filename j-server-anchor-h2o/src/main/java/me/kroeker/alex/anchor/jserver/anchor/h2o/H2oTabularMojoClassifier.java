@@ -42,13 +42,13 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
 
         this.modelWrapper = new EasyPredictModelWrapper(model);
         this.columnNames = Collections.unmodifiableList(columnNames);
-        this.predictionCache = Collections.synchronizedMap(new FixedSizeCache<>(10_000, dataListSize));
+        this.predictionCache = Collections.synchronizedMap(new FixedSizeCache<>(100_000, dataListSize));
     }
 
     @Override
     public int predict(final TabularInstance instance) {
-        if (this.predictionCache != null && this.predictionCache.containsKey(instance)) {
-            return this.predictionCache.get(instance);
+        if (this.checkCachedPrediction(instance)) {
+            return this.getCachedPrediction(instance);
         } else {
             Object[] instanceValues;
             if (instance.getOriginalInstance() != null) {
@@ -81,6 +81,14 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
                 throw new PredictException(e);
             }
         }
+    }
+
+    private boolean checkCachedPrediction(final TabularInstance instance) {
+        return this.predictionCache != null && this.predictionCache.containsKey(instance);
+    }
+
+    private Integer getCachedPrediction(final TabularInstance instance) {
+        return this.predictionCache.get(instance);
     }
 
     public EasyPredictModelWrapper getModelWrapper() {
