@@ -214,7 +214,6 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
 
         return new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
-                .enableThreading(10, false)
                 .setBestAnchorIdentification(new BatchSAR(100 * anchorTabular.getFeatures().size(), 10))
                 .setInitSampleCount(200)
                 .setTau(anchorTau)
