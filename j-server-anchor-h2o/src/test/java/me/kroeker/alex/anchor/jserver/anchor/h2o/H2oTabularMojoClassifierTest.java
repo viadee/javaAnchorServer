@@ -25,7 +25,8 @@ public class H2oTabularMojoClassifierTest {
                 this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
                 (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,
                 Resources.AIRLINE_FEATURES,
-                Arrays.asList("Origin")
+                Arrays.asList("Origin"),
+                1
         );
 
         TabularInstance predictInstance = new TabularInstance(Resources.AIRLINE_FEATURE_MAPPING, null, Resources.SIMPLE_AIRLINE_INSTANCE);
