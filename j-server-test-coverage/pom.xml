@@ -48,10 +48,10 @@
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-h2o-util</artifactId>
         </dependency>
-        <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
-            <artifactId>j-server-model</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>me.kroeker.alex.anchor</groupId>-->
+            <!--<artifactId>j-server-model</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>

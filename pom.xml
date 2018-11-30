@@ -137,13 +137,17 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>de.goerke.tobias</groupId>
-                <artifactId>sparkExtension</artifactId>
+                <groupId>de.viadee</groupId>
+                <artifactId>SparkExtension</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>slf4j-log4j12</artifactId>
                         <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.spark</groupId>
+                        <artifactId>spark-core_2.12</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

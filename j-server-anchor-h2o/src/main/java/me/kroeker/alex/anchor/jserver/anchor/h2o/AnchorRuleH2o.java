@@ -3,6 +3,10 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +28,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import de.viadee.anchorj.AnchorCandidate;
@@ -35,6 +37,7 @@ import de.viadee.anchorj.exploration.BatchSAR;
 import de.viadee.anchorj.global.AbstractGlobalExplainer;
 import de.viadee.anchorj.global.CoveragePick;
 import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
+import de.viadee.anchorj.spark.SparkBatchExplainer;
 import de.viadee.anchorj.tabular.AnchorTabular;
 import de.viadee.anchorj.tabular.CategoricalValueMapping;
 import de.viadee.anchorj.tabular.ColumnDescription;
@@ -43,7 +46,6 @@ import de.viadee.anchorj.tabular.MetricValueMapping;
 import de.viadee.anchorj.tabular.NativeValueMapping;
 import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
-import hex.genmodel.easy.prediction.AbstractPrediction;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
@@ -70,7 +72,8 @@ import me.kroeker.alex.anchor.jserver.model.SubmodularPickResult;
 import water.bindings.H2oApi;
 
 @Component
-public class AnchorRuleH2o implements AnchorRule, H2oConnector {
+public class AnchorRuleH2o implements AnchorRule, H2oConnector, Serializable {
+    private static final long serialVersionUID = 2496087947141848733L;
 
     private static final Logger LOG = LoggerFactory.getLogger(AnchorRuleH2o.class);
 
@@ -137,9 +140,6 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
 
         final AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
                 buildAnchorPreprocessor(connectionName, modelId, frameId, vh, bucketNo);
-//        SPRandomSelection randomSelection = new SPRandomSelection(new Random(), vh.dataSet);
-
-//        final int sampleSize = (Integer) getAnchorOptionFromParamsOrDefault(anchorConfig, SP_SAMPLE_SIZE);
         final AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
 
         final int dataSetSize = vh.dataSet.size();
@@ -152,15 +152,30 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
 
         final AnchorConstructionBuilder<TabularInstance> anchorConstructionBuilder = createAnchorBuilderWithConfig(anchorTabular, classificationFunction, cleanedInstance, anchorConfig);
 
-        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(anchorConstructionBuilder, 10);
-//        final AbstractGlobalExplainer<TabularInstance> subPick = new ModifiedSubmodularPick<>(
-//                anchorConstructionBuilder,
-//                10
-//        );
-        final List<AnchorResult<TabularInstance>> anchorResults = subPick.run(
-                anchorTabular.getTabularInstances().getInstances(),
-                noAnchor);
+        final String lobFolder = "/Users/akr/git/javaAnchorServer/j-server-application/target/libs";
 
+        final SparkConf sparkConf;
+        final String sparkMasterUrl = "spark://localhost:7077";
+        try {
+            sparkConf = new SparkConf().setAppName("anchorj").setMaster(sparkMasterUrl)
+                    //                .s
+                    .set("spark.shuffle.service.enabled", "false")
+                    .set("spark.dynamicAllocation.enabled", "false")
+                    //                .set("spark.io.compression.codec", "snappy")
+                    .setJars(Files.list(Paths.get(lobFolder)).map(Path::toFile).map(File::getAbsolutePath).toArray(String[]::new))
+                    .set("spark.rdd.compress", "true");
+        } catch (IOException e) {
+            throw new DataAccessException("Failed to connect to the Spark Master: " + sparkMasterUrl, e);
+        }
+
+        List<AnchorResult<TabularInstance>> anchorResults;
+        try (JavaSparkContext sc = new JavaSparkContext(sparkConf)) {
+            SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(sc);
+            final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(explainer, anchorConstructionBuilder);
+            anchorResults = subPick.run(anchorTabular.getTabularInstances().getInstances(), noAnchor);
+        } catch (Exception e) {
+            throw new DataAccessException("Failed to run Submodular Pick: " + e.getMessage(), e);
+        }
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         anchorResults.forEach((anchorResult) -> explanations.add(transformAnchor(modelId, frameId,
@@ -180,32 +195,6 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
 
             return null;
         });
-        SparkConf sparkConf = new SparkConf().setAppName("anchorj").setMaster("spark://localhost:7077")
-                .set("spark.shuffle.service.enabled", "false")
-                .set("spark.dynamicAllocation.enabled", "false")
-//                .set("spark.io.compression.codec", "snappy")
-                .set("spark.rdd.compress", "true");
-
-        JavaSparkContext sc = new JavaSparkContext(sparkConf);
-        List<Integer> l = new ArrayList<>(2000);
-        for (int i = 0; i < 2000; i++) {
-            l.add(i);
-        }
-
-        long count = sc.parallelize(l).filter(i -> {
-            double x = Math.random();
-            double y = Math.random();
-            return x*x + y*y < 1;
-        }).count();
-        LOG.error("Spark count result: " + count);
-
-        SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(sc);
-        ModifiedSubmodularPick<TabularInstance> subSparkPick = new ModifiedSubmodularPick<>(explainer, anchorContructionBuilder, SubmodularPickGoal.FEATURE_PRECISION_WEIGHTED_COVERAGE);
-//        ModifiedSubmodularPick subPick = new ModifiedSubmodularPick<>(anchorContructionBuilder, SubmodularPickGoal.FEATURE_APPEARANCE, 10);
-        List<AnchorResult<TabularInstance>> anchorResults = subSparkPick.run(anchorTabular.getTabularInstances().getInstances(), 4);
-        Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
-        anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, instance, vh,
-                anchorBuilder, anchorTabular, convertedInstance, classificationFunction, anchor)));
 
         final Map<String, Double> predicateCoverage = new HashMap<>();
         final Consumer<AnchorPredicate> calculateCoverage = predicate -> {
@@ -326,7 +315,7 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
      *
      * @return a function to extract the labelIndex value of the predictions
      */
-    private Function<AbstractPrediction, Integer> generateH2oPredictor() {
+    private H2oTabularMojoClassifier.SerializableFunction generateH2oPredictor() {
         return (prediction) -> {
             if (prediction instanceof BinomialModelPrediction) {
                 return ((BinomialModelPrediction) prediction).labelIndex;

@@ -2,6 +2,7 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -20,6 +21,7 @@ import hex.genmodel.easy.prediction.AbstractPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
 public class H2oTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
+    private static final long serialVersionUID = -3460976375700093928L;
 
     private static final Logger LOG = LoggerFactory.getLogger(H2oTabularMojoClassifier.class);
 
@@ -29,7 +31,7 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
 
     public H2oTabularMojoClassifier(
             InputStream mojoInputStream,
-            Function<AbstractPrediction, Integer> predictionDiscretizer,
+            SerializableFunction predictionDiscretizer,
             List<String> columnNames) throws IOException {
 
         this.predictionDiscretizer = predictionDiscretizer;
@@ -71,6 +73,9 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
 
     public EasyPredictModelWrapper getModelWrapper() {
         return modelWrapper;
+    }
+
+    public interface SerializableFunction extends Function<AbstractPrediction, Integer>, Serializable {
     }
 
 }

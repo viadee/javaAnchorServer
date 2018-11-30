@@ -1,5 +1,6 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -7,25 +8,23 @@ import java.util.stream.Stream;
 
 /**
  */
-public class PercentileRangeDiscretizer implements Function<Number[], Integer[]> {
+public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
+    private static final long serialVersionUID = 1465028695728316141L;
 
-    private int classCount;
     private List<Range> valueDiscretizer;
 
-    public PercentileRangeDiscretizer(int classCount, double min, double max) {
-        this.classCount = classCount;
-
+    public PercentileRangeDiscretizer(int classCount, final double min, final double max) {
         double diff = max - min;
-        if (diff < this.classCount) {
-            this.classCount = (int) diff;
+        if (diff < classCount) {
+            classCount = (int) diff;
         }
-        final double step = diff / this.classCount;
+        final double step = diff / classCount;
 
-        valueDiscretizer = new ArrayList<>(this.classCount);
-        for (int i = 0; i < this.classCount; i++) {
+        valueDiscretizer = new ArrayList<>(classCount);
+        for (int i = 0; i < classCount; i++) {
             double stepMin = min + step * i;
             double stepMax = min + step * (i + 1);
-            if (i == this.classCount - 1) {
+            if (i == classCount - 1) {
                 stepMax++;
             }
 

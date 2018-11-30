@@ -12,7 +12,7 @@
     <artifactId>j-server-api</artifactId>
     <packaging>jar</packaging>
 
-    <name>anchor-j-server</name>
+    <name>j-server-api</name>
 
     <description>Demo project for Spring Boot</description>
 

@@ -1,6 +1,9 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-class NoValueHandler {
+import java.io.Serializable;
+
+class NoValueHandler implements Serializable {
+    private static final long serialVersionUID = 7748767741586042147L;
 
     private static final int NA_VALUE = -999;
 
