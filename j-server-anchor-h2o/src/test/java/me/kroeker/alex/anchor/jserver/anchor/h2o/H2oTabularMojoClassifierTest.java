@@ -1,7 +1,6 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,9 +23,7 @@ public class H2oTabularMojoClassifierTest {
         H2oTabularMojoClassifier classifier = new H2oTabularMojoClassifier(
                 this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
                 (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,
-                Resources.AIRLINE_FEATURES,
-                Arrays.asList("Origin"),
-                1
+                Resources.AIRLINE_FEATURES
         );
 
         TabularInstance predictInstance = new TabularInstance(Resources.AIRLINE_FEATURE_MAPPING, null, Resources.SIMPLE_AIRLINE_INSTANCE);

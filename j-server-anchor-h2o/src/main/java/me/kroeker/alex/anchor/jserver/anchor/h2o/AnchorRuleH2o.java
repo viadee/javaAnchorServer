@@ -284,9 +284,7 @@ public class AnchorRuleH2o implements AnchorRule, H2oConnector {
             classificationFunction = new H2oTabularMojoClassifier(
                     new FileInputStream(mojoFile),
                     this.generateH2oPredictor(),
-                    anchor.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()),
-                    anchor.getFeatures().stream().filter((desc) -> desc.getColumnType() == TabularFeature.ColumnType.CATEGORICAL).map(TabularFeature::getName).collect(Collectors.toList()),
-                    anchor.getTabularInstances().size());
+                    anchor.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()));
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + connectionName);
         }
