@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  */
 public class FeatureConditionEnum extends FeatureCondition {
+
     private String category;
 
     public FeatureConditionEnum() {

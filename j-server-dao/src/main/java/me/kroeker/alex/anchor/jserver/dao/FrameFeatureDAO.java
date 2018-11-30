@@ -1,10 +1,10 @@
 package me.kroeker.alex.anchor.jserver.dao;
 
-import java.util.Collection;
-import java.util.Map;
-
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.FeatureCondition;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Eine Schnittstelle zum Zugriff auf die Features eines Frames.

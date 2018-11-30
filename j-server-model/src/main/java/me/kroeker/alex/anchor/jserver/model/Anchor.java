@@ -1,5 +1,6 @@
 package me.kroeker.alex.anchor.jserver.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.Objects;
 
 /**
  */
-public class Anchor {
+public class Anchor implements Serializable {
 
     private String model_id;
     private String frame_id;
@@ -17,8 +18,8 @@ public class Anchor {
     private double precision;
     private double coverage;
     private Collection<Integer> features;
-    private Map<Integer, FeatureConditionMetric> metricAnchor;
-    private Map<Integer, FeatureConditionEnum> enumAnchor;
+    private Map<Integer, AnchorPredicateMetric> metricPredicate;
+    private Map<Integer, AnchorPredicateEnum> enumPredicate;
     private Integer affected_rows;
     private LocalDateTime created_at;
 
@@ -102,20 +103,20 @@ public class Anchor {
         this.created_at = created_at;
     }
 
-    public Map<Integer, FeatureConditionMetric> getMetricAnchor() {
-        return metricAnchor;
+    public Map<Integer, AnchorPredicateMetric> getMetricPredicate() {
+        return metricPredicate;
     }
 
-    public void setMetricAnchor(Map<Integer, FeatureConditionMetric> metricAnchor) {
-        this.metricAnchor = metricAnchor;
+    public void setMetricPredicate(Map<Integer, AnchorPredicateMetric> metricPredicate) {
+        this.metricPredicate = metricPredicate;
     }
 
-    public Map<Integer, FeatureConditionEnum> getEnumAnchor() {
-        return enumAnchor;
+    public Map<Integer, AnchorPredicateEnum> getEnumPredicate() {
+        return enumPredicate;
     }
 
-    public void setEnumAnchor(Map<Integer, FeatureConditionEnum> enumAnchor) {
-        this.enumAnchor = enumAnchor;
+    public void setEnumPredicate(Map<Integer, AnchorPredicateEnum> enumPredicate) {
+        this.enumPredicate = enumPredicate;
     }
 
     @Override
@@ -131,15 +132,15 @@ public class Anchor {
                 Objects.equals(label_of_case, anchor.label_of_case) &&
                 Objects.equals(prediction, anchor.prediction) &&
                 Objects.equals(features, anchor.features) &&
-                Objects.equals(metricAnchor, anchor.metricAnchor) &&
-                Objects.equals(enumAnchor, anchor.enumAnchor) &&
+                Objects.equals(metricPredicate, anchor.metricPredicate) &&
+                Objects.equals(enumPredicate, anchor.enumPredicate) &&
                 Objects.equals(affected_rows, anchor.affected_rows) &&
                 Objects.equals(created_at, anchor.created_at);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(model_id, frame_id, instance, label_of_case, prediction, precision, coverage, features, metricAnchor, enumAnchor, affected_rows, created_at);
+        return Objects.hash(model_id, frame_id, instance, label_of_case, prediction, precision, coverage, features, metricPredicate, enumPredicate, affected_rows, created_at);
     }
 
     @Override
@@ -153,8 +154,8 @@ public class Anchor {
                 ", precision=" + precision +
                 ", coverage=" + coverage +
                 ", features=" + features +
-                ", metricAnchor=" + metricAnchor +
-                ", enumAnchor=" + enumAnchor +
+                ", metricPredicate=" + metricPredicate +
+                ", enumPredicate=" + enumPredicate +
                 ", affected_rows=" + affected_rows +
                 ", created_at=" + created_at +
                 '}';

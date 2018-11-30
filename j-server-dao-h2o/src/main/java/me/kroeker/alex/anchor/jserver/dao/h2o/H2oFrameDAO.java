@@ -11,18 +11,19 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.dao.FrameDAO;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oConnector;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.model.CategoricalColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.CategoryFreq;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ColV3;
@@ -32,16 +33,17 @@ import water.bindings.pojos.FrameV3;
 import water.bindings.pojos.FramesListV3;
 
 /**
+ *
  */
 @Component
-public class H2oFrameDAO implements FrameDAO {
+public class H2oFrameDAO implements FrameDAO, H2oConnector {
 
     private static final int DOMAIN_MAX_ITEMS = 20;
 
     @Override
     public Collection<DataFrame> getFrames(String connectionName) throws DataAccessException {
         try {
-            FramesListV3 h2oFrames = H2oUtil.createH2o(connectionName).frames();
+            FramesListV3 h2oFrames = this.createH2o(connectionName).frames();
             Collection<DataFrame> frames = new ArrayList<>(h2oFrames.frames.length);
             for (FrameBaseV3 h2oFrame : h2oFrames.frames) {
                 DataFrame frame = new DataFrame();
@@ -65,7 +67,7 @@ public class H2oFrameDAO implements FrameDAO {
         frameKey.name = frameId;
 
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
-            H2oApi api = H2oUtil.createH2o(connectionName);
+            H2oApi api = this.createH2o(connectionName);
 
             File dataSet = h2oDownload.getFile(api, frameId);
 
@@ -79,10 +81,6 @@ public class H2oFrameDAO implements FrameDAO {
             Collection<ColumnSummary<?>> columns = new ArrayList<>(h2oFrame.columns.length);
 
             for (ColV3 h2oCol : h2oFrame.columns) {
-                if (h2oCol.label.equals("weekday")) {
-                    h2oCol.type = "string";
-                    h2oCol.stringData = new String[]{""};
-                }
                 final String columnName = h2oCol.label;
                 String columnType = h2oCol.type;
                 ColumnSummary column;
@@ -112,8 +110,8 @@ public class H2oFrameDAO implements FrameDAO {
     }
 
     @Override
-    public TabularInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
-        H2oApi api = H2oUtil.createH2o(connectionName);
+    public FrameInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
+        H2oApi api = this.createH2o(connectionName);
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSet = h2oDownload.getFile(api, frameId);
             return H2oDataUtil.getRandomInstance(conditions, dataSet);

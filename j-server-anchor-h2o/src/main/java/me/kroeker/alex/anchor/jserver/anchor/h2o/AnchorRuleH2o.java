@@ -9,8 +9,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -18,45 +24,90 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import de.goerke.tobias.anchorj.AnchorConstructionBuilder;
-import de.goerke.tobias.anchorj.AnchorResult;
-import de.goerke.tobias.anchorj.exploration.BatchSAR;
-import de.goerke.tobias.anchorj.global.ModifiedSubmodularPick;
-import de.goerke.tobias.anchorj.global.SubmodularPickGoal;
-import de.goerke.tobias.anchorj.spark.SparkBatchExplainer;
-import de.goerke.tobias.anchorj.tabular.AnchorTabular;
-import de.goerke.tobias.anchorj.tabular.CategoricalValueMapping;
-import de.goerke.tobias.anchorj.tabular.ColumnDescription;
-import de.goerke.tobias.anchorj.tabular.FeatureValueMapping;
-import de.goerke.tobias.anchorj.tabular.MetricValueMapping;
-import de.goerke.tobias.anchorj.tabular.NativeValueMapping;
-import de.goerke.tobias.anchorj.tabular.TabularFeature;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import de.goerke.tobias.anchorj.tabular.TabularPerturbationFunction;
-import me.kroeker.alex.anchor.h2o.util.H2oDataUtil;
-import me.kroeker.alex.anchor.h2o.util.H2oDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oFrameDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oMojoDownload;
-import me.kroeker.alex.anchor.h2o.util.H2oUtil;
+import de.viadee.anchorj.AnchorCandidate;
+import de.viadee.anchorj.AnchorConstructionBuilder;
+import de.viadee.anchorj.AnchorResult;
+import de.viadee.anchorj.exploration.BatchSAR;
+import de.viadee.anchorj.global.AbstractGlobalExplainer;
+import de.viadee.anchorj.global.CoveragePick;
+import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
+import de.viadee.anchorj.tabular.AnchorTabular;
+import de.viadee.anchorj.tabular.CategoricalValueMapping;
+import de.viadee.anchorj.tabular.ColumnDescription;
+import de.viadee.anchorj.tabular.FeatureValueMapping;
+import de.viadee.anchorj.tabular.MetricValueMapping;
+import de.viadee.anchorj.tabular.NativeValueMapping;
+import de.viadee.anchorj.tabular.TabularFeature;
+import de.viadee.anchorj.tabular.TabularInstance;
+import hex.genmodel.easy.prediction.AbstractPrediction;
+import hex.genmodel.easy.prediction.BinomialModelPrediction;
+import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.business.ModelBO;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oConnector;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
+import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
+import me.kroeker.alex.anchor.jserver.model.AnchorPredicate;
+import me.kroeker.alex.anchor.jserver.model.AnchorPredicateEnum;
+import me.kroeker.alex.anchor.jserver.model.AnchorPredicateMetric;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
 import me.kroeker.alex.anchor.jserver.model.ContinuousColumnSummary;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
 import me.kroeker.alex.anchor.jserver.model.Model;
+import me.kroeker.alex.anchor.jserver.model.SubmodularPickResult;
 import water.bindings.H2oApi;
 
 @Component
-public class AnchorRuleH2o implements AnchorRule {
+public class AnchorRuleH2o implements AnchorRule, H2oConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(AnchorRuleH2o.class);
+
+    private static final String ANCHOR_TAU = "Tau";
+    private static final String ANCHOR_DELTA = "Delta";
+    private static final String ANCHOR_EPSILON = "Epsilon";
+    private static final String ANCHOR_TAU_DISCREPANCY = "Tau-Discrepancy";
+    private static final String ANCHOR_BUCKET_NO = "Bucket-No.";
+    //    private static final String SP_SAMPLE_SIZE = "Sample-Size";
+    private static final String SP_NO_ANCHOR = "No-Anchor";
+
+    private static final Map<String, AnchorConfigDescription> DEFAULT_ANCHOR_PARAMS;
+
+    static {
+        DEFAULT_ANCHOR_PARAMS = new HashMap<>();
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_TAU, new AnchorConfigDescription(ANCHOR_TAU,
+                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.9)
+        );
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_DELTA, new AnchorConfigDescription(ANCHOR_DELTA,
+                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.1)
+        );
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_EPSILON, new AnchorConfigDescription(ANCHOR_EPSILON,
+                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.1)
+        );
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_TAU_DISCREPANCY, new AnchorConfigDescription(ANCHOR_TAU_DISCREPANCY,
+                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.05)
+        );
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_BUCKET_NO, new AnchorConfigDescription(ANCHOR_BUCKET_NO,
+                AnchorConfigDescription.ConfigInputType.INTEGER, 5)
+        );
+//        DEFAULT_ANCHOR_PARAMS.put(SP_SAMPLE_SIZE, new AnchorConfigDescription(SP_SAMPLE_SIZE,
+//                AnchorConfigDescription.ConfigInputType.INTEGER, Integer.MAX_VALUE)
+//        );
+        DEFAULT_ANCHOR_PARAMS.put(SP_NO_ANCHOR, new AnchorConfigDescription(SP_NO_ANCHOR,
+                AnchorConfigDescription.ConfigInputType.INTEGER, 3)
+        );
+    }
 
     private ModelBO modelBO;
 
@@ -68,25 +119,67 @@ public class AnchorRuleH2o implements AnchorRule {
     }
 
     @Override
-    public Collection<Anchor> runSubmodularPick(String connectionName,
-                                                String modelId,
-                                                String frameId,
-                                                TabularInstance instance) throws DataAccessException {
-        H2oApi api = H2oUtil.createH2o(connectionName);
+    public Collection<AnchorConfigDescription> getAnchorConfigs() {
+        return DEFAULT_ANCHOR_PARAMS.values();
+    }
+
+    @Override
+    public SubmodularPickResult runSubmodularPick(String connectionName,
+                                                  String modelId,
+                                                  String frameId,
+                                                  FrameInstance instance,
+                                                  Map<String, Object> anchorConfig) throws DataAccessException {
+        final H2oApi api = this.createH2o(connectionName);
         LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
-        AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
-                buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
-        AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
-        H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchorTabular);
-        TabularInstance convertedInstance = handleInstanceToExplain(instance, vh, anchorBuilder);
 
-        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(convertedInstance,
-                anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
+        final int bucketNo = (Integer) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_BUCKET_NO);
+        final int noAnchor = (Integer) getAnchorOptionFromParamsOrDefault(anchorConfig, SP_NO_ANCHOR);
+
+        final AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
+                buildAnchorPreprocessor(connectionName, modelId, frameId, vh, bucketNo);
+//        SPRandomSelection randomSelection = new SPRandomSelection(new Random(), vh.dataSet);
+
+//        final int sampleSize = (Integer) getAnchorOptionFromParamsOrDefault(anchorConfig, SP_SAMPLE_SIZE);
+        final AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
+
+        final int dataSetSize = vh.dataSet.size();
+        // garbage!
+        vh = null;
+
+        final H2oTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchorTabular);
+        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), instance.getInstance());
+        final TabularInstance cleanedInstance = handleInstanceToExplain(convertedInstance, anchorBuilder);
+
+        final AnchorConstructionBuilder<TabularInstance> anchorConstructionBuilder = createAnchorBuilderWithConfig(anchorTabular, classificationFunction, cleanedInstance, anchorConfig);
+
+        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(anchorConstructionBuilder, 10);
+//        final AbstractGlobalExplainer<TabularInstance> subPick = new ModifiedSubmodularPick<>(
+//                anchorConstructionBuilder,
+//                10
+//        );
+        final List<AnchorResult<TabularInstance>> anchorResults = subPick.run(
+                anchorTabular.getTabularInstances().getInstances(),
+                noAnchor);
 
 
-        final AnchorConstructionBuilder<TabularInstance> anchorContructionBuilder = new AnchorConstructionBuilder<>(classificationFunction,
-                tabularPerturbationFunction, convertedInstance);
+        final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
+        anchorResults.forEach((anchorResult) -> explanations.add(transformAnchor(modelId, frameId,
+                dataSetSize, anchorBuilder, anchorTabular, classificationFunction, anchorResult)));
 
+        final Set<TabularInstance> globalCoverageInstances = new HashSet<>();
+        this.runParallel(() -> {
+            anchorTabular.getTabularInstances().parallelStream().forEach(item -> {
+                anchorResults.forEach((result) -> {
+                    result.getOrderedFeatures().forEach((featureIndex) -> {
+                        if (item.getValue(featureIndex).equals(result.getInstance().getValue(featureIndex))) {
+                            globalCoverageInstances.add(item);
+                        }
+                    });
+                });
+            });
+
+            return null;
+        });
         SparkConf sparkConf = new SparkConf().setAppName("anchorj").setMaster("spark://localhost:7077")
                 .set("spark.shuffle.service.enabled", "false")
                 .set("spark.dynamicAllocation.enabled", "false")
@@ -114,53 +207,113 @@ public class AnchorRuleH2o implements AnchorRule {
         anchorResults.forEach((anchor) -> explanations.add(transformAnchor(modelId, frameId, instance, vh,
                 anchorBuilder, anchorTabular, convertedInstance, classificationFunction, anchor)));
 
-        return explanations;
+        final Map<String, Double> predicateCoverage = new HashMap<>();
+        final Consumer<AnchorPredicate> calculateCoverage = predicate -> {
+            final String featureName = predicate.getFeatureName();
+            double exactCoverage;
+            if (!predicateCoverage.containsKey(featureName)) {
+                exactCoverage = this.computeExactCoverage(anchorTabular.getTabularInstances(), predicate);
+                predicateCoverage.put(featureName, exactCoverage);
+            } else {
+                exactCoverage = predicateCoverage.get(featureName);
+            }
+            predicate.setExactCoverage(exactCoverage);
+        };
+        explanations.forEach((expl) -> {
+            expl.getEnumPredicate().values().forEach(calculateCoverage);
+            expl.getMetricPredicate().values().forEach(calculateCoverage);
+        });
+
+        final double aggregatedCoverage = globalCoverageInstances.size() / (double) dataSetSize;
+        return new SubmodularPickResult(explanations, aggregatedCoverage);
     }
 
     @Override
-    public Anchor computeRule(String connectionName, String modelId, String frameId, TabularInstance instance)
+    public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance,
+                              Map<String, Object> anchorConfig)
             throws DataAccessException {
-        H2oApi api = H2oUtil.createH2o(connectionName);
+        H2oApi api = this.createH2o(connectionName);
         LoadDataSetVH vh = loadDataSetFromH2o(frameId, api);
 
-        AnchorTabular.TabularPreprocessorBuilder anchorBuilder = buildAnchorPreprocessor(connectionName, modelId, frameId, vh);
-        AnchorTabular anchor = anchorBuilder.build(vh.dataSet);
+        final int bucketNo = (Integer) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_BUCKET_NO);
 
-        TabularInstance convertedInstance = handleInstanceToExplain(instance, vh, anchorBuilder);
+        AnchorTabular.TabularPreprocessorBuilder anchorBuilder = buildAnchorPreprocessor(connectionName, modelId,
+                frameId, vh, bucketNo);
+        AnchorTabular anchorTabular = anchorBuilder.build(vh.dataSet);
+        final int dataSetSize = vh.dataSet.size();
+        // garbage!
+        vh = null;
 
-        H2OTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchor);
+        TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), instance.getInstance(), instance.getInstance());
+        TabularInstance cleanedInstance = handleInstanceToExplain(convertedInstance, anchorBuilder);
 
-        TabularPerturbationFunction tabularPerturbationFunction = new TabularPerturbationFunction(convertedInstance,
-                anchor.getTabularInstances().toArray(new TabularInstance[0]));
+        H2oTabularMojoClassifier classificationFunction = generateH2oClassifier(connectionName, modelId, anchorTabular);
 
-        final AnchorResult<TabularInstance> anchorResult = new AnchorConstructionBuilder<>(classificationFunction,
-                tabularPerturbationFunction, convertedInstance)
-                .enableThreading(10, false)
-                .setBestAnchorIdentification(new BatchSAR(20, 20))
-                .setInitSampleCount(200)
-                .setTau(0.8)
-                .setAllowSuboptimalSteps(false)
-                .build().constructAnchor();
+        final AnchorResult<TabularInstance> anchorResult =
+                this.createAnchorBuilderWithConfig(anchorTabular, classificationFunction, cleanedInstance, anchorConfig)
+                        .build().constructAnchor();
 
-        return transformAnchor(modelId, frameId, instance, vh, anchorBuilder, anchor, convertedInstance,
+        return transformAnchor(modelId, frameId, dataSetSize, anchorBuilder, anchorTabular,
                 classificationFunction, anchorResult);
     }
 
-    private TabularInstance handleInstanceToExplain(TabularInstance instance, LoadDataSetVH vh, AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
+    private double computeExactCoverage(List<TabularInstance> instances, AnchorPredicate rule) {
+        long count = instances.stream().filter((instance) -> {
+            if (rule instanceof AnchorPredicateEnum) {
+                return instance.getOriginalValue(rule.getFeatureName()).equals(((AnchorPredicateEnum) rule).getCategory());
+            } else if (rule instanceof AnchorPredicateMetric) {
+                double instanceValue = Double.valueOf(instance.getOriginalValue(rule.getFeatureName()).toString());
+                return instanceValue >= ((AnchorPredicateMetric) rule).getConditionMin() && instanceValue < ((AnchorPredicateMetric) rule).getConditionMax();
+            } else {
+                throw new IllegalArgumentException("Rule of class " + rule.getClass().getSimpleName() + " not handled");
+            }
+        }).count();
+
+        return (double) count / instances.size();
+    }
+
+    private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(AnchorTabular anchorTabular, H2oTabularMojoClassifier classificationFunction, TabularInstance cleanedInstance, Map<String, Object> anchorConfig) {
+        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(cleanedInstance,
+                anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
+
+        final double anchorTau = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU);
+        final double anchorDelta = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_DELTA);
+        final double anchorEpsilon = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_EPSILON);
+        final double anchorTauDiscrepancy = (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU_DISCREPANCY);
+
+        return new AnchorConstructionBuilder<>(classificationFunction,
+                tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
+                .setBestAnchorIdentification(new BatchSAR(100 * anchorTabular.getFeatures().size(), 10))
+                .setInitSampleCount(100)
+                .setTau(anchorTau)
+                .setDelta(anchorDelta)
+                .setEpsilon(anchorEpsilon)
+                .setTauDiscrepancy(anchorTauDiscrepancy)
+                .setAllowSuboptimalSteps(true);
+    }
+
+    private static Object getAnchorOptionFromParamsOrDefault(Map<String, Object> anchorConfig, String paramName) {
+        return anchorConfig.getOrDefault(paramName, DEFAULT_ANCHOR_PARAMS.get(paramName).getValue());
+    }
+
+    private TabularInstance handleInstanceToExplain(TabularInstance instance,
+                                                    AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
+        @SuppressWarnings("SuspiciousToArrayCall")
         String[] instanceAsStringArray = Arrays.asList(instance.getInstance()).toArray(new String[0]);
         Collection<String[]> anchorInstance = new ArrayList<>(1);
         anchorInstance.add(instanceAsStringArray);
-        this.handleNa(vh.header, anchorInstance, anchorBuilder.getColumnDescriptions());
+        this.handleNa(instance.getFeatureNamesMapping(), anchorInstance, anchorBuilder.getColumnDescriptions());
         return anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
     }
 
-    private H2OTabularMojoClassifier generateH2oClassifier(String connectionName, String modelId, AnchorTabular anchor) throws DataAccessException {
-        H2OTabularMojoClassifier classificationFunction;
+    private H2oTabularMojoClassifier generateH2oClassifier(String connectionName, String modelId, AnchorTabular anchor) throws DataAccessException {
+        H2oTabularMojoClassifier classificationFunction;
         try (H2oDownload mojoDownload = new H2oMojoDownload()) {
-            File mojoFile = mojoDownload.getFile(H2oUtil.createH2o(connectionName), modelId);
+            File mojoFile = mojoDownload.getFile(this.createH2o(connectionName), modelId);
 
-            classificationFunction = new H2OTabularMojoClassifier(
+            classificationFunction = new H2oTabularMojoClassifier(
                     new FileInputStream(mojoFile),
+                    this.generateH2oPredictor(),
                     anchor.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()));
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + connectionName);
@@ -168,9 +321,27 @@ public class AnchorRuleH2o implements AnchorRule {
         return classificationFunction;
     }
 
-    private Anchor transformAnchor(String modelId, String frameId, TabularInstance instance, LoadDataSetVH vh,
+    /**
+     * Handles {@link BinomialModelPrediction} and {@link MultinomialModelPrediction}.
+     *
+     * @return a function to extract the labelIndex value of the predictions
+     */
+    private Function<AbstractPrediction, Integer> generateH2oPredictor() {
+        return (prediction) -> {
+            if (prediction instanceof BinomialModelPrediction) {
+                return ((BinomialModelPrediction) prediction).labelIndex;
+            } else if (prediction instanceof MultinomialModelPrediction) {
+                return ((MultinomialModelPrediction) prediction).labelIndex;
+            } else {
+                throw new UnsupportedOperationException("Prediction of type: " + prediction.getClass().getSimpleName()
+                        + "; not supported");
+            }
+        };
+    }
+
+    private Anchor transformAnchor(String modelId, String frameId, int dataSetSize,
                                    AnchorTabular.TabularPreprocessorBuilder anchorBuilder, AnchorTabular anchor,
-                                   TabularInstance convertedInstance, H2OTabularMojoClassifier classificationFunction,
+                                   H2oTabularMojoClassifier classificationFunction,
                                    AnchorResult<TabularInstance> anchorResult) {
         Anchor convertedAnchor = new Anchor();
         convertedAnchor.setCoverage(anchorResult.getCoverage());
@@ -182,52 +353,77 @@ public class AnchorRuleH2o implements AnchorRule {
 
         ColumnDescription targetColumn = anchorBuilder.getColumnDescriptions().stream().filter(ColumnDescription::isTargetFeature)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("no column with target definition found"));
-        Object labelOfCase = instance.getInstance()[vh.header.get(targetColumn.getName())];
+
+        TabularInstance cleanedInstance = anchorResult.getInstance();
+        Object labelOfCase = cleanedInstance.getOriginalInstance()
+                [cleanedInstance.getFeatureNamesMapping().get(targetColumn.getName())];
         convertedAnchor.setLabel_of_case(labelOfCase);
 
-        Map<String, Object> convertedInstanceMap = new HashMap<>(instance.getFeatureCount());
-        for (int i = 0; i < convertedInstance.getFeatureCount(); i++) {
-            convertedInstanceMap.put(anchor.getFeatures().get(i).getName(), instance.getValue(i));
+        Map<String, Object> cleanedInstanceMap = new HashMap<>(cleanedInstance.getFeatureCount());
+        for (int i = 0; i < cleanedInstance.getFeatureCount(); i++) {
+            cleanedInstanceMap.put(anchor.getFeatures().get(i).getName(), cleanedInstance.getOriginalValue(i));
         }
-        convertedAnchor.setInstance(convertedInstanceMap);
+        convertedAnchor.setInstance(cleanedInstanceMap);
 
-        final int affectedRows = (int) Math.round(vh.dataSet.size() * convertedAnchor.getCoverage());
+        final int affectedRows = (int) Math.round(dataSetSize * convertedAnchor.getCoverage());
         convertedAnchor.setAffected_rows(affectedRows);
 
         String prediction = classificationFunction.getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
         convertedAnchor.setPrediction(prediction);
 
-        final Map<Integer, FeatureConditionEnum> enumConditions = new HashMap<>();
-        final Map<Integer, FeatureConditionMetric> metricConditions = new HashMap<>();
+        final Map<Integer, AnchorPredicateEnum> enumAnchors = new HashMap<>();
+        final Map<Integer, AnchorPredicateMetric> metricAnchors = new HashMap<>();
         for (Map.Entry<Integer, FeatureValueMapping> entry : anchor.getVisualizer().getAnchor(anchorResult).entrySet()) {
             final TabularFeature feature = entry.getValue().getFeature();
+
+            final int featureIndex = anchorResult.getInstance().getFeatureArrayIndex(feature.getName());
+            final AnchorCandidate candidate = this.findCandidate(anchorResult, featureIndex);
+            double addedCoverage = 0;
+            double addedPrecision = 0;
+            if (candidate != null) {
+                addedCoverage = candidate.getAddedCoverage();
+                addedPrecision = candidate.getAddedPrecision();
+            } else {
+                LOG.error("No AnchorCandidate for feature with index " + featureIndex + " and name " + feature.getName() + " found");
+            }
+
             final FeatureValueMapping featureValueMapping = entry.getValue();
             if (featureValueMapping instanceof CategoricalValueMapping) {
-                enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
-                        ((CategoricalValueMapping) featureValueMapping).getCategoricalValue().toString()));
+                String value = featureValueMapping.getValue().toString();
+                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), value, addedPrecision, addedCoverage));
             } else if (featureValueMapping instanceof NativeValueMapping) {
-                enumConditions.put(entry.getKey(), new FeatureConditionEnum(feature.getName(),
-                        ((NativeValueMapping) featureValueMapping).getValue().toString()));
+                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(),
+                        featureValueMapping.getValue().toString(), addedPrecision, addedCoverage));
             } else if (featureValueMapping instanceof MetricValueMapping) {
                 MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
-                metricConditions.put(entry.getKey(), new FeatureConditionMetric(feature.getName(),
-                        metric.getMinValue(), metric.getMaxValue()));
+                metricAnchors.put(entry.getKey(), new AnchorPredicateMetric(feature.getName(),
+                        metric.getMinValue(), metric.getMaxValue(), addedPrecision, addedCoverage));
             } else {
                 throw new IllegalArgumentException("feature value mapping of type " +
-                        featureValueMapping.getClass().getSimpleName() + " not handeld");
+                        featureValueMapping.getClass().getSimpleName() + " not handled");
             }
         }
-        convertedAnchor.setEnumAnchor(enumConditions);
-        convertedAnchor.setMetricAnchor(metricConditions);
+        convertedAnchor.setEnumPredicate(enumAnchors);
+        convertedAnchor.setMetricPredicate(metricAnchors);
         return convertedAnchor;
+    }
+
+    private AnchorCandidate findCandidate(AnchorCandidate candidate, Integer feature) {
+        if (candidate.getAddedFeature().equals(feature)) {
+            return candidate;
+        } else if (candidate.getParentCandidate() != null) {
+            return findCandidate(candidate.getParentCandidate(), feature);
+        } else {
+            return null;
+        }
     }
 
     private AnchorTabular.TabularPreprocessorBuilder buildAnchorPreprocessor(String connectionName,
                                                                              String modelId,
                                                                              String frameId,
-                                                                             LoadDataSetVH vh) throws DataAccessException {
+                                                                             LoadDataSetVH vh,
+                                                                             final int classCount) throws DataAccessException {
         Model model = this.modelBO.getModel(connectionName, modelId);
-
         AnchorTabular.TabularPreprocessorBuilder anchorBuilder =
                 new AnchorTabular.TabularPreprocessorBuilder();
 
@@ -241,6 +437,8 @@ public class AnchorRuleH2o implements AnchorRule {
             ColumnSummary<?> column = findColumn(frameSummary.getColumn_summary_list(), columnLabel);
             if (columnLabel.equals(model.getTarget_column())) {
                 anchorBuilder.addTargetColumn(columnLabel);
+            } else if (model.getIgnoredColumns().contains(columnLabel)) {
+                anchorBuilder.addIgnoredColumn(columnLabel);
             } else if (H2oUtil.isEnumColumn(column.getColumn_type())) {
                 anchorBuilder.addCategoricalColumn(columnLabel);
             } else if (H2oUtil.isStringColumn(column.getColumn_type())) {
@@ -248,7 +446,7 @@ public class AnchorRuleH2o implements AnchorRule {
             } else {
                 double min = ((ContinuousColumnSummary) column).getColumn_min();
                 double max = ((ContinuousColumnSummary) column).getColumn_max();
-                Function<Number[], Integer[]> discretizer = new PercentileRangeDiscretizer(5, min, max);
+                Function<Number[], Integer[]> discretizer = new PercentileRangeDiscretizer(classCount, min, max);
                 anchorBuilder.addNominalColumn(columnLabel, discretizer);
             }
         });
@@ -270,18 +468,39 @@ public class AnchorRuleH2o implements AnchorRule {
                 .mapToInt((description) -> header.get(description.getName()))
                 .boxed().collect(Collectors.toList());
 
-        dataSet.parallelStream().forEach((dataEntry) ->
-                nominalColumnsIndexes
-                        .forEach((nominalColumnIndex) -> {
+        this.runParallel(() -> {
+                    dataSet.forEach((dataEntry) -> {
+                        nominalColumnsIndexes.forEach((nominalColumnIndex) -> {
                             if (dataEntry[nominalColumnIndex].isEmpty()) {
-                                dataEntry[nominalColumnIndex] = NoValueHandler.getNumberNa();
+                                dataEntry[nominalColumnIndex] = String.valueOf(NoValueHandler.getNumberNa());
                             }
-                        })
+                        });
+                    });
+                    return null;
+                }
         );
     }
 
+    private <T> T runParallel(Callable<T> call) {
+        ForkJoinPool fjp = new ForkJoinPool(10, ForkJoinPool.defaultForkJoinWorkerThreadFactory, new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                LOG.error("uncaught exception of thread: " + t.getName() + " and error: " + e.getMessage(), e);
+            }
+        }, false);
+        try {
+            return fjp.submit(call).get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("interrupted filter: " + e.getMessage(), e);
+        } finally {
+            fjp.shutdown();
+        }
+
+        return null;
+    }
+
     private LoadDataSetVH loadDataSetFromH2o(String frameId, H2oApi api) throws DataAccessException {
-        Collection<String[]> dataSet = new ArrayList<>();
+        List<String[]> dataSet = new ArrayList<>();
         Map<String, Integer> header;
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSetFile = h2oDownload.getFile(api, frameId);
@@ -300,9 +519,9 @@ public class AnchorRuleH2o implements AnchorRule {
 
     private static class LoadDataSetVH {
         final Map<String, Integer> header;
-        final Collection<String[]> dataSet;
+        final List<String[]> dataSet;
 
-        LoadDataSetVH(Map<String, Integer> header, Collection<String[]> dataSet) {
+        LoadDataSetVH(Map<String, Integer> header, List<String[]> dataSet) {
             this.header = header;
             this.dataSet = dataSet;
         }

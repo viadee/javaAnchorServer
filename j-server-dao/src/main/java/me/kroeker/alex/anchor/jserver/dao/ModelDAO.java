@@ -1,9 +1,9 @@
 package me.kroeker.alex.anchor.jserver.dao;
 
-import java.util.Collection;
-
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.model.Model;
+
+import java.util.Collection;
 
 /**
  * Definierter Zugriff auf die Modelle, die im Cluster gespeichert sind.

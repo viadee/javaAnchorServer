@@ -1,28 +1,32 @@
-package me.kroeker.alex.anchor.h2o.util;
+package me.kroeker.alex.anchor.jserver.h2o.util;
+
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 
 public final class H2oDataUtil {
 
     private H2oDataUtil() {
     }
 
-    public static TabularInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
+    public static FrameInstance getRandomInstance(FeatureConditionsRequest conditions, File dataSet) throws IOException {
         Collection<Function<CSVRecord, Boolean>> filters = calculateConditionsFilter(conditions);
 
         List<CSVRecord> acceptedRecords = new ArrayList<>();
@@ -45,7 +49,7 @@ public final class H2oDataUtil {
             acceptedInstanceString[entry.getValue()] = acceptedInstance.get(entry.getKey());
         });
 
-        return new TabularInstance(headerMapping, acceptedInstanceString);
+        return new FrameInstance(headerMapping, acceptedInstanceString);
     }
 
     private static Collection<Function<CSVRecord, Boolean>> calculateConditionsFilter(FeatureConditionsRequest conditions) {
@@ -77,6 +81,7 @@ public final class H2oDataUtil {
     public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {
         try (Reader in = new FileReader(file)) {
             CSVParser records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
+
             for (CSVRecord record : records) {
                 recordConsumer.accept(record);
             }

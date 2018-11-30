@@ -1,12 +1,12 @@
 package me.kroeker.alex.anchor.jserver.dao;
 
-import java.util.Collection;
-
-import de.goerke.tobias.anchorj.tabular.TabularInstance;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.DataFrame;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import me.kroeker.alex.anchor.jserver.model.FrameSummary;
+
+import java.util.Collection;
 
 /**
  * Definierter Zugriff auf die Frames, die im Cluster gespeichert sind.
@@ -38,8 +38,8 @@ public interface FrameDAO {
      * @return eine zufällig ausgewählte Instanz
      * @throws DataAccessException wenn bei der Kommunikation mit dem Cluster Fehler aufgetreten sind
      */
-    TabularInstance randomInstance(String connectionName,
-                                   String frameId,
-                                   FeatureConditionsRequest conditions) throws DataAccessException;
+    FrameInstance randomInstance(String connectionName,
+                                 String frameId,
+                                 FeatureConditionsRequest conditions) throws DataAccessException;
 
 }

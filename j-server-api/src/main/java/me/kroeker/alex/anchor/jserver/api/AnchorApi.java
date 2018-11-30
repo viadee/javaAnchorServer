@@ -3,7 +3,9 @@ package me.kroeker.alex.anchor.jserver.api;
 import java.util.Collection;
 
 import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.SubmodularPickResult;
 
 /**
  * Definiert die Schnittstelle zur Berechnung von Anchor-Erklärungen.
@@ -25,8 +27,11 @@ public interface AnchorApi {
             String frameId,
             FeatureConditionsRequest conditions);
 
-    Collection<Anchor> runSubmodularPick(String connectionName,
-                                         String modelId,
-                                         String frameId);
+    SubmodularPickResult runSubmodularPick(String connectionName,
+                                           String modelId,
+                                           String frameId
+    );
+
+    Collection<AnchorConfigDescription> getAnchorConfigs();
 
 }
