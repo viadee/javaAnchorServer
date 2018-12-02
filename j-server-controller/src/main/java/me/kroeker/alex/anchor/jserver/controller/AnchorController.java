@@ -94,7 +94,7 @@ public class AnchorController implements AnchorApi {
     ) {
         try {
             File anchorsSer = new File("test-anchors" + modelId + ".obj");
-            boolean cache = true;
+            boolean cache = false;
             if (cache && anchorsSer.exists() && anchorsSer.length() > 0) {
                 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(anchorsSer))) {
                     return (SubmodularPickResult) ois.readObject();
