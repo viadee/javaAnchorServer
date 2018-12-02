@@ -5,6 +5,7 @@ import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.AnchorBO;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.model.Anchor;
+import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import org.slf4j.Logger;
@@ -17,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  */
@@ -27,11 +31,14 @@ public class AnchorController implements AnchorApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(AnchorController.class);
 
-    private FrameBO frameBO;
+    private final FrameBO frameBO;
 
-    private AnchorBO anchorBO;
+    private final AnchorBO anchorBO;
 
-    public AnchorController(@Autowired FrameBO frameBO, @Autowired AnchorBO anchorBO) {
+    private final HttpServletRequest request;
+
+    public AnchorController(@Autowired HttpServletRequest request, @Autowired FrameBO frameBO, @Autowired AnchorBO anchorBO) {
+        this.request = request;
         this.frameBO = frameBO;
         this.anchorBO = anchorBO;
     }
@@ -52,7 +59,14 @@ public class AnchorController implements AnchorApi {
         try {
             FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId, conditions);
 
-            return this.anchorBO.computeRule(connectionName, modelId, frameId, instance);
+            Collection<AnchorConfigDescription> configDescription = this.anchorBO.getAnchorConfigs();
+            return this.anchorBO.computeRule(
+                    connectionName,
+                    modelId,
+                    frameId,
+                    instance,
+                    this.getAnchorConfig(configDescription)
+            );
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
@@ -69,16 +83,64 @@ public class AnchorController implements AnchorApi {
     public Collection<Anchor> runSubmodularPick(
             @PathVariable String connectionName,
             @RequestHeader("Model-Id") String modelId,
-            @RequestHeader("Frame-Id") String frameId) {
+            @RequestHeader("Frame-Id") String frameId
+    ) {
         try {
             FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 
-            return this.anchorBO.runSubmodularPick(connectionName, modelId, frameId, instance);
+            Collection<AnchorConfigDescription> configDescription = this.anchorBO.getAnchorConfigs();
+            return this.anchorBO.runSubmodularPick(
+                    connectionName,
+                    modelId,
+                    frameId,
+                    instance,
+                    this.getAnchorConfig(configDescription)
+            );
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
             return null;
         }
+    }
+
+    @Override
+    @RequestMapping(
+            value = "/anchors/config",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON
+    )
+    public Collection<AnchorConfigDescription> getAnchorConfigs() {
+        try {
+            return this.anchorBO.getAnchorConfigs();
+        } catch (DataAccessException dae) {
+            LOG.error(dae.getMessage(), dae);
+            // TODO add exception handling
+            return null;
+        }
+    }
+
+    private Map<String, Object> getAnchorConfig(Collection<AnchorConfigDescription> configDescription) {
+        Map<String, Object> anchorConfig = new HashMap<>();
+        for (AnchorConfigDescription config : configDescription) {
+            String headerValue = this.request.getHeader(config.getConfigName());
+            if (headerValue != null && !headerValue.isEmpty()) {
+                switch (config.getInputType()) {
+                    case DOUBLE:
+                        anchorConfig.put(config.getConfigName(), Double.valueOf(headerValue));
+                        break;
+                    case STRING:
+                        anchorConfig.put(config.getConfigName(), headerValue);
+                        break;
+                    case INTEGER:
+                        anchorConfig.put(config.getConfigName(), Integer.valueOf(headerValue));
+                        break;
+                    default:
+                        throw new RuntimeException("input type " + config.getInputType() + " is not handled");
+                }
+            }
+        }
+
+        return anchorConfig;
     }
 
 }
