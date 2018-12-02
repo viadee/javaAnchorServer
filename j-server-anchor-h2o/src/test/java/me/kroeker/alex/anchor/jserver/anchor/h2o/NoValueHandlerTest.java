@@ -1,16 +1,18 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  */
-public class NoValueHandlerTest {
+class NoValueHandlerTest {
 
     @Test
-    public void testIsNumberNa() {
+    void testIsNumberNa() {
         assertTrue(NoValueHandler.isNumberNa(-999));
         assertFalse(NoValueHandler.isNumberNa(123));
         assertFalse(NoValueHandler.isNumberNa(-999.01));
@@ -18,7 +20,7 @@ public class NoValueHandlerTest {
     }
 
     @Test
-    public void testGetNumberNa() {
+    void testGetNumberNa() {
         assertEquals(-999, NoValueHandler.getNumberNa());
     }
 

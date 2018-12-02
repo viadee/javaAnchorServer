@@ -3,11 +3,11 @@ package me.kroeker.alex.anchor.jsever.h2o.util;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
 import okhttp3.ResponseBody;
@@ -15,8 +15,8 @@ import retrofit2.Response;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ModelKeyV3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.when;
 /**
  *
  */
-@RunWith(PowerMockRunner.class)
-public class H2oDownloadTest {
+@ExtendWith(MockitoExtension.class)
+class H2oDownloadTest {
 
     @Mock
     private H2oApi api;
@@ -33,8 +33,8 @@ public class H2oDownloadTest {
     @Mock
     private Response<ResponseBody> response;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         ResponseBody body = mock(ResponseBody.class);
         when(response.isSuccessful()).thenReturn(true);
         when(body.byteStream()).thenReturn(
@@ -44,7 +44,7 @@ public class H2oDownloadTest {
     }
 
     @Test
-    public void testLoadCsvAndRemove() throws IOException {
+    void testLoadCsvAndRemove() throws IOException {
         when(api._downloadDataset_fetch(any())).thenReturn(response);
 
         File csvFile;
@@ -56,7 +56,7 @@ public class H2oDownloadTest {
     }
 
     @Test
-    public void testLoadMojoAndRemove() throws IOException {
+    void testLoadMojoAndRemove() throws IOException {
         when(api.modelMojo(any(ModelKeyV3.class))).thenReturn(response);
 
         File csvFile;

@@ -8,22 +8,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oDataUtil;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  */
-public class H2oDataUtilTest {
+class H2oDataUtilTest {
 
     @Test
-    public void testGetRandomInstanceWithoutConditions() throws IOException {
+    void testGetRandomInstanceWithoutConditions() throws IOException {
         FeatureConditionsRequest request = new FeatureConditionsRequest();
         FrameInstance frame = H2oDataUtil.getRandomInstance(
                 request,
@@ -35,7 +35,7 @@ public class H2oDataUtilTest {
     }
 
     @Test
-    public void testGetRandomInstanceWithConditions() throws IOException {
+    void testGetRandomInstanceWithConditions() throws IOException {
         FeatureConditionsRequest request = new FeatureConditionsRequest();
 
         Map<String, FeatureConditionEnum> enumConditions = new HashMap<>(1);
@@ -56,7 +56,7 @@ public class H2oDataUtilTest {
     }
 
     @Test
-    public void testIterateThroughCsvData() throws IOException {
+    void testIterateThroughCsvData() throws IOException {
         final Collection<CSVRecord> records = new ArrayList<>(4);
         H2oDataUtil.iterateThroughCsvData(Resources.SIMPLE_CSV_FILE, records::add);
 

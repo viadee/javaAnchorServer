@@ -1,18 +1,15 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.business.ModelBO;
-import me.kroeker.alex.anchor.jserver.h2o.util.H2oUtil;
 import me.kroeker.alex.anchor.jserver.model.FrameInstance;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -20,11 +17,10 @@ import water.bindings.H2oApi;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({H2oUtil.class})
-@Ignore
+@ExtendWith(MockitoExtension.class)
+@Disabled
 public class AnchorPredicateH2OTest {
 
     @Mock
@@ -42,14 +38,14 @@ public class AnchorPredicateH2OTest {
     @InjectMocks
     private AnchorRuleH2o anchor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ResponseBody body = mock(ResponseBody.class);
-        Mockito.when(response.isSuccessful()).thenReturn(true);
-        Mockito.when(body.byteStream()).thenReturn(
+        when(response.isSuccessful()).thenReturn(true);
+        when(body.byteStream()).thenReturn(
                 this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CSV)
         );
-        Mockito.when(response.body()).thenReturn(body);
+        when(response.body()).thenReturn(body);
 
         when(anchor.createH2o(any())).thenReturn(api);
     }

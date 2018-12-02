@@ -2,24 +2,24 @@ package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  */
-public class H2oTabularMojoClassifierTest {
+class H2oTabularMojoClassifierTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
     }
 
     @Test
-    public void testPredictAirline() throws IOException {
+    void testPredictAirline() throws IOException {
         H2oTabularMojoClassifier classifier = new H2oTabularMojoClassifier(
                 this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CLASSIFIER),
                 (prediction) -> ((BinomialModelPrediction) prediction).labelIndex,

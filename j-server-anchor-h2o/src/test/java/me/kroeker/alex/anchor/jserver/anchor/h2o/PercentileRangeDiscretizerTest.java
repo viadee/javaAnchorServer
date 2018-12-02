@@ -1,18 +1,19 @@
 package me.kroeker.alex.anchor.jserver.anchor.h2o;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
  */
-public class PercentileRangeDiscretizerTest {
+class PercentileRangeDiscretizerTest {
 
     @Test
-    public void testHasFiveClassesWithDiffOfFive() {
+    void testHasFiveClassesWithDiffOfFive() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
-        Number[] numbers = new Number[]{0, 1, 2, 3, 4, 5};
+        Number[] numbers = new Number[] { 0, 1, 2, 3, 4, 5 };
         Integer[] ranges = discretizer.apply(numbers);
 
         assertEquals(0, ranges[0].intValue());
@@ -23,9 +24,9 @@ public class PercentileRangeDiscretizerTest {
     }
 
     @Test
-    public void testFiveClassesWithDiffOfThree() {
+    void testFiveClassesWithDiffOfThree() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 3);
-        Number[] numbers = new Number[]{0, 1, 2, 3};
+        Number[] numbers = new Number[] { 0, 1, 2, 3 };
         Integer[] ranges = discretizer.apply(numbers);
 
         assertEquals(0, ranges[0].intValue());
@@ -34,18 +35,18 @@ public class PercentileRangeDiscretizerTest {
     }
 
     @Test
-    public void testValueIsNa() {
+    void testValueIsNa() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
-        Number[] numbers = new Number[]{-999};
+        Number[] numbers = new Number[] { -999 };
         Integer[] ranges = discretizer.apply(numbers);
 
         assertEquals(-999, ranges[0].intValue());
     }
 
     @Test
-    public void testClasses() {
+    void testClasses() {
         PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 5, 20);
-        Number[] numbers = new Number[]{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+        Number[] numbers = new Number[] { 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
         Integer[] discretizedValues = discretizer.apply(numbers);
 
         assertEquals(0, discretizedValues[0].intValue());
@@ -65,10 +66,12 @@ public class PercentileRangeDiscretizerTest {
         assertEquals(4, discretizedValues[14].intValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testValueNotHandled() {
-        PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
-        discretizer.apply(new Number[]{6});
+    @Test
+    void testValueNotHandled() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            PercentileRangeDiscretizer discretizer = new PercentileRangeDiscretizer(5, 0, 5);
+            discretizer.apply(new Number[] { 6 });
+        });
     }
 
 }
