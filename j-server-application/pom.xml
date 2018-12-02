@@ -34,18 +34,18 @@
         </dependency>
 
         <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.springframework.security</groupId>-->
-            <!--<artifactId>spring-security-test</artifactId>-->
-            <!--<scope>test</scope>-->
+        <!--<groupId>org.springframework.security</groupId>-->
+        <!--<artifactId>spring-security-test</artifactId>-->
+        <!--<scope>test</scope>-->
         <!--</dependency>-->
     </dependencies>
 
@@ -68,9 +68,17 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
+                            <failOnMissingClassifierArtifact>true</failOnMissingClassifierArtifact>
+
                             <outputDirectory>
                                 ${project.build.directory}/libs
                             </outputDirectory>
+                            <includeGroupIds>
+                                de.viadee,
+                                me.kroeker.alex.anchor,
+                                ai.h2o,
+                                org.apache.commons
+                            </includeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
