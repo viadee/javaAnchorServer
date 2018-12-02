@@ -3,6 +3,8 @@ package me.kroeker.alex.anchor.jserver.anchor;
 /**
  */
 public class PredictException extends RuntimeException {
+    private static final long serialVersionUID = -2761825202915608071L;
+
     public PredictException() {
         super();
     }

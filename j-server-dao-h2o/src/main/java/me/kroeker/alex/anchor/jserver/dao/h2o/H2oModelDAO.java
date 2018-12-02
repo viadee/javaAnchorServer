@@ -62,7 +62,7 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
     }
 
     private Model transferToModelObject(ModelSchemaBaseV3 h2oModel) {
-        String[] ignoredColumns = null;
+        String[] ignoredColumns;
         final String algoName = h2oModel.algo;
         switch (algoName) {
             case "gbm":

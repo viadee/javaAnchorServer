@@ -9,6 +9,7 @@ import java.util.Objects;
 /**
  */
 public class Anchor implements Serializable {
+    private static final long serialVersionUID = 8680607729372712938L;
 
     private String model_id;
     private String frame_id;

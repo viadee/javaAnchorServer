@@ -8,15 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  *
  */
-public class H2oUtilTest {
+class H2oUtilTest {
 
     @Test
-    public void testIsEnumColumn() {
+    void testIsEnumColumn() {
         assertTrue(H2oUtil.isEnumColumn("enum"));
     }
 
     @Test
-    public void testIsStringColumn() {
+    void testIsStringColumn() {
         assertTrue(H2oUtil.isStringColumn("String"));
         assertTrue(H2oUtil.isStringColumn("uuid"));
     }

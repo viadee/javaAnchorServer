@@ -1,13 +1,5 @@
 package me.kroeker.alex.anchor.jserver.h2o.util;
 
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
-import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
-import me.kroeker.alex.anchor.jserver.model.FrameInstance;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,6 +12,16 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
+import me.kroeker.alex.anchor.jserver.model.FeatureConditionsRequest;
+import me.kroeker.alex.anchor.jserver.model.FrameInstance;
+import water.bindings.H2oApi;
 
 public final class H2oDataUtil {
 
@@ -88,6 +90,24 @@ public final class H2oDataUtil {
 
             return records.getHeaderMap();
         }
+    }
+
+    public static Map<String, Integer> loadDataSetFromH2o(String frameId, H2oApi api, List<String[]> dataSetResponse) throws DataAccessException {
+        Map<String, Integer> header;
+        try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
+            File dataSetFile = h2oDownload.getFile(api, frameId);
+            Collection<String> newLine = new ArrayList<>();
+            header = H2oDataUtil.iterateThroughCsvData(dataSetFile, (record) -> {
+                        newLine.clear();
+                        record.iterator().forEachRemaining(newLine::add);
+                        dataSetResponse.add(newLine.toArray(new String[0]));
+                    }
+            );
+        } catch (IOException ioe) {
+            throw new DataAccessException("Failed to load data set from h2o with frame id: " + frameId, ioe);
+        }
+
+        return header;
     }
 
 }

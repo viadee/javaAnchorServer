@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  */
 public class FeatureConditionEnum extends FeatureCondition {
+    private static final long serialVersionUID = 6205543290887984485L;
 
     private String category;
 

@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
-    private static final long serialVersionUID = 1465028695728316141L;
+    private static final long serialVersionUID = 1569809236645015291L;
 
     private List<Range> valueDiscretizer;
 
@@ -51,7 +51,9 @@ public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>
         throw new IllegalArgumentException("Number " + number + " not handled");
     }
 
-    private static class Range {
+    private static class Range implements Serializable {
+        private static final long serialVersionUID = 7804017107871251851L;
+
         int label;
         double rangeInclusiveMin;
         double rangeExclusiveMax;

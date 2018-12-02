@@ -25,6 +25,10 @@
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>h2o-bindings</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ai.h2o</groupId>
+            <artifactId>h2o-genmodel</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
@@ -48,6 +52,10 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>me.kroeker.alex.anchor</groupId>
+            <artifactId>j-server-api</artifactId>
         </dependency>
     </dependencies>
 

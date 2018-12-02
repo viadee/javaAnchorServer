@@ -5,6 +5,8 @@ import java.io.IOException;
 /**
  */
 public class DataAccessException extends IOException {
+    private static final long serialVersionUID = -5778122139750179922L;
+
     public DataAccessException() {
         super();
     }

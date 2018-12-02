@@ -12,7 +12,7 @@ import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
 import de.viadee.anchorj.tabular.TabularInstance;
 
 public class TabularWithOriginalDataPerturbationFunction implements ReconfigurablePerturbationFunction<TabularInstance> {
-    private static final long serialVersionUID = -2686781293702251912L;
+    private static final long serialVersionUID = -3401089946498602421L;
 
     private final TabularInstance instance;
     private final TabularInstance[] perturbationData;

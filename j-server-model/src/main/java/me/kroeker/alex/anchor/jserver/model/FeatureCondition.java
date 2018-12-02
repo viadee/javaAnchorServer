@@ -6,6 +6,7 @@ import java.util.Objects;
 /**
  */
 public class FeatureCondition implements Serializable {
+    private static final long serialVersionUID = -8776873938351822951L;
 
     private String columnType;
 

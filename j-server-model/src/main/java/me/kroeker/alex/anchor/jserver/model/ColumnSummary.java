@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
+ *
  */
 public abstract class ColumnSummary<T extends Object> {
     private String frame_id;

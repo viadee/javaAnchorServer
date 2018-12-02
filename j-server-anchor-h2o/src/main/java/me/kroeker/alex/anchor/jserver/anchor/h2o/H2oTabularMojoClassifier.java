@@ -21,13 +21,13 @@ import hex.genmodel.easy.prediction.AbstractPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
 public class H2oTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
-    private static final long serialVersionUID = -3460976375700093928L;
+    private static final long serialVersionUID = -7682877358184283439L;
 
     private static final Logger LOG = LoggerFactory.getLogger(H2oTabularMojoClassifier.class);
 
     private final EasyPredictModelWrapper modelWrapper;
     private final List<String> columnNames;
-    private final Function<AbstractPrediction, Integer> predictionDiscretizer;
+    private final SerializableFunction predictionDiscretizer;
 
     public H2oTabularMojoClassifier(
             InputStream mojoInputStream,

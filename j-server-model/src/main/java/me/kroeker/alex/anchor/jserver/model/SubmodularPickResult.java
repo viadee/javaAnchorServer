@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class SubmodularPickResult implements Serializable {
+    private static final long serialVersionUID = -6781565239045176865L;
 
     private final Collection<Anchor> anchors;
     private final double aggregatedCoverage;
