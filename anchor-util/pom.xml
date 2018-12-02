@@ -19,6 +19,10 @@
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>business</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>h2o-util</artifactId>
         </dependency>
         <dependency>

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
-class AnchorRuleH2oTest {
+class AnchorH2OTest {
 
     @Mock
     private H2oApi api;
@@ -44,7 +44,7 @@ class AnchorRuleH2oTest {
     private Response<ResponseBody> frameResponse;
 
     @InjectMocks
-    private AnchorRuleH2o anchor;
+    private AnchorH2o anchor;
 
     @Test
     @Disabled

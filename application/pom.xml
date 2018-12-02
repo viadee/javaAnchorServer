@@ -25,6 +25,10 @@
             <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>anchor-h2o</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>anchor-h2o-spark</artifactId>
+        </dependency>
 
 
         <dependency>

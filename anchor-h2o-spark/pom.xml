@@ -17,5 +17,33 @@
             <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>anchor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>anchor-util</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.viadee</groupId>
+            <artifactId>DefaultConfigsExtension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee</groupId>
+            <artifactId>SparkExtension</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.h2o</groupId>
+            <artifactId>h2o-genmodel</artifactId>
+        </dependency>
     </dependencies>
 </project>

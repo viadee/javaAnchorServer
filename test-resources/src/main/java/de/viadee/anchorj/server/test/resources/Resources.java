@@ -1,6 +1,7 @@
 package de.viadee.anchorj.server.test.resources;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -28,7 +29,7 @@ public class Resources {
 
     public static final Map<String, Integer> AIRLINE_FEATURE_MAPPING = new HashMap<>(AIRLINE_FEATURES.size());
 
-    public static final Object[] SIMPLE_AIRLINE_INSTANCE;
+    public static final Serializable[] SIMPLE_AIRLINE_INSTANCE;
 
     public static Path copyResource(final String resource) throws IOException {
         Path tempFile = Files.createTempFile("test_", ".csv");
@@ -44,7 +45,7 @@ public class Resources {
             AIRLINE_FEATURE_MAPPING.put(AIRLINE_FEATURES.get(i), i);
         }
 
-        SIMPLE_AIRLINE_INSTANCE = new Object[31];
+        SIMPLE_AIRLINE_INSTANCE = new Serializable[31];
         SIMPLE_AIRLINE_INSTANCE[0] = "1987";
         SIMPLE_AIRLINE_INSTANCE[1] = "10";
         SIMPLE_AIRLINE_INSTANCE[2] = "14";

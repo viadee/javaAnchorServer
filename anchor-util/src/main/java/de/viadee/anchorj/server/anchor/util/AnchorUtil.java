@@ -1,5 +1,6 @@
 package de.viadee.anchorj.server.anchor.util;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -153,7 +155,7 @@ public class AnchorUtil {
                 [cleanedInstance.getFeatureNamesMapping().get(targetColumn.getName())];
         convertedAnchor.setLabel_of_case(labelOfCase);
 
-        Map<String, Object> cleanedInstanceMap = new HashMap<>(cleanedInstance.getFeatureCount());
+        Map<String, Serializable> cleanedInstanceMap = new HashMap<>(cleanedInstance.getFeatureCount());
         for (int i = 0; i < cleanedInstance.getFeatureCount(); i++) {
             cleanedInstanceMap.put(anchor.getFeatures().get(i).getName(), cleanedInstance.getOriginalValue(i));
         }
@@ -264,6 +266,28 @@ public class AnchorUtil {
         anchorInstance.add(instanceAsStringArray);
         AnchorUtil.handleNa(instance.getFeatureNamesMapping(), anchorInstance, anchorBuilder.getColumnDescriptions());
         return anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
+    }
+
+    public static void calculateCoveragePerPredicate(final List<TabularInstance> instances,
+                                                     final Collection<Anchor> explanations) {
+
+        final Map<String, Double> predicateCoverage = new HashMap<>();
+        final Consumer<AnchorPredicate> calculateCoverage = predicate -> {
+            final String featureName = predicate.getFeatureName();
+            double exactCoverage;
+            if (!predicateCoverage.containsKey(featureName)) {
+                exactCoverage = AnchorUtil.computeExactCoverage(instances, predicate);
+                predicateCoverage.put(featureName, exactCoverage);
+            } else {
+                exactCoverage = predicateCoverage.get(featureName);
+            }
+            predicate.setExactCoverage(exactCoverage);
+        };
+        explanations.forEach((expl) -> {
+            expl.getEnumPredicate().values().forEach(calculateCoverage);
+            expl.getMetricPredicate().values().forEach(calculateCoverage);
+        });
+
     }
 
 }

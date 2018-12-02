@@ -9,11 +9,11 @@ import java.util.Objects;
 /**
  */
 public class Anchor implements Serializable {
-    private static final long serialVersionUID = 8680607729372712938L;
+    private static final long serialVersionUID = -1345662548683897191L;
 
     private String model_id;
     private String frame_id;
-    private Map<String, Object> instance;
+    private Map<String, Serializable> instance;
     private Object label_of_case;
     private String prediction;
     private double precision;
@@ -40,11 +40,11 @@ public class Anchor implements Serializable {
         this.frame_id = frame_id;
     }
 
-    public Map<String, Object> getInstance() {
+    public Map<String, Serializable> getInstance() {
         return instance;
     }
 
-    public void setInstance(Map<String, Object> instance) {
+    public void setInstance(Map<String, Serializable> instance) {
         this.instance = instance;
     }
 
