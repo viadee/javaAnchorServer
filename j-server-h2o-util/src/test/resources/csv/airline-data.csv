@@ -1,7 +1,0 @@
-"Year","Month","DayofMonth","DayOfWeek","DepTime","CRSDepTime","ArrTime","CRSArrTime","UniqueCarrier","FlightNum","TailNum","ActualElapsedTime","CRSElapsedTime","AirTime","ArrDelay","DepDelay","Origin","Dest","Distance","TaxiIn","TaxiOut","Cancelled","CancellationCode","Diverted","CarrierDelay","WeatherDelay","NASDelay","SecurityDelay","LateAircraftDelay","IsArrDelayed","IsDepDelayed"
-1987,10,14,3,741,730,912,849,"PS",1451,"NA",91,79,,23,11,"SAN","SFO",447,,,0,"NA",0,,,,,,"YES","YES"
-1987,10,15,4,729,730,903,849,"PS",1451,"NA",94,79,,14,-1,"SAN","SFO",447,,,0,"NA",0,,,,,,"YES","NO"
-1987,10,17,6,741,730,918,849,"PS",1451,"NA",97,79,,29,11,"SAN","SFO",447,,,0,"NA",0,,,,,,"YES","YES"
-1987,10,18,7,729,730,847,849,"PS",1451,"NA",78,79,,-2,-1,"SAN","SFO",447,,,0,"NA",0,,,,,,"NO","NO"
-1987,10,19,1,749,730,922,849,"PS",1451,"NA",93,79,,33,19,"SAN","SFO",447,,,0,"NA",0,,,,,,"YES","YES"
-1987,10,21,3,728,730,848,849,"PS",1451,"NA",80,79,,-1,-2,"SAN","SFO",447,,,0,"NA",0,,,,,,"NO","NO"

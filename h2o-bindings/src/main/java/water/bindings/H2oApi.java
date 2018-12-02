@@ -42,6 +42,10 @@ public class H2oApi {
     return this;
   }
 
+  public String getUrl() {
+    return this._url;
+  }
+
   public H2oApi setTimeout(int t) {
     timeout_s = t;
     retrofit = null;

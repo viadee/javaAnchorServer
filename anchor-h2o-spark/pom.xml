@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>anchorj-server</artifactId>
+        <groupId>de.viadee.anchorj.server</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>anchor-h2o-spark</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>anchor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>anchor-util</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.viadee</groupId>
+            <artifactId>DefaultConfigsExtension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee</groupId>
+            <artifactId>SparkExtension</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.h2o</groupId>
+            <artifactId>h2o-genmodel</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>j-server</artifactId>
-        <groupId>me.kroeker.alex.anchor</groupId>
+        <artifactId>anchorj-server</artifactId>
+        <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 

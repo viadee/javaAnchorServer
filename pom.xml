@@ -10,8 +10,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>me.kroeker.alex.anchor</groupId>
-    <artifactId>j-server</artifactId>
+    <groupId>de.viadee.anchorj.server</groupId>
+    <artifactId>anchorj-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -19,19 +19,22 @@
     <description>Provides Anchors-Explanations for Machine Learning Models as a Service</description>
 
     <modules>
-        <module>j-server-application</module>
-        <module>j-server-model</module>
-        <module>j-server-api</module>
-        <module>j-server-controller</module>
-        <module>j-server-dao</module>
-        <module>j-server-business</module>
-        <module>j-server-dao-spark</module>
-        <module>j-server-dao-h2o</module>
+        <module>application</module>
+        <module>model</module>
+        <module>api</module>
+        <module>controller</module>
+        <module>dao</module>
+        <module>business</module>
+        <module>dao-spark</module>
+        <module>dao-h2o</module>
         <module>h2o-bindings</module>
-        <module>j-server-anchor</module>
-        <module>j-server-anchor-h2o</module>
-        <module>j-server-h2o-util</module>
-        <module>j-server-test-coverage</module>
+        <module>anchor</module>
+        <module>anchor-h2o</module>
+        <module>h2o-util</module>
+        <module>test-coverage</module>
+        <module>anchor-h2o-spark</module>
+        <module>anchor-util</module>
+        <module>test-resources</module>
     </modules>
 
     <properties>
@@ -39,8 +42,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <h2o.version>3.20.0.10</h2o.version>
-        <mockito.version>2.9.0</mockito.version>
-        <powermock.version>1.7.4</powermock.version>
+        <mockito.jupiter.version>2.23.4</mockito.jupiter.version>
+        <junit.jupiter.version>5.3.2</junit.jupiter.version>
     </properties>
 
     <dependencies>
@@ -53,59 +56,82 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-model</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>model</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-api</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-controller</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>controller</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-dao</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>dao</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-business</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>business</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-dao-spark</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>dao-spark</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-dao-h2o</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>dao-h2o</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-h2o-util</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>h2o-util</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-anchor</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>anchor</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
-                <artifactId>j-server-anchor-h2o</artifactId>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>anchor-h2o</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>h2o-bindings</artifactId>
                 <version>3.20.0.10</version>
+            </dependency>
+            <dependency>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>anchor-util</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>anchor-h2o-spark</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>de.viadee.anchorj.server</groupId>-->
+                <!--<artifactId>test-resources</artifactId>-->
+                <!--<version>0.0.1-SNAPSHOT</version>-->
+                <!--<scope>test</scope>-->
+                <!--<type>test-jar</type>-->
+            <!--</dependency>-->
+            <dependency>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>test-resources</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <scope>test</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/ai.h2o/h2o-genmodel -->
             <dependency>
@@ -118,44 +144,68 @@
                 <groupId>de.viadee</groupId>
                 <artifactId>anchorj</artifactId>
                 <version>1.0-SNAPSHOT</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-log4j12</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>de.viadee</groupId>
                 <artifactId>DefaultConfigsExtension</artifactId>
                 <version>1.0-SNAPSHOT</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-log4j12</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>de.viadee</groupId>
+                <artifactId>SparkExtension</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-log4j12</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.spark</groupId>
+                        <artifactId>spark-core_2.12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-core_2.11</artifactId>
+                <version>2.3.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2 -->
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito2</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/org.powermock/powermock-core -->
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-core</artifactId>
-                <version>${powermock.version}</version>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all -->
@@ -166,6 +216,42 @@
                 <scope>test</scope>
             </dependency>
 
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-core</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-algos</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-genmodel</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-persist-hdfs</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-web</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-app</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -209,6 +295,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.2</version>
                 <executions>
                     <!-- set arg line property for surefire -->
                     <execution>
@@ -234,4 +321,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>mvncentral</id>
+            <name>Maven Central</name>
+            <url>http://central.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>h2o-ai</id>
+            <name>H2O maven Repo</name>
+            <url>http://h2o-release.s3.amazonaws.com/h2o/rel-xia/2/maven/repo/</url>
+        </repository>
+    </repositories>
 </project>
