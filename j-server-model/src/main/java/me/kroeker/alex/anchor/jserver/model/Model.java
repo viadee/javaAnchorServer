@@ -1,8 +1,10 @@
 package me.kroeker.alex.anchor.jserver.model;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
+ *
  */
 public class Model {
     private String model_id;
@@ -10,6 +12,7 @@ public class Model {
     private String url;
     private String target_column;
     private DataFrame data_frame;
+    private Set<String> ignoredColumns;
 
     public String getModel_id() {
         return model_id;
@@ -51,6 +54,14 @@ public class Model {
         this.data_frame = data_frame;
     }
 
+    public Set<String> getIgnoredColumns() {
+        return ignoredColumns;
+    }
+
+    public void setIgnoredColumns(Set<String> ignoredColumns) {
+        this.ignoredColumns = ignoredColumns;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -60,12 +71,13 @@ public class Model {
                 Objects.equals(name, model.name) &&
                 Objects.equals(url, model.url) &&
                 Objects.equals(target_column, model.target_column) &&
-                Objects.equals(data_frame, model.data_frame);
+                Objects.equals(data_frame, model.data_frame) &&
+                Objects.equals(ignoredColumns, model.ignoredColumns);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(model_id, name, url, target_column, data_frame);
+        return Objects.hash(model_id, name, url, target_column, data_frame, ignoredColumns);
     }
 
     @Override
@@ -76,6 +88,7 @@ public class Model {
                 ", url='" + url + '\'' +
                 ", target_column='" + target_column + '\'' +
                 ", data_frame=" + data_frame +
+                ", ignoredColumns=" + ignoredColumns +
                 '}';
     }
 }

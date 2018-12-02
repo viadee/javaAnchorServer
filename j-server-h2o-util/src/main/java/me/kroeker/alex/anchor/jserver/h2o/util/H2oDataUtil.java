@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.h2o.util;
+package me.kroeker.alex.anchor.jserver.h2o.util;
 
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionEnum;
 import me.kroeker.alex.anchor.jserver.model.FeatureConditionMetric;
@@ -81,6 +81,7 @@ public final class H2oDataUtil {
     public static Map<String, Integer> iterateThroughCsvData(File file, Consumer<CSVRecord> recordConsumer) throws IOException {
         try (Reader in = new FileReader(file)) {
             CSVParser records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
+
             for (CSVRecord record : records) {
                 recordConsumer.accept(record);
             }
