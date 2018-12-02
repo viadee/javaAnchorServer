@@ -6,24 +6,23 @@
 
     <parent>
         <artifactId>j-server</artifactId>
-        <groupId>me.kroeker.alex.anchor</groupId>
+        <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>j-server-application</artifactId>
-    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-controller</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-dao-h2o</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-anchor-h2o</artifactId>
         </dependency>
 

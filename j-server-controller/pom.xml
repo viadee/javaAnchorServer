@@ -6,28 +6,27 @@
 
     <parent>
         <artifactId>j-server</artifactId>
-        <groupId>me.kroeker.alex.anchor</groupId>
+        <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>j-server-controller</artifactId>
-    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-dao</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-business</artifactId>
         </dependency>
 

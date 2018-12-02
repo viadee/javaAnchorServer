@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>me.kroeker.alex.anchor</groupId>
+    <groupId>de.viadee.anchorj.server</groupId>
     <artifactId>j-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -56,72 +56,72 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-model</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-controller</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-dao</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-business</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-dao-spark</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-dao-h2o</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-h2o-util</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-anchor</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-anchor-h2o</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>me.kroeker.alex.anchor</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>h2o-bindings</artifactId>
                 <version>3.20.0.10</version>
             </dependency>
             <dependency>
-                <groupId>de.viadee.anchorj</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>anchor-util</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>de.viadee.anchorj</groupId>
+                <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>j-server-anchor-h2o-spark</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <!--<dependency>-->
-                <!--<groupId>de.viadee.anchorj</groupId>-->
+                <!--<groupId>de.viadee.anchorj.server</groupId>-->
                 <!--<artifactId>test-resources</artifactId>-->
                 <!--<version>0.0.1-SNAPSHOT</version>-->
                 <!--<scope>test</scope>-->

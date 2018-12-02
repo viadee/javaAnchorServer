@@ -6,7 +6,7 @@
 
     <parent>
         <artifactId>j-server</artifactId>
-        <groupId>me.kroeker.alex.anchor</groupId>
+        <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -14,19 +14,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-dao</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-model</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-h2o-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>j-server-api</artifactId>
         </dependency>
 
@@ -43,7 +43,7 @@
             <!--<version>3.20.0.6</version>-->
         <!--</dependency>-->
         <dependency>
-            <groupId>me.kroeker.alex.anchor</groupId>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>h2o-bindings</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->

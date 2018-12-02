@@ -3,12 +3,12 @@ package de.viadee.anchorj.server.anchor.h2o.spark;
 import java.util.Collection;
 import java.util.Map;
 
-import me.kroeker.alex.anchor.jserver.anchor.AnchorRule;
-import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
-import me.kroeker.alex.anchor.jserver.model.Anchor;
-import me.kroeker.alex.anchor.jserver.model.AnchorConfigDescription;
-import me.kroeker.alex.anchor.jserver.model.FrameInstance;
-import me.kroeker.alex.anchor.jserver.model.SubmodularPickResult;
+import de.viadee.anchorj.server.anchor.AnchorRule;
+import de.viadee.anchorj.server.api.exceptions.DataAccessException;
+import de.viadee.anchorj.server.model.Anchor;
+import de.viadee.anchorj.server.model.AnchorConfigDescription;
+import de.viadee.anchorj.server.model.FrameInstance;
+import de.viadee.anchorj.server.model.SubmodularPickResult;
 
 /**
  *
