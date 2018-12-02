@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>j-server</artifactId>
+        <artifactId>anchorj-server</artifactId>
         <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -15,15 +15,15 @@
     <dependencies>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-model</artifactId>
+            <artifactId>model</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-h2o-util</artifactId>
+            <artifactId>h2o-util</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-anchor</artifactId>
+            <artifactId>anchor</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee</groupId>

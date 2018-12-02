@@ -5,25 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>j-server</artifactId>
+        <artifactId>anchorj-server</artifactId>
         <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>j-server-application</artifactId>
+    <artifactId>application</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-controller</artifactId>
+            <artifactId>controller</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-dao-h2o</artifactId>
+            <artifactId>dao-h2o</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-anchor-h2o</artifactId>
+            <artifactId>anchor-h2o</artifactId>
         </dependency>
 
 
@@ -74,7 +74,6 @@
                             </outputDirectory>
                             <includeGroupIds>
                                 de.viadee,
-                                me.kroeker.alex.anchor,
                                 ai.h2o,
                                 org.apache.commons
                             </includeGroupIds>

@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>de.viadee.anchorj.server</groupId>
-    <artifactId>j-server</artifactId>
+    <artifactId>anchorj-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -19,20 +19,20 @@
     <description>Provides Anchors-Explanations for Machine Learning Models as a Service</description>
 
     <modules>
-        <module>j-server-application</module>
-        <module>j-server-model</module>
-        <module>j-server-api</module>
-        <module>j-server-controller</module>
-        <module>j-server-dao</module>
-        <module>j-server-business</module>
-        <module>j-server-dao-spark</module>
-        <module>j-server-dao-h2o</module>
+        <module>application</module>
+        <module>model</module>
+        <module>api</module>
+        <module>controller</module>
+        <module>dao</module>
+        <module>business</module>
+        <module>dao-spark</module>
+        <module>dao-h2o</module>
         <module>h2o-bindings</module>
-        <module>j-server-anchor</module>
-        <module>j-server-anchor-h2o</module>
-        <module>j-server-h2o-util</module>
-        <module>j-server-test-coverage</module>
-        <module>j-server-anchor-h2o-spark</module>
+        <module>anchor</module>
+        <module>anchor-h2o</module>
+        <module>h2o-util</module>
+        <module>test-coverage</module>
+        <module>anchor-h2o-spark</module>
         <module>anchor-util</module>
         <module>test-resources</module>
     </modules>
@@ -57,52 +57,52 @@
         <dependencies>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-model</artifactId>
+                <artifactId>model</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-api</artifactId>
+                <artifactId>api</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-controller</artifactId>
+                <artifactId>controller</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-dao</artifactId>
+                <artifactId>dao</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-business</artifactId>
+                <artifactId>business</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-dao-spark</artifactId>
+                <artifactId>dao-spark</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-dao-h2o</artifactId>
+                <artifactId>dao-h2o</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-h2o-util</artifactId>
+                <artifactId>h2o-util</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-anchor</artifactId>
+                <artifactId>anchor</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-anchor-h2o</artifactId>
+                <artifactId>anchor-h2o</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -117,7 +117,7 @@
             </dependency>
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
-                <artifactId>j-server-anchor-h2o-spark</artifactId>
+                <artifactId>anchor-h2o-spark</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <!--<dependency>-->

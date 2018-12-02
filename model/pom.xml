@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>j-server</artifactId>
+        <artifactId>anchorj-server</artifactId>
         <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>j-server-model</artifactId>
+    <artifactId>model</artifactId>
     <packaging>jar</packaging>
 
 

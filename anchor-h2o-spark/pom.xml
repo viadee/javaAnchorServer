@@ -5,17 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>j-server</artifactId>
+        <artifactId>anchorj-server</artifactId>
         <groupId>de.viadee.anchorj.server</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>j-server-anchor-h2o-spark</artifactId>
+    <artifactId>anchor-h2o-spark</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>j-server-anchor</artifactId>
+            <artifactId>anchor</artifactId>
         </dependency>
     </dependencies>
 </project>
