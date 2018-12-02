@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import de.viadee.anchorj.server.test.resources.Resources;
 import me.kroeker.alex.anchor.jserver.api.exceptions.DataAccessException;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.business.ModelBO;
@@ -46,7 +47,7 @@ class AnchorPredicateH2OTest {
         ResponseBody body = mock(ResponseBody.class);
         when(response.isSuccessful()).thenReturn(true);
         when(body.byteStream()).thenReturn(
-                this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CSV)
+                this.getClass().getResourceAsStream(Resources.AIRLINE_CSV)
         );
         when(response.body()).thenReturn(body);
         when(api._downloadDataset_fetch(any())).thenReturn(response);

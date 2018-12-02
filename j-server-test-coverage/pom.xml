@@ -48,10 +48,26 @@
             <groupId>me.kroeker.alex.anchor</groupId>
             <artifactId>j-server-h2o-util</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj</groupId>
+            <artifactId>anchor-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj</groupId>
+            <artifactId>j-server-anchor-h2o-spark</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>me.kroeker.alex.anchor</groupId>-->
             <!--<artifactId>j-server-model</artifactId>-->
         <!--</dependency>-->
+
+        <!-- needed to execute Integration tests instrumented with Cobertura -->
+        <dependency>
+            <groupId>net.sourceforge.cobertura</groupId>
+            <artifactId>cobertura</artifactId>
+            <version>2.1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -81,4 +97,10 @@
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <soapui.settings.empty.file.path>${project.basedir}/target/soapui/empty</soapui.settings.empty.file.path>
+        <soapui.project.fail.1.file.path>${project.basedir}/target/soapui/fail</soapui.project.fail.1.file.path>
+        <soapui.config.output.directory>${project.basedir}/target/soapui/out</soapui.config.output.directory>
+    </properties>
 </project>

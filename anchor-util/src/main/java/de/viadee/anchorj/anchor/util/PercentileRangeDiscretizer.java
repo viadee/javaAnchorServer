@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.anchor.h2o;
+package de.viadee.anchorj.anchor.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
-    private static final long serialVersionUID = 1569809236645015291L;
+    private static final long serialVersionUID = 8752254596599470432L;
 
     private List<Range> valueDiscretizer;
 
@@ -52,7 +52,7 @@ public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>
     }
 
     private static class Range implements Serializable {
-        private static final long serialVersionUID = 7804017107871251851L;
+        private static final long serialVersionUID = -5976040777101277296L;
 
         int label;
         double rangeInclusiveMin;

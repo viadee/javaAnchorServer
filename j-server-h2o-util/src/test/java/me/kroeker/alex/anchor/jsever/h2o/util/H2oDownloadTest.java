@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import de.viadee.anchorj.server.test.resources.Resources;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oFrameDownload;
 import me.kroeker.alex.anchor.jserver.h2o.util.H2oMojoDownload;
 import okhttp3.ResponseBody;
@@ -38,7 +39,7 @@ class H2oDownloadTest {
         ResponseBody body = mock(ResponseBody.class);
         when(response.isSuccessful()).thenReturn(true);
         when(body.byteStream()).thenReturn(
-                this.getClass().getResourceAsStream("/" + Resources.SIMPLE_CSV_FILE_STRING)
+                this.getClass().getResourceAsStream(Resources.SIMPLE_CSV_FILE_STRING)
         );
         when(response.body()).thenReturn(body);
     }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import de.viadee.anchorj.server.test.resources.Resources;
 import me.kroeker.alex.anchor.jserver.business.FrameBO;
 import me.kroeker.alex.anchor.jserver.business.ModelBO;
 import me.kroeker.alex.anchor.jserver.model.ColumnSummary;
@@ -54,7 +55,7 @@ class AnchorRuleH2oTest {
         ResponseBody body = mock(ResponseBody.class);
         when(frameResponse.isSuccessful()).thenReturn(true);
         when(body.byteStream()).thenReturn(
-                this.getClass().getResourceAsStream("/" + Resources.AIRLINE_CSV)
+                this.getClass().getResourceAsStream(Resources.AIRLINE_CSV)
         );
         when(frameResponse.body()).thenReturn(body);
         when(api._downloadDataset_fetch(any())).thenReturn(frameResponse);

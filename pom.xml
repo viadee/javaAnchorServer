@@ -32,6 +32,9 @@
         <module>j-server-anchor-h2o</module>
         <module>j-server-h2o-util</module>
         <module>j-server-test-coverage</module>
+        <module>j-server-anchor-h2o-spark</module>
+        <module>anchor-util</module>
+        <module>test-resources</module>
     </modules>
 
     <properties>
@@ -106,6 +109,29 @@
                 <groupId>me.kroeker.alex.anchor</groupId>
                 <artifactId>h2o-bindings</artifactId>
                 <version>3.20.0.10</version>
+            </dependency>
+            <dependency>
+                <groupId>de.viadee.anchorj</groupId>
+                <artifactId>anchor-util</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de.viadee.anchorj</groupId>
+                <artifactId>j-server-anchor-h2o-spark</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>de.viadee.anchorj</groupId>-->
+                <!--<artifactId>test-resources</artifactId>-->
+                <!--<version>0.0.1-SNAPSHOT</version>-->
+                <!--<scope>test</scope>-->
+                <!--<type>test-jar</type>-->
+            <!--</dependency>-->
+            <dependency>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>test-resources</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <scope>test</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/ai.h2o/h2o-genmodel -->
             <dependency>
@@ -190,6 +216,42 @@
                 <scope>test</scope>
             </dependency>
 
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-core</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-algos</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-genmodel</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-persist-hdfs</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-web</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>ai.h2o</groupId>-->
+                <!--<artifactId>h2o-app</artifactId>-->
+                <!--<version>${h2o.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -259,4 +321,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>mvncentral</id>
+            <name>Maven Central</name>
+            <url>http://central.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>h2o-ai</id>
+            <name>H2O maven Repo</name>
+            <url>http://h2o-release.s3.amazonaws.com/h2o/rel-xia/2/maven/repo/</url>
+        </repository>
+    </repositories>
 </project>

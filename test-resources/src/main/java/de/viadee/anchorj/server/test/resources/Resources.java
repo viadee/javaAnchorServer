@@ -1,29 +1,43 @@
-package me.kroeker.alex.anchor.jserver.anchor.h2o;
+package de.viadee.anchorj.server.test.resources;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author ak902764
+ *
  */
 public class Resources {
 
-    static final String AIRLINE_CSV = "csv/airline-data.csv";
+    public static final String SIMPLE_CSV_FILE_STRING = "/csv/simple-csv-with-header.csv";
 
+    public static final String AIRLINE_CSV = "/csv/airline-data.csv";
 
-    static final String AIRLINE_CLASSIFIER = "mojo/GBM_Airlines_Classification.zip";
+    public static final String AIRLINE_CLASSIFIER = "/mojo/GBM_Airlines_Classification.zip";
 
-    static final List<String> AIRLINE_FEATURES = Arrays.asList("Year", "Month", "DayofMonth", "DayOfWeek",
+    public static final List<String> AIRLINE_FEATURES = Arrays.asList("Year", "Month", "DayofMonth", "DayOfWeek",
             "DepTime", "CRSDepTime", "ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum",
             "ActualElapsedTime", "CRSElapsedTime", "AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance",
             "TaxiIn", "TaxiOut", "Cancelled", "CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay",
             "NASDelay", "SecurityDelay", "LateAircraftDelay", "IsArrDelayed", "IsDepDelayed");
 
-    static final Map<String, Integer> AIRLINE_FEATURE_MAPPING = new HashMap<>(AIRLINE_FEATURES.size());
+    public static final Map<String, Integer> AIRLINE_FEATURE_MAPPING = new HashMap<>(AIRLINE_FEATURES.size());
 
-    static final Object[] SIMPLE_AIRLINE_INSTANCE;
+    public static final Object[] SIMPLE_AIRLINE_INSTANCE;
+
+    public static Path copyResource(final String resource) throws IOException {
+        Path tempFile = Files.createTempFile("test_", ".csv");
+        Files.copy(Resources.class.getClass().getResourceAsStream(resource), tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+        tempFile.toFile().deleteOnExit();
+        return tempFile;
+
+    }
 
     static {
         for (int i = 0; i < AIRLINE_FEATURES.size(); i++) {

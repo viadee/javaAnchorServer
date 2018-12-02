@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.anchor.h2o;
+package de.viadee.anchorj.anchor.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ import hex.genmodel.easy.prediction.AbstractPrediction;
 import me.kroeker.alex.anchor.jserver.anchor.PredictException;
 
 public class H2oTabularMojoClassifier implements ClassificationFunction<TabularInstance> {
-    private static final long serialVersionUID = -7682877358184283439L;
+    private static final long serialVersionUID = -7959314866688372691L;
 
     private static final Logger LOG = LoggerFactory.getLogger(H2oTabularMojoClassifier.class);
 

@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.anchor.h2o;
+package de.viadee.anchorj.anchor.util;
 
 import org.junit.jupiter.api.Test;
 

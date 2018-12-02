@@ -1,4 +1,4 @@
-package me.kroeker.alex.anchor.jserver.anchor.h2o;
+package de.viadee.anchorj.anchor.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
 import de.viadee.anchorj.tabular.TabularInstance;
 
 public class TabularWithOriginalDataPerturbationFunction implements ReconfigurablePerturbationFunction<TabularInstance> {
-    private static final long serialVersionUID = -3401089946498602421L;
+    private static final long serialVersionUID = -3628876083250760836L;
 
     private final TabularInstance instance;
     private final TabularInstance[] perturbationData;
