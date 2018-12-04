@@ -125,9 +125,9 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
         ColumnSummary column;
         column = new ContinuousColumnSummary();
         column.setData(Arrays.asList(ArrayUtils.toObject(h2oCol.data)));
-        ((ContinuousColumnSummary) column).setColumn_min((int) h2oCol.mins[0]);
-        ((ContinuousColumnSummary) column).setColumn_max((int) h2oCol.maxs[0]);
-        ((ContinuousColumnSummary) column).setMean((int) h2oCol.mean);
+        ((ContinuousColumnSummary) column).setColumn_min(h2oCol.mins[0]);
+        ((ContinuousColumnSummary) column).setColumn_max(h2oCol.maxs[0]);
+        ((ContinuousColumnSummary) column).setMean(h2oCol.mean);
         return column;
     }
 
@@ -188,7 +188,8 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
         int domainLength = domain.length;
         double coveredFreq = 0;
         List<CategoryFreq> categories = new ArrayList<>(domainLength);
-        for (int i = 0; i < domainLength; i++) {
+
+        for (int i = 0; i < histogramBins.length; i++) {
             double freq = (double) histogramBins[i] / rowCount;
             categories.add(new CategoryFreq(domain[i], freq));
             coveredFreq += freq;

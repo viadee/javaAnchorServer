@@ -22,6 +22,7 @@ import water.bindings.pojos.ModelSchemaBaseV3;
 import water.bindings.pojos.ModelsV3;
 import water.bindings.pojos.NaiveBayesModelV3;
 import water.bindings.pojos.PCAModelV3;
+import water.bindings.pojos.StackedEnsembleModelV99;
 
 /**
  *
@@ -107,6 +108,9 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
             case "pca":
                 PCAModelV3 pcaModel = (PCAModelV3) h2oModel;
                 return pcaModel.parameters != null ? pcaModel.parameters.ignoredColumns : null;
+            case "stackedensemble":
+                StackedEnsembleModelV99 seModel = (StackedEnsembleModelV99) h2oModel;
+                return seModel.parameters != null ? seModel.parameters.ignoredColumns : null;
             default:
                 throw new IllegalArgumentException("Model with algo " + algoName + " not handled");
         }

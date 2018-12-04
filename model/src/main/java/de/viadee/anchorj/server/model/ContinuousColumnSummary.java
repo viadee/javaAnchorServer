@@ -5,32 +5,32 @@ import java.util.Objects;
 /**
  */
 public class ContinuousColumnSummary extends ColumnSummary<Double> {
-    private int column_min;
-    private int column_max;
+    private double column_min;
+    private double column_max;
 
-    private int mean;
+    private double mean;
 
-    public int getColumn_min() {
+    public double getColumn_min() {
         return column_min;
     }
 
-    public void setColumn_min(int column_min) {
+    public void setColumn_min(double column_min) {
         this.column_min = column_min;
     }
 
-    public int getColumn_max() {
+    public double getColumn_max() {
         return column_max;
     }
 
-    public void setColumn_max(int column_max) {
+    public void setColumn_max(double column_max) {
         this.column_max = column_max;
     }
 
-    public int getMean() {
+    public double getMean() {
         return mean;
     }
 
-    public void setMean(int mean) {
+    public void setMean(double mean) {
         this.mean = mean;
     }
 

@@ -23,6 +23,13 @@ import org.slf4j.LoggerFactory;
 import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.DataInstance;
+import de.viadee.anchorj.server.h2o.util.H2oUtil;
+import de.viadee.anchorj.server.model.Anchor;
+import de.viadee.anchorj.server.model.AnchorPredicate;
+import de.viadee.anchorj.server.model.AnchorPredicateEnum;
+import de.viadee.anchorj.server.model.AnchorPredicateMetric;
+import de.viadee.anchorj.server.model.ColumnSummary;
+import de.viadee.anchorj.server.model.ContinuousColumnSummary;
 import de.viadee.anchorj.tabular.AnchorTabular;
 import de.viadee.anchorj.tabular.CategoricalValueMapping;
 import de.viadee.anchorj.tabular.ColumnDescription;
@@ -33,13 +40,6 @@ import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
-import de.viadee.anchorj.server.h2o.util.H2oUtil;
-import de.viadee.anchorj.server.model.Anchor;
-import de.viadee.anchorj.server.model.AnchorPredicate;
-import de.viadee.anchorj.server.model.AnchorPredicateEnum;
-import de.viadee.anchorj.server.model.AnchorPredicateMetric;
-import de.viadee.anchorj.server.model.ColumnSummary;
-import de.viadee.anchorj.server.model.ContinuousColumnSummary;
 
 /**
  *
@@ -147,12 +147,8 @@ public class AnchorUtil {
         convertedAnchor.setFrame_id(frameId);
         convertedAnchor.setModel_id(modelId);
 
-        ColumnDescription targetColumn = anchorBuilder.getColumnDescriptions().stream().filter(ColumnDescription::isTargetFeature)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("no column with target definition found"));
-
         TabularInstance cleanedInstance = anchorResult.getInstance();
-        Object labelOfCase = cleanedInstance.getOriginalInstance()
-                [cleanedInstance.getFeatureNamesMapping().get(targetColumn.getName())];
+        Object labelOfCase = cleanedInstance.getLabel();
         convertedAnchor.setLabel_of_case(labelOfCase);
 
         Map<String, Serializable> cleanedInstanceMap = new HashMap<>(cleanedInstance.getFeatureCount());

@@ -7,11 +7,12 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
+ *
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
     private static final long serialVersionUID = 3466033579065170509L;
 
-    private List<Range> valueDiscretizer;
+    private final List<Range> valueDiscretizer;
 
     public PercentileRangeDiscretizer(int classCount, final double inclusiveMin, final double inclusiveMax) {
         double diff = inclusiveMax - inclusiveMin;
@@ -25,7 +26,7 @@ public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>
             double stepMin = inclusiveMin + step * i;
             double stepMax = inclusiveMin + step * (i + 1);
             if (i == classCount - 1) {
-                stepMax += 0.00000000000001;
+                stepMax++;
             }
 
             this.valueDiscretizer.add(new Range(i, stepMin, stepMax));

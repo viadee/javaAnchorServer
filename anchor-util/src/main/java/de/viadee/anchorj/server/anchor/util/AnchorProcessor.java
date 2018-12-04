@@ -2,10 +2,12 @@ package de.viadee.anchorj.server.anchor.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.viadee.anchorj.AnchorConstructionBuilder;
 import de.viadee.anchorj.AnchorResult;
@@ -23,6 +25,7 @@ import de.viadee.anchorj.server.model.FrameSummary;
 import de.viadee.anchorj.server.model.Model;
 import de.viadee.anchorj.server.model.SubmodularPickResult;
 import de.viadee.anchorj.tabular.AnchorTabular;
+import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
 import water.bindings.H2oApi;
 
@@ -72,8 +75,10 @@ public class AnchorProcessor {
 
         this.instances = anchorTabular.getTabularInstances();
 
-        this.classificationFunction = H2oTabularMojoClassifier.create(this.api, this.modelId, this.anchorTabular);
-        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), instance.getInstance());
+        String targetFeatureName = anchorTabular.getMappings().keySet().stream().filter((TabularFeature::isTargetFeature)).findFirst().orElseThrow(() -> new IllegalStateException("no target column found")).getName();
+        List<String> sortedHeaderNames = this.instances.get(0).getFeatureNamesMapping().entrySet().stream().filter((entry) -> !targetFeatureName.equals(entry.getKey())).sorted(Comparator.comparingInt(Map.Entry::getValue)).map(Map.Entry::getKey).collect(Collectors.toList());
+        this.classificationFunction = H2oTabularMojoClassifier.create(this.api, this.modelId, sortedHeaderNames);
+        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance());
         final TabularInstance cleanedInstance = AnchorUtil.handleInstanceToExplain(convertedInstance, tabularPreprocessor);
 
         this.constructionBuilder = createAnchorBuilderWithConfig(this.anchorTabular, this.classificationFunction,
@@ -138,7 +143,8 @@ public class AnchorProcessor {
                                                                                      ClassificationFunction<TabularInstance> classificationFunction,
                                                                                      TabularInstance cleanedInstance,
                                                                                      Map<String, Object> anchorConfig) {
-        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(cleanedInstance,
+        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(
+                cleanedInstance,
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
 
         final double anchorTau = AnchorConfig.getTau(anchorConfig);

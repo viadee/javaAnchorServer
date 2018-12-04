@@ -5,10 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +15,6 @@ import de.viadee.anchorj.server.anchor.PredictException;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
 import de.viadee.anchorj.server.h2o.util.H2oDownload;
 import de.viadee.anchorj.server.h2o.util.H2oMojoDownload;
-import de.viadee.anchorj.tabular.AnchorTabular;
-import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
 import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
@@ -35,14 +31,14 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
     private static final Logger LOG = LoggerFactory.getLogger(H2oTabularMojoClassifier.class);
 
     private final EasyPredictModelWrapper modelWrapper;
-    private final List<String> columnNames;
     private final SerializableFunction predictionDiscretizer;
+    private final String[] sortedColumnNames;
 
     public H2oTabularMojoClassifier(
             InputStream mojoInputStream,
             SerializableFunction predictionDiscretizer,
-            List<String> columnNames) throws IOException {
-
+            List<String> sortedHeaderMapping) throws IOException {
+        this.sortedColumnNames = sortedHeaderMapping.toArray(new String[0]);
         this.predictionDiscretizer = predictionDiscretizer;
 
         final MojoReaderBackend reader = MojoReaderBackendFactory.createReaderBackend(mojoInputStream,
@@ -50,7 +46,6 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
         final MojoModel model = ModelMojoReader.readFrom(reader);
 
         this.modelWrapper = new EasyPredictModelWrapper(model);
-        this.columnNames = Collections.unmodifiableList(columnNames);
     }
 
     @Override
@@ -65,11 +60,8 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
         }
 
         RowData row = new RowData();
-        int i = 0;
-        for (String columnName : columnNames) {
-            Object value = instanceValues[i];
-            row.put(columnName, value);
-            i++;
+        for (int i = 0; i < sortedColumnNames.length; i++) {
+            row.put(sortedColumnNames[i], instanceValues[i]);
         }
 
         try {
@@ -87,7 +79,7 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
     public interface SerializableFunction extends Function<AbstractPrediction, Integer>, Serializable {
     }
 
-    public static H2oTabularMojoClassifier create(final H2oApi api, String modelId, AnchorTabular anchor)
+    public static H2oTabularMojoClassifier create(final H2oApi api, String modelId, List<String> sortedHeaderMapping)
             throws DataAccessException {
 
         H2oTabularMojoClassifier classificationFunction;
@@ -97,7 +89,7 @@ public class H2oTabularMojoClassifier implements ClassificationFunction<TabularI
             classificationFunction = new H2oTabularMojoClassifier(
                     new FileInputStream(mojoFile),
                     AnchorUtil.generateH2oPredictor(),
-                    anchor.getFeatures().stream().map(TabularFeature::getName).collect(Collectors.toList()));
+                    sortedHeaderMapping);
         } catch (IOException e) {
             throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + api.getUrl());
         }

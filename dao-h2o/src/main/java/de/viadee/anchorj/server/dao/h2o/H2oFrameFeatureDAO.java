@@ -1,5 +1,13 @@
 package de.viadee.anchorj.server.dao.h2o;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
 import de.viadee.anchorj.server.dao.FrameDAO;
 import de.viadee.anchorj.server.dao.FrameFeatureDAO;
@@ -10,14 +18,6 @@ import de.viadee.anchorj.server.model.ContinuousColumnSummary;
 import de.viadee.anchorj.server.model.FeatureCondition;
 import de.viadee.anchorj.server.model.FeatureConditionEnum;
 import de.viadee.anchorj.server.model.FeatureConditionMetric;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -54,9 +54,9 @@ public class H2oFrameFeatureDAO implements FrameFeatureDAO {
 
         // TODO make buckets configurable
         int buckets = 4;
-        int columnMin = column.getColumn_min();
-        int columnMax = column.getColumn_max();
-        double step = ((double) columnMax - columnMin) / buckets;
+        double columnMin = column.getColumn_min();
+        double columnMax = column.getColumn_max();
+        double step = (columnMax - columnMin) / buckets;
 
         for (int i = 0; i < buckets; i++) {
             double conditionMin = columnMin + i * step;
