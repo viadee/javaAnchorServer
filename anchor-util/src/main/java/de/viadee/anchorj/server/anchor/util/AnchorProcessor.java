@@ -78,7 +78,7 @@ public class AnchorProcessor {
         String targetFeatureName = anchorTabular.getMappings().keySet().stream().filter((TabularFeature::isTargetFeature)).findFirst().orElseThrow(() -> new IllegalStateException("no target column found")).getName();
         List<String> sortedHeaderNames = this.instances.get(0).getFeatureNamesMapping().entrySet().stream().filter((entry) -> !targetFeatureName.equals(entry.getKey())).sorted(Comparator.comparingInt(Map.Entry::getValue)).map(Map.Entry::getKey).collect(Collectors.toList());
         this.classificationFunction = H2oTabularMojoClassifier.create(this.api, this.modelId, sortedHeaderNames);
-        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance());
+        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance(), instance.getInstance());
         final TabularInstance cleanedInstance = AnchorUtil.handleInstanceToExplain(convertedInstance, tabularPreprocessor, anchorTabular);
 
         this.constructionBuilder = createAnchorBuilderWithConfig(this.anchorTabular, this.classificationFunction,
