@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.springframework.stereotype.Component;
@@ -70,6 +71,8 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
         Model model = new Model();
         if (ignoredColumns != null) {
             model.setIgnoredColumns(new HashSet<>(Arrays.asList(ignoredColumns)));
+        } else {
+            model.setIgnoredColumns(Collections.emptySet());
         }
         model.setModel_id(h2oModel.modelId.name);
         model.setName(h2oModel.modelId.name);

@@ -255,13 +255,30 @@ public class AnchorUtil {
     }
 
     public static TabularInstance handleInstanceToExplain(TabularInstance instance,
-                                                    AnchorTabular.TabularPreprocessorBuilder anchorBuilder) {
+                                                          AnchorTabular.TabularPreprocessorBuilder anchorBuilder,
+                                                          AnchorTabular tabular) {
         @SuppressWarnings("SuspiciousToArrayCall")
         String[] instanceAsStringArray = Arrays.asList(instance.getInstance()).toArray(new String[0]);
         Collection<String[]> anchorInstance = new ArrayList<>(1);
         anchorInstance.add(instanceAsStringArray);
+        // TODO from column description use transformation and discretizer
         AnchorUtil.handleNa(instance.getFeatureNamesMapping(), anchorInstance, anchorBuilder.getColumnDescriptions());
-        return anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
+
+        TabularInstance transformedInstance = anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
+        tabular.getMappings().entrySet().stream().filter((entry) -> !entry.getKey().isTargetFeature()).forEach((entry) -> {
+            int featureIndex = transformedInstance.getFeatureArrayIndex(entry.getKey().getName());
+            Serializable value = transformedInstance.getOriginalValue(featureIndex);
+            entry.getValue().entrySet().stream().anyMatch((valueMapping) -> {
+                if (valueMapping.getValue() instanceof CategoricalValueMapping) {
+                    if (value.equals(valueMapping.getValue().getValue())) {
+                        transformedInstance.getInstance()[featureIndex] = (Serializable) ((CategoricalValueMapping) valueMapping.getValue()).getCategoricalValue();
+                        return true;
+                    }
+                }
+                return false;
+            });
+        });
+        return transformedInstance;
     }
 
     public static void calculateCoveragePerPredicate(final List<TabularInstance> instances,

@@ -223,7 +223,6 @@ class AnchorUtilTest {
         instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "2", "2" }));
         instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "2" }));
 
-
         ArrayList<Anchor> anchors = new ArrayList<>();
         Anchor a = new Anchor();
         Map<Integer, AnchorPredicateEnum> enumPredicates = new HashMap<>();
