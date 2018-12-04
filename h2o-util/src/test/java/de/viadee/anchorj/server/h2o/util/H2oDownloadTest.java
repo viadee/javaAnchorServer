@@ -26,6 +26,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class H2oDownloadTest {
 
+    private static String OS = System.getProperty("os.name").toLowerCase();
+
     @Mock
     private H2oApi api;
 
@@ -49,7 +51,7 @@ class H2oDownloadTest {
         File csvFile;
         try (H2oFrameDownload h2oFrame = new H2oFrameDownload()) {
             csvFile = h2oFrame.getFile(api, "frame-key");
-            assertEquals(460L, csvFile.length());
+            assertEquals(getFileLength(), csvFile.length());
         }
         assertFalse(csvFile.exists());
     }
@@ -62,9 +64,21 @@ class H2oDownloadTest {
         // TODO test with dummy MOJO file
         try (H2oMojoDownload h2oMojo = new H2oMojoDownload()) {
             csvFile = h2oMojo.getFile(api, "frame-key");
-            assertEquals(460L, csvFile.length());
+            assertEquals(getFileLength(), csvFile.length());
         }
         assertFalse(csvFile.exists());
+    }
+
+    private long getFileLength() {
+        if (isWindows()) {
+            return 465L;
+        } else {
+            return 460L;
+        }
+    }
+
+    private static boolean isWindows() {
+        return (OS.contains("win"));
     }
 
 }
