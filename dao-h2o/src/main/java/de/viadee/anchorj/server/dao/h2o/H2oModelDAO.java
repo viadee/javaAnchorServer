@@ -64,39 +64,7 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
     private Model transferToModelObject(ModelSchemaBaseV3 h2oModel) {
         String[] ignoredColumns;
         final String algoName = h2oModel.algo;
-        switch (algoName) {
-            case "gbm":
-                GBMModelV3 gbmModel = (GBMModelV3) h2oModel;
-                ignoredColumns = gbmModel.parameters != null ? gbmModel.parameters.ignoredColumns : null;
-                break;
-            case "drf":
-            case "random_forest":
-                DRFModelV3 drfModel = (DRFModelV3) h2oModel;
-                ignoredColumns = drfModel.parameters != null ? drfModel.parameters.ignoredColumns : null;
-                break;
-            case "deeplearning":
-                DeepLearningModelV3 dlModel = (DeepLearningModelV3) h2oModel;
-                ignoredColumns = dlModel.parameters != null ? dlModel.parameters.ignoredColumns : null;
-                break;
-            case "glm":
-                GLMModelV3 glmModel = (GLMModelV3) h2oModel;
-                ignoredColumns = glmModel.parameters != null ? glmModel.parameters.ignoredColumns : null;
-                break;
-            case "naive_bayes":
-                NaiveBayesModelV3 nbModel = (NaiveBayesModelV3) h2oModel;
-                ignoredColumns = nbModel.parameters != null ? nbModel.parameters.ignoredColumns : null;
-                break;
-            case "kmeans":
-                KMeansModelV3 kmModel = (KMeansModelV3) h2oModel;
-                ignoredColumns = kmModel.parameters != null ? kmModel.parameters.ignoredColumns : null;
-                break;
-            case "pca":
-                PCAModelV3 pcaModel = (PCAModelV3) h2oModel;
-                ignoredColumns = pcaModel.parameters != null ? pcaModel.parameters.ignoredColumns : null;
-                break;
-            default:
-                throw new IllegalArgumentException("Model with algo " + algoName + " not handled");
-        }
+        ignoredColumns = findIgnoredColumns(h2oModel, algoName);
 
         Model model = new Model();
         if (ignoredColumns != null) {
@@ -113,6 +81,35 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
         frame.setUrl(h2oModel.dataFrame.url);
         model.setData_frame(frame);
         return model;
+    }
+
+    private String[] findIgnoredColumns(ModelSchemaBaseV3 h2oModel, String algoName) {
+        switch (algoName) {
+            case "gbm":
+                GBMModelV3 gbmModel = (GBMModelV3) h2oModel;
+                return gbmModel.parameters != null ? gbmModel.parameters.ignoredColumns : null;
+            case "drf":
+            case "random_forest":
+                DRFModelV3 drfModel = (DRFModelV3) h2oModel;
+                return drfModel.parameters != null ? drfModel.parameters.ignoredColumns : null;
+            case "deeplearning":
+                DeepLearningModelV3 dlModel = (DeepLearningModelV3) h2oModel;
+                return dlModel.parameters != null ? dlModel.parameters.ignoredColumns : null;
+            case "glm":
+                GLMModelV3 glmModel = (GLMModelV3) h2oModel;
+                return glmModel.parameters != null ? glmModel.parameters.ignoredColumns : null;
+            case "naive_bayes":
+                NaiveBayesModelV3 nbModel = (NaiveBayesModelV3) h2oModel;
+                return nbModel.parameters != null ? nbModel.parameters.ignoredColumns : null;
+            case "kmeans":
+                KMeansModelV3 kmModel = (KMeansModelV3) h2oModel;
+                return kmModel.parameters != null ? kmModel.parameters.ignoredColumns : null;
+            case "pca":
+                PCAModelV3 pcaModel = (PCAModelV3) h2oModel;
+                return pcaModel.parameters != null ? pcaModel.parameters.ignoredColumns : null;
+            default:
+                throw new IllegalArgumentException("Model with algo " + algoName + " not handled");
+        }
     }
 
 }

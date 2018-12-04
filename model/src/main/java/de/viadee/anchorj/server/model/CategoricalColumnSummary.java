@@ -1,11 +1,12 @@
 package de.viadee.anchorj.server.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 /**
  */
-public class CategoricalColumnSummary<T extends Object> extends ColumnSummary<T> {
+public class CategoricalColumnSummary<T extends Serializable> extends ColumnSummary<T> {
     private List<CategoryFreq> categories;
     private int unique;
 

@@ -276,7 +276,7 @@ public class AnchorUtil {
             final String featureName = predicate.getFeatureName();
             double exactCoverage;
             if (!predicateCoverage.containsKey(featureName)) {
-                exactCoverage = AnchorUtil.computeExactCoverage(instances, predicate);
+                exactCoverage = computeExactCoverage(instances, predicate);
                 predicateCoverage.put(featureName, exactCoverage);
             } else {
                 exactCoverage = predicateCoverage.get(featureName);

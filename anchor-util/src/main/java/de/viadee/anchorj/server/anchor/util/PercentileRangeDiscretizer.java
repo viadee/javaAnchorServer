@@ -9,23 +9,23 @@ import java.util.stream.Stream;
 /**
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
-    private static final long serialVersionUID = 8752254596599470432L;
+    private static final long serialVersionUID = 3466033579065170509L;
 
     private List<Range> valueDiscretizer;
 
-    public PercentileRangeDiscretizer(int classCount, final double min, final double max) {
-        double diff = max - min;
+    public PercentileRangeDiscretizer(int classCount, final double inclusiveMin, final double inclusiveMax) {
+        double diff = inclusiveMax - inclusiveMin;
         if (diff < classCount) {
-            classCount = (int) diff;
+            classCount = (int) diff + 1;
         }
         final double step = diff / classCount;
 
         valueDiscretizer = new ArrayList<>(classCount);
         for (int i = 0; i < classCount; i++) {
-            double stepMin = min + step * i;
-            double stepMax = min + step * (i + 1);
+            double stepMin = inclusiveMin + step * i;
+            double stepMax = inclusiveMin + step * (i + 1);
             if (i == classCount - 1) {
-                stepMax++;
+                stepMax += 0.00000000000001;
             }
 
             this.valueDiscretizer.add(new Range(i, stepMin, stepMax));
@@ -52,7 +52,7 @@ public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>
     }
 
     private static class Range implements Serializable {
-        private static final long serialVersionUID = -5976040777101277296L;
+        private static final long serialVersionUID = 2926610136945172478L;
 
         int label;
         double rangeInclusiveMin;

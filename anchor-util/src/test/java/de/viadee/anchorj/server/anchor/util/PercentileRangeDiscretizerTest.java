@@ -23,6 +23,7 @@ class PercentileRangeDiscretizerTest {
         assertEquals(2, ranges[2].intValue());
         assertEquals(3, ranges[3].intValue());
         assertEquals(4, ranges[4].intValue());
+        assertEquals(4, ranges[5].intValue());
     }
 
     @Test
@@ -34,6 +35,7 @@ class PercentileRangeDiscretizerTest {
         assertEquals(0, ranges[0].intValue());
         assertEquals(1, ranges[1].intValue());
         assertEquals(2, ranges[2].intValue());
+        assertEquals(3, ranges[3].intValue());
     }
 
     @Test

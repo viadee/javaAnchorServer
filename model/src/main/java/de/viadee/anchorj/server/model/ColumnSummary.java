@@ -1,12 +1,13 @@
 package de.viadee.anchorj.server.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 
 /**
  *
  */
-public abstract class ColumnSummary<T extends Object> {
+public abstract class ColumnSummary<T extends Serializable> {
     private String frame_id;
     private String label;
     private String column_type;

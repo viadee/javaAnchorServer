@@ -3,7 +3,7 @@ package de.viadee.anchorj.server.anchor.util;
 import java.io.Serializable;
 
 public class NoValueHandler implements Serializable {
-    private static final long serialVersionUID = -9196291187565600841L;
+    private static final long serialVersionUID = 6578700442708931179L;
 
     private static final int NA_VALUE = -999;
 
