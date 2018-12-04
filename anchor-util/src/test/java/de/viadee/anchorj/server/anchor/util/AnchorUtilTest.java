@@ -217,11 +217,11 @@ class AnchorUtilTest {
         header.put("C", 2);
 
         List<TabularInstance> instances = new LinkedList<>();
-        instances.add(new TabularInstance(header, new String[0], new String[] { "0", "1", "3" }));
-        instances.add(new TabularInstance(header, new String[0], new String[] { "0", "2", "2" }));
-        instances.add(new TabularInstance(header, new String[0], new String[] { "0", "1", "2" }));
-        instances.add(new TabularInstance(header, new String[0], new String[] { "0", "2", "2" }));
-        instances.add(new TabularInstance(header, new String[0], new String[] { "0", "1", "2" }));
+        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "3" }));
+        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "2", "2" }));
+        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "2" }));
+        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "2", "2" }));
+        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "2" }));
 
 
         ArrayList<Anchor> anchors = new ArrayList<>();
