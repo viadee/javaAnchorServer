@@ -120,6 +120,11 @@
                 <artifactId>anchor-h2o-spark</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>de.viadee</groupId>
+                <artifactId>ModelImportExtension</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
             <!--<dependency>-->
                 <!--<groupId>de.viadee.anchorj.server</groupId>-->
                 <!--<artifactId>test-resources</artifactId>-->

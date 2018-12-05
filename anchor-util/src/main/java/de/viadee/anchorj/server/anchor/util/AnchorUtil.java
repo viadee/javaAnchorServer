@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.DataInstance;
+import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
 import de.viadee.anchorj.server.h2o.util.H2oUtil;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorPredicate;
@@ -38,8 +39,6 @@ import de.viadee.anchorj.tabular.MetricValueMapping;
 import de.viadee.anchorj.tabular.NativeValueMapping;
 import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
-import hex.genmodel.easy.prediction.BinomialModelPrediction;
-import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 
 /**
  *
@@ -142,7 +141,7 @@ public class AnchorUtil {
                                          String frameId,
                                          int dataSetSize,
                                          AnchorTabular anchor,
-                                         H2oTabularMojoClassifier classificationFunction,
+                                         H2oTabularNominalMojoClassifier<TabularInstance> classificationFunction,
                                          AnchorResultWithExactCoverage anchorResult) {
         Anchor convertedAnchor = new Anchor();
         convertedAnchor.setCoverage(anchorResult.getExactCoverage());
@@ -239,24 +238,6 @@ public class AnchorUtil {
     public static ColumnSummary<?> findColumn(final Collection<ColumnSummary<?>> columns, final String columnName) {
         return columns.stream().filter((column) -> column.getLabel().equals(columnName)).findFirst().orElseThrow(
                 () -> new IllegalStateException("Column with name " + columnName + " not found"));
-    }
-
-    /**
-     * Handles {@link BinomialModelPrediction} and {@link MultinomialModelPrediction}.
-     *
-     * @return a function to extract the labelIndex value of the predictions
-     */
-    public static H2oTabularMojoClassifier.SerializableFunction generateH2oPredictor() {
-        return (prediction) -> {
-            if (prediction instanceof BinomialModelPrediction) {
-                return ((BinomialModelPrediction) prediction).labelIndex;
-            } else if (prediction instanceof MultinomialModelPrediction) {
-                return ((MultinomialModelPrediction) prediction).labelIndex;
-            } else {
-                throw new UnsupportedOperationException("Prediction of type: " + prediction.getClass().getSimpleName()
-                        + "; not supported");
-            }
-        };
     }
 
     public static TabularInstance handleInstanceToExplain(TabularInstance instance,

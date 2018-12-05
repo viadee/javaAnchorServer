@@ -1,5 +1,8 @@
 package de.viadee.anchorj.server.anchor.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,10 +18,13 @@ import de.viadee.anchorj.ClassificationFunction;
 import de.viadee.anchorj.exploration.BatchSAR;
 import de.viadee.anchorj.global.AbstractGlobalExplainer;
 import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
+import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
 import de.viadee.anchorj.server.business.FrameBO;
 import de.viadee.anchorj.server.business.ModelBO;
 import de.viadee.anchorj.server.h2o.util.H2oDataUtil;
+import de.viadee.anchorj.server.h2o.util.H2oDownload;
+import de.viadee.anchorj.server.h2o.util.H2oMojoDownload;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.FrameSummary;
@@ -46,7 +52,7 @@ public class AnchorProcessor {
     private List<TabularInstance> instances;
     private AnchorConstructionBuilder<TabularInstance> constructionBuilder;
     private AnchorTabular anchorTabular;
-    private H2oTabularMojoClassifier classificationFunction;
+    private H2oTabularNominalMojoClassifier<TabularInstance> classificationFunction;
     private AnchorTabular.TabularPreprocessorBuilder tabularPreprocessor;
 
     public AnchorProcessor(String connectionName, H2oApi api, ModelBO modelBO, FrameBO frameBO, Map<String, Object> anchorConfig, final String modelId, final String frameId) {
@@ -77,12 +83,28 @@ public class AnchorProcessor {
 
         String targetFeatureName = anchorTabular.getMappings().keySet().stream().filter((TabularFeature::isTargetFeature)).findFirst().orElseThrow(() -> new IllegalStateException("no target column found")).getName();
         List<String> sortedHeaderNames = this.instances.get(0).getFeatureNamesMapping().entrySet().stream().filter((entry) -> !targetFeatureName.equals(entry.getKey())).sorted(Comparator.comparingInt(Map.Entry::getValue)).map(Map.Entry::getKey).collect(Collectors.toList());
-        this.classificationFunction = H2oTabularMojoClassifier.create(this.api, this.modelId, sortedHeaderNames);
+        this.classificationFunction = createMojoClassifier(this.api, this.modelId, sortedHeaderNames);
         final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance(), instance.getInstance());
         final TabularInstance cleanedInstance = AnchorUtil.handleInstanceToExplain(convertedInstance, tabularPreprocessor, anchorTabular);
 
         this.constructionBuilder = createAnchorBuilderWithConfig(this.anchorTabular, this.classificationFunction,
                 cleanedInstance, this.anchorConfig);
+    }
+
+    public static H2oTabularNominalMojoClassifier<TabularInstance> createMojoClassifier(final H2oApi api, String modelId, List<String> sortedHeaderMapping)
+            throws DataAccessException {
+
+        H2oTabularNominalMojoClassifier<TabularInstance> classificationFunction;
+        try (H2oDownload mojoDownload = new H2oMojoDownload()) {
+            File mojoFile = mojoDownload.getFile(api, modelId);
+
+            classificationFunction = new H2oTabularNominalMojoClassifier<>(
+                    new FileInputStream(mojoFile),
+                    sortedHeaderMapping);
+        } catch (IOException e) {
+            throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + api.getUrl());
+        }
+        return classificationFunction;
     }
 
     public Anchor singleExplanation() {
@@ -193,7 +215,7 @@ public class AnchorProcessor {
         return this.anchorTabular;
     }
 
-    public H2oTabularMojoClassifier getClassificationFunction() {
+    public H2oTabularNominalMojoClassifier<TabularInstance> getClassificationFunction() {
         return this.classificationFunction;
     }
 

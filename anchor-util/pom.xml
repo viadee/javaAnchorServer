@@ -37,6 +37,10 @@
             <groupId>de.viadee</groupId>
             <artifactId>DefaultConfigsExtension</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.viadee</groupId>
+            <artifactId>ModelImportExtension</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ai.h2o</groupId>

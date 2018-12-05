@@ -12,6 +12,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
+import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorPredicateEnum;
 import de.viadee.anchorj.server.model.AnchorPredicateMetric;
@@ -26,9 +27,6 @@ import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
 import de.viadee.anchorj.tabular.TabularInstanceVisualizer;
 import hex.genmodel.easy.EasyPredictModelWrapper;
-import hex.genmodel.easy.prediction.BinomialModelPrediction;
-import hex.genmodel.easy.prediction.MultinomialModelPrediction;
-import hex.genmodel.easy.prediction.RegressionModelPrediction;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -246,7 +244,7 @@ class AnchorUtilTest {
         originalInstance2[0] = "100";
         originalInstance2[1] = "2";
 
-        H2oTabularMojoClassifier classifier = mock(H2oTabularMojoClassifier.class);
+        H2oTabularNominalMojoClassifier classifier = mock(H2oTabularNominalMojoClassifier.class);
         EasyPredictModelWrapper modelWrapper = mock(EasyPredictModelWrapper.class);
         when(classifier.getModelWrapper()).thenReturn(modelWrapper);
         when(modelWrapper.getResponseDomainValues()).thenReturn(new String[] { "0", "1" });
@@ -277,21 +275,6 @@ class AnchorUtilTest {
         assertEquals(0.12, transformed.getCoverage());
         assertEquals(0.89, transformed.getPrecision());
         // TODO complete test
-    }
-
-    @Test
-    void testGenerateH2oPredictor() {
-        BinomialModelPrediction biPrediction = new BinomialModelPrediction();
-        biPrediction.labelIndex = 1;
-        assertEquals(1, AnchorUtil.generateH2oPredictor().apply(biPrediction).intValue());
-
-        MultinomialModelPrediction multiPrediction = new MultinomialModelPrediction();
-        multiPrediction.labelIndex = 1;
-        assertEquals(1, AnchorUtil.generateH2oPredictor().apply(multiPrediction).intValue());
-
-        RegressionModelPrediction regrPrediction = new RegressionModelPrediction();
-        regrPrediction.value = 1.0;
-        assertThrows(UnsupportedOperationException.class, () -> AnchorUtil.generateH2oPredictor().apply(regrPrediction));
     }
 
     @Test
