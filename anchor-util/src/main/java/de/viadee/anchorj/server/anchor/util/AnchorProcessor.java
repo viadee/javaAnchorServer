@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import de.viadee.anchorj.AnchorConstructionBuilder;
 import de.viadee.anchorj.ClassificationFunction;
-import de.viadee.anchorj.exploration.BatchSAR;
+import de.viadee.anchorj.exploration.KL_LUCB;
 import de.viadee.anchorj.global.AbstractGlobalExplainer;
 import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
 import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
@@ -133,6 +133,7 @@ public class AnchorProcessor {
         final int noAnchor = AnchorConfig.getSpAnchorNo(anchorConfig);
         List<AnchorResultWithExactCoverage> anchorResults = globalExplainer.run(this.getInstances(), noAnchor)
                 .stream().map(AnchorResultWithExactCoverage::new).collect(Collectors.toList());
+        anchorResults.forEach(this::computeSingleAnchorCoverage);
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         anchorResults.forEach((anchorResult) -> explanations.add(AnchorUtil.transformAnchor(modelId, frameId,
@@ -140,8 +141,6 @@ public class AnchorProcessor {
                 this.getClassificationFunction(), anchorResult)));
 
         AnchorUtil.calculateCoveragePerPredicate(this.getInstances(), explanations);
-
-        anchorResults.forEach(this::computeSingleAnchorCoverage);
 
         final Set<TabularInstance> globalCoverageInstances = AnchorUtil.findCoveredInstances(
                 this.getInstances(),
@@ -190,7 +189,7 @@ public class AnchorProcessor {
 
         return new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
-                .setBestAnchorIdentification(new BatchSAR(100 * anchorTabular.getFeatures().size(), 10))
+                .setBestAnchorIdentification(new KL_LUCB(100))
                 .setInitSampleCount(100)
                 .setTau(anchorTau)
                 .setDelta(anchorDelta)
