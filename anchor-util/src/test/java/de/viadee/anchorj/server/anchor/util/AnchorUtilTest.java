@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorPredicateEnum;
@@ -29,15 +30,9 @@ import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import hex.genmodel.easy.prediction.MultinomialModelPrediction;
 import hex.genmodel.easy.prediction.RegressionModelPrediction;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -267,7 +262,7 @@ class AnchorUtilTest {
         when(visualizer.getAnchor(any())).thenReturn(discretizedMapping);
 
         TabularInstance explainedInstance = tabular.getTabularInstances().get(0);
-        AnchorResult<TabularInstance> result = mock(AnchorResult.class);
+        AnchorResultWithExactCoverage result = mock(AnchorResultWithExactCoverage.class);
         when(result.getInstance()).thenReturn(explainedInstance);
         when(result.getLabel()).thenReturn(1);
         when(result.getTimeSpent()).thenReturn(12.3);
@@ -277,7 +272,7 @@ class AnchorUtilTest {
         when(result.getOrderedFeatures()).thenReturn(Collections.singletonList(1));
 
 
-        Anchor transformed = AnchorUtil.transformAnchor("modelId", "frameId", 1, preprocessor, tabular, classifier, result);
+        Anchor transformed = AnchorUtil.transformAnchor("modelId", "frameId", 1, tabular, classifier, result);
         assertEquals("2", transformed.getLabel_of_case());
         assertEquals(0.12, transformed.getCoverage());
         assertEquals(0.89, transformed.getPrecision());
@@ -297,6 +292,33 @@ class AnchorUtilTest {
         RegressionModelPrediction regrPrediction = new RegressionModelPrediction();
         regrPrediction.value = 1.0;
         assertThrows(UnsupportedOperationException.class, () -> AnchorUtil.generateH2oPredictor().apply(regrPrediction));
+    }
+
+    @Test
+    void testIsInstanceInAnchor() {
+        Map<String, Integer> header = new HashMap<>();
+        header.put("A", 0);
+        header.put("B", 1);
+        header.put("C", 2);
+
+        List<TabularInstance> instances = new LinkedList<>();
+        instances.add(new TabularInstance(header, null, new Integer[]{0, 1, 3}));
+        instances.add(new TabularInstance(header, null, new Integer[]{0, 2, 2}));
+        instances.add(new TabularInstance(header, null, new Integer[]{0, 1, 2}));
+        instances.add(new TabularInstance(header, null, new Integer[]{0, 2, 2}));
+        instances.add(new TabularInstance(header, null, new Integer[]{0, 2, 1}));
+
+        AnchorCandidate candidate = new AnchorCandidate(Arrays.asList(0, 1));
+        candidate.setCoverage(0);
+
+        TabularInstance instanceToTest = new TabularInstance(header, null, new Integer[]{0, 1, 3});
+        AnchorResult<TabularInstance> result = new AnchorResultWithExactCoverage(candidate, instanceToTest, 0, true, 0, 0);
+
+        assertTrue(AnchorUtil.isInstanceInAnchor(instances.get(0), result));
+        assertFalse(AnchorUtil.isInstanceInAnchor(instances.get(1), result));
+
+        Set<TabularInstance> covered = AnchorUtil.findCoveredInstances(instances, Collections.singletonList(result));
+        assertEquals(2, covered.size());
     }
 
 }

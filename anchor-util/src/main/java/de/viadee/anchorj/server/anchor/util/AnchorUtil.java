@@ -67,22 +67,25 @@ public class AnchorUtil {
         return (double) count / instances.size();
     }
 
-    public static <T extends DataInstance<?>> Set<T> computeGlobalCoverage(final List<T> instances,
-                                                                           final List<AnchorResult<T>> anchorResults) {
+    public static <T extends DataInstance<?>, E extends AnchorResult<T>> Set<T> findCoveredInstances(final List<T> instances,
+                                                                                                     final List<E> anchorResults) {
         return AnchorUtil.runParallel(() -> {
             final Set<T> coveredInstances = new HashSet<>();
             instances.parallelStream().forEach(item -> {
                 anchorResults.forEach((result) -> {
-                    result.getOrderedFeatures().forEach((featureIndex) -> {
-                        if (item.getValue(featureIndex).equals(result.getInstance().getValue(featureIndex))) {
-                            coveredInstances.add(item);
-                        }
-                    });
+                    if (isInstanceInAnchor(item, result)) {
+                        coveredInstances.add(item);
+                    }
                 });
             });
 
             return coveredInstances;
         });
+    }
+
+    public static <T extends DataInstance<?>> boolean isInstanceInAnchor(T item, AnchorResult<T> result) {
+        return result.getOrderedFeatures().stream().allMatch((featureIndex) ->
+                item.getValue(featureIndex).equals(result.getInstance().getValue(featureIndex)));
     }
 
     public static <T> T runParallel(Callable<T> call) {
@@ -135,12 +138,14 @@ public class AnchorUtil {
         }
     }
 
-    public static Anchor transformAnchor(String modelId, String frameId, int dataSetSize,
-                                         AnchorTabular.TabularPreprocessorBuilder anchorBuilder, AnchorTabular anchor,
+    public static Anchor transformAnchor(String modelId,
+                                         String frameId,
+                                         int dataSetSize,
+                                         AnchorTabular anchor,
                                          H2oTabularMojoClassifier classificationFunction,
-                                         AnchorResult<TabularInstance> anchorResult) {
+                                         AnchorResultWithExactCoverage anchorResult) {
         Anchor convertedAnchor = new Anchor();
-        convertedAnchor.setCoverage(anchorResult.getCoverage());
+        convertedAnchor.setCoverage(anchorResult.getExactCoverage());
         convertedAnchor.setPrecision(anchorResult.getPrecision());
         convertedAnchor.setCreated_at(LocalDateTime.now());
         convertedAnchor.setFeatures(anchorResult.getOrderedFeatures());

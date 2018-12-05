@@ -2,6 +2,7 @@ package de.viadee.anchorj.server.anchor.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.viadee.anchorj.AnchorConstructionBuilder;
-import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.ClassificationFunction;
 import de.viadee.anchorj.exploration.BatchSAR;
 import de.viadee.anchorj.global.AbstractGlobalExplainer;
@@ -86,28 +86,42 @@ public class AnchorProcessor {
     }
 
     public Anchor singleExplanation() {
+        AnchorResultWithExactCoverage result = new AnchorResultWithExactCoverage(this.getConstructionBuilder().build().constructAnchor());
+        computeSingleAnchorCoverage(result);
+
         return AnchorUtil.transformAnchor(
                 this.modelId,
                 this.frameId,
                 this.getDataSetSize(),
-                this.tabularPreprocessor,
                 this.anchorTabular,
                 this.classificationFunction,
-                this.getConstructionBuilder().build().constructAnchor());
+                result);
+    }
+
+    private void computeSingleAnchorCoverage(AnchorResultWithExactCoverage result) {
+        final Set<TabularInstance> coveredInstances = AnchorUtil.findCoveredInstances(
+                this.getInstances(),
+                Collections.singletonList(result)
+        );
+        final double aggregatedCoverage = coveredInstances.size() / (double) this.getDataSetSize();
+        result.setExactCoverage(aggregatedCoverage);
     }
 
     public SubmodularPickResult globalExplanation(AbstractGlobalExplainer<TabularInstance> globalExplainer) {
         final int noAnchor = AnchorConfig.getSpAnchorNo(anchorConfig);
-        List<AnchorResult<TabularInstance>> anchorResults = globalExplainer.run(this.getInstances(), noAnchor);
+        List<AnchorResultWithExactCoverage> anchorResults = globalExplainer.run(this.getInstances(), noAnchor)
+                .stream().map(AnchorResultWithExactCoverage::new).collect(Collectors.toList());
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         anchorResults.forEach((anchorResult) -> explanations.add(AnchorUtil.transformAnchor(modelId, frameId,
-                this.getDataSetSize(), this.getTabularPreprocessor(), this.getAnchorTabular(),
+                this.getDataSetSize(), this.getAnchorTabular(),
                 this.getClassificationFunction(), anchorResult)));
 
         AnchorUtil.calculateCoveragePerPredicate(this.getInstances(), explanations);
 
-        final Set<TabularInstance> globalCoverageInstances = AnchorUtil.computeGlobalCoverage(
+        anchorResults.forEach(this::computeSingleAnchorCoverage);
+
+        final Set<TabularInstance> globalCoverageInstances = AnchorUtil.findCoveredInstances(
                 this.getInstances(),
                 anchorResults
         );
