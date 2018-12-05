@@ -11,10 +11,10 @@ import de.viadee.anchorj.server.model.AnchorConfigDescription;
  */
 public class AnchorConfig {
 
-    private static final String ANCHOR_TAU = "Tau";
+    private static final String ANCHOR_TAU = "Min-Precision";
     //    private static final String ANCHOR_DELTA = "Delta";
 //    private static final String ANCHOR_EPSILON = "Epsilon";
-    private static final String ANCHOR_TAU_DISCREPANCY = "Tau-Discrepancy";
+//    private static final String ANCHOR_TAU_DISCREPANCY = "Tau-Discrepancy";
     private static final String ANCHOR_BUCKET_NO = "Bucket-No.";
     //    private static final String SP_SAMPLE_SIZE = "Sample-Size";
     private static final String SP_NO_ANCHOR = "No-Anchor";
@@ -32,9 +32,9 @@ public class AnchorConfig {
 //        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_EPSILON, new AnchorConfigDescription(ANCHOR_EPSILON,
 //                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.1)
 //        );
-        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_TAU_DISCREPANCY, new AnchorConfigDescription(ANCHOR_TAU_DISCREPANCY,
-                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.05)
-        );
+//        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_TAU_DISCREPANCY, new AnchorConfigDescription(ANCHOR_TAU_DISCREPANCY,
+//                AnchorConfigDescription.ConfigInputType.DOUBLE, 0.05)
+//        );
         DEFAULT_ANCHOR_PARAMS.put(ANCHOR_BUCKET_NO, new AnchorConfigDescription(ANCHOR_BUCKET_NO,
                 AnchorConfigDescription.ConfigInputType.INTEGER, 5)
         );
@@ -70,7 +70,7 @@ public class AnchorConfig {
     }
 
     public static Double getTauDiscrepancy(Map<String, Object> anchorConfig) {
-        return (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU_DISCREPANCY);
+        return 0.05; // (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU_DISCREPANCY);
     }
 
 }
