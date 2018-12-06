@@ -265,9 +265,9 @@ class AnchorUtilTest {
         when(result.getLabel()).thenReturn(1);
         when(result.getTimeSpent()).thenReturn(12.3);
         when(result.getTimeSpentSampling()).thenReturn(4.9);
-        when(result.getCoverage()).thenReturn(0.12);
         when(result.getPrecision()).thenReturn(0.89);
         when(result.getOrderedFeatures()).thenReturn(Collections.singletonList(1));
+        when(result.getExactCoverage()).thenReturn(0.12);
 
 
         Anchor transformed = AnchorUtil.transformAnchor("modelId", "frameId", 1, tabular, classifier, result);

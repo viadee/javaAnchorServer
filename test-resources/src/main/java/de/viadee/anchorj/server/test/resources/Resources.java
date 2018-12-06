@@ -33,7 +33,7 @@ public class Resources {
 
     public static Path copyResource(final String resource) throws IOException {
         Path tempFile = Files.createTempFile("test_", ".csv");
-        Files.copy(Resources.class.getClass().getResourceAsStream(resource), tempFile, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(Resources.class.getResourceAsStream(resource), tempFile, StandardCopyOption.REPLACE_EXISTING);
 
         tempFile.toFile().deleteOnExit();
         return tempFile;
