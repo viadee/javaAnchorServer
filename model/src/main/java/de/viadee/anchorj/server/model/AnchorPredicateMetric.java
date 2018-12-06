@@ -6,7 +6,7 @@ import java.util.Objects;
  * @author ak902764
  */
 public class AnchorPredicateMetric extends AnchorPredicate {
-    private static final long serialVersionUID = 2483025048956411061L;
+    private static final long serialVersionUID = 162065024758871550L;
 
     private static final String COLUMN_TYPE = "metric";
 

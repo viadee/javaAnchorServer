@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  */
 public class AnchorPredicate implements Serializable {
-    private static final long serialVersionUID = 7953975367579376984L;
+    private static final long serialVersionUID = 4576473634080656223L;
 
     private String columnType;
 

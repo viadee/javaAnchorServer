@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  *
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
-    private static final long serialVersionUID = 3466033579065170509L;
+    private static final long serialVersionUID = 9132759308646285100L;
 
     private final List<Range> valueDiscretizer;
 

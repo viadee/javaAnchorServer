@@ -3,7 +3,7 @@ package de.viadee.anchorj.server.anchor;
 /**
  */
 public class PredictException extends RuntimeException {
-    private static final long serialVersionUID = -2761825202915608071L;
+    private static final long serialVersionUID = -1431063233275096300L;
 
     public PredictException() {
         super();

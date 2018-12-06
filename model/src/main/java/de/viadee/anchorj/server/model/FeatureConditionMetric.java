@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  */
 public class FeatureConditionMetric extends FeatureCondition {
-    private static final long serialVersionUID = 4495509139369437182L;
+    private static final long serialVersionUID = 1076979563012051955L;
 
     private double conditionMin;
 

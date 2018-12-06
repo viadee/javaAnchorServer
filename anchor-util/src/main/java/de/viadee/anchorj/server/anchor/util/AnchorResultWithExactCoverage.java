@@ -7,6 +7,8 @@ import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.tabular.TabularInstance;
 
 public class AnchorResultWithExactCoverage extends AnchorResult<TabularInstance> {
+    private static final long serialVersionUID = 7770534107863742504L;
+
     private double exactCoverage;
 
     /**

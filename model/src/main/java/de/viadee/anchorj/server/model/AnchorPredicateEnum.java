@@ -6,7 +6,7 @@ import java.util.Objects;
  *
  */
 public class AnchorPredicateEnum extends AnchorPredicate {
-    private static final long serialVersionUID = -7422138294540010497L;
+    private static final long serialVersionUID = 4354328659946347111L;
 
     private static final String COLUMN_TYPE = "string";
 
