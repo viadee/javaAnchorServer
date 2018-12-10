@@ -1,16 +1,9 @@
 package de.viadee.anchorj.server.anchor.h2o.spark;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +33,16 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(AnchorSpark.class);
 
-    private static final String SPARK_LIB_FOLDER = "/Users/akr/git/javaAnchorServer/application/target/libs";
-
     private ModelBO modelBO;
 
     private FrameBO frameBO;
 
-    public AnchorSpark(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO) {
+    private SparkCon sparkCon;
+
+    public AnchorSpark(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO, @Autowired SparkCon sparkCon) {
         this.modelBO = modelBO;
         this.frameBO = frameBO;
+        this.sparkCon = sparkCon;
     }
 
     @Override
@@ -57,29 +51,10 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
         AnchorProcessor processor = new AnchorProcessor(connectionName, api, modelBO, frameBO, anchorConfig, modelId,
                 frameId);
         processor.preProcess(instance);
+        SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(this.sparkCon.getSparkContext());
+        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(explainer, processor.getConstructionBuilder());
 
-
-        final SparkConf sparkConf;
-        final String sparkMasterUrl = "spark://localhost:7077";
-        try {
-            sparkConf = new SparkConf().setAppName("anchorj").setMaster(sparkMasterUrl)
-                    //                .s
-                    .set("spark.shuffle.service.enabled", "false")
-                    .set("spark.dynamicAllocation.enabled", "false")
-                    //                .set("spark.io.compression.codec", "snappy")
-                    .setJars(Files.list(Paths.get(SPARK_LIB_FOLDER)).map(Path::toFile).map(File::getAbsolutePath).toArray(String[]::new))
-                    .set("spark.rdd.compress", "true");
-        } catch (IOException e) {
-            throw new DataAccessException("Failed to connect to the Spark Master: " + sparkMasterUrl, e);
-        }
-
-        try (JavaSparkContext sc = new JavaSparkContext(sparkConf)) {
-            SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(sc);
-            final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(explainer, processor.getConstructionBuilder());
-            return processor.globalExplanation(subPick);
-        } catch (Exception e) {
-            throw new DataAccessException("Failed to run Submodular Pick: " + e.getMessage(), e);
-        }
+        return processor.globalExplanation(subPick);
     }
 
     @Override
