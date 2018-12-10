@@ -19,6 +19,8 @@ public class AnchorConfig {
     //    private static final String SP_SAMPLE_SIZE = "Sample-Size";
     private static final String SP_NO_ANCHOR = "No-Anchor";
 
+    private static final String ANCHOR_SAMPLE_SIZE = "Sample-Size";
+
     private static final Map<String, AnchorConfigDescription> DEFAULT_ANCHOR_PARAMS;
 
     static {
@@ -42,7 +44,10 @@ public class AnchorConfig {
 //                AnchorConfigDescription.ConfigInputType.INTEGER, Integer.MAX_VALUE)
 //        );
         DEFAULT_ANCHOR_PARAMS.put(SP_NO_ANCHOR, new AnchorConfigDescription(SP_NO_ANCHOR,
-                AnchorConfigDescription.ConfigInputType.INTEGER, 3)
+                AnchorConfigDescription.ConfigInputType.INTEGER, 12)
+        );
+        DEFAULT_ANCHOR_PARAMS.put(ANCHOR_SAMPLE_SIZE, new AnchorConfigDescription(ANCHOR_SAMPLE_SIZE,
+                AnchorConfigDescription.ConfigInputType.INTEGER, 100)
         );
     }
 
@@ -71,6 +76,10 @@ public class AnchorConfig {
 
     public static Double getTauDiscrepancy(Map<String, Object> anchorConfig) {
         return 0.05; // (Double) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_TAU_DISCREPANCY);
+    }
+
+    public static Integer getSampleSize(Map<String, Object> anchorConfig) {
+        return (Integer) getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_SAMPLE_SIZE);
     }
 
 }

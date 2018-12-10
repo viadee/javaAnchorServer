@@ -6,7 +6,7 @@ import java.util.Objects;
  * @author ak902764
  */
 public class AnchorPredicateMetric extends AnchorPredicate {
-    private static final long serialVersionUID = 162065024758871550L;
+    private static final long serialVersionUID = -3335262707734997357L;
 
     private static final String COLUMN_TYPE = "metric";
 
@@ -18,8 +18,8 @@ public class AnchorPredicateMetric extends AnchorPredicate {
         super(COLUMN_TYPE);
     }
 
-    public AnchorPredicateMetric(String featureName, double conditionMin, double conditionMax, double precision, double coverage) {
-        super(COLUMN_TYPE, featureName, precision, coverage);
+    public AnchorPredicateMetric(String featureName, Integer discretizedValue, double conditionMin, double conditionMax, double precision, double coverage) {
+        super(COLUMN_TYPE, featureName, discretizedValue, precision, coverage);
         this.conditionMin = conditionMin;
         this.conditionMax = conditionMax;
     }

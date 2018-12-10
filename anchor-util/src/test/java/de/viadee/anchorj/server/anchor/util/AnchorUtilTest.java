@@ -210,18 +210,18 @@ class AnchorUtilTest {
         header.put("C", 2);
 
         List<TabularInstance> instances = new LinkedList<>();
-        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "3" }));
-        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "2", "2" }));
-        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "2" }));
-        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "2", "2" }));
-        instances.add(new TabularInstance(header, null, new String[0], new String[] { "0", "1", "2" }));
+        instances.add(new TabularInstance(header, null, new Integer[] {0, 1, 3}, new String[] { "0", "1", "3" }));
+        instances.add(new TabularInstance(header, null, new Integer[] {0, 2, 2}, new String[] { "0", "2", "2" }));
+        instances.add(new TabularInstance(header, null, new Integer[] {0, 1, 2}, new String[] { "0", "1", "2" }));
+        instances.add(new TabularInstance(header, null, new Integer[] {0, 2, 2}, new String[] { "0", "2", "2" }));
+        instances.add(new TabularInstance(header, null, new Integer[] {0, 1, 2}, new String[] { "0", "1", "2" }));
 
         ArrayList<Anchor> anchors = new ArrayList<>();
         Anchor a = new Anchor();
         Map<Integer, AnchorPredicateEnum> enumPredicates = new HashMap<>();
         Map<Integer, AnchorPredicateMetric> metricPredicates = new HashMap<>();
-        enumPredicates.put(0, new AnchorPredicateEnum("C", "3", 0, 0));
-        metricPredicates.put(0, new AnchorPredicateMetric("B", 0, 2, 0, 0));
+        enumPredicates.put(0, new AnchorPredicateEnum("C", 3, "3", 0, 0));
+        metricPredicates.put(0, new AnchorPredicateMetric("B", 1, 0, 2, 0, 0));
         a.setEnumPredicate(enumPredicates);
         a.setMetricPredicate(metricPredicates);
         anchors.add(a);
@@ -255,7 +255,7 @@ class AnchorUtilTest {
         when(tabular.getVisualizer()).thenReturn(visualizer);
 
         Map<Integer, FeatureValueMapping> discretizedMapping = new HashMap<>();
-        CategoricalValueMapping val1 = new CategoricalValueMapping(tabular.getFeatures().get(0), 1, "100");
+        CategoricalValueMapping val1 = new CategoricalValueMapping(tabular.getFeatures().get(0), "100", 1);
         discretizedMapping.put(0, val1);
         when(visualizer.getAnchor(any())).thenReturn(discretizedMapping);
 
@@ -267,7 +267,7 @@ class AnchorUtilTest {
         when(result.getTimeSpentSampling()).thenReturn(4.9);
         when(result.getPrecision()).thenReturn(0.89);
         when(result.getOrderedFeatures()).thenReturn(Collections.singletonList(1));
-        when(result.getExactCoverage()).thenReturn(0.12);
+        when(result.getCoverage()).thenReturn(0.12);
 
 
         Anchor transformed = AnchorUtil.transformAnchor("modelId", "frameId", 1, tabular, classifier, result);
@@ -297,8 +297,8 @@ class AnchorUtilTest {
         TabularInstance instanceToTest = new TabularInstance(header, null, new Integer[]{0, 1, 3});
         AnchorResult<TabularInstance> result = new AnchorResultWithExactCoverage(candidate, instanceToTest, 0, true, 0, 0);
 
-        assertTrue(AnchorUtil.isInstanceInAnchor(instances.get(0), result));
-        assertFalse(AnchorUtil.isInstanceInAnchor(instances.get(1), result));
+        assertTrue(AnchorUtil.isInstanceInAnchor(instances.get(0), result.getInstance(), result.getOrderedFeatures()));
+        assertFalse(AnchorUtil.isInstanceInAnchor(instances.get(1), result.getInstance(), result.getOrderedFeatures()));
 
         Set<TabularInstance> covered = AnchorUtil.findCoveredInstances(instances, Collections.singletonList(result));
         assertEquals(2, covered.size());

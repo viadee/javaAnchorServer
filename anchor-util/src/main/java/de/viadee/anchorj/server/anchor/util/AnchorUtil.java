@@ -11,9 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,55 +47,50 @@ public class AnchorUtil {
     private AnchorUtil() {
     }
 
-    public static double computeExactCoverage(List<TabularInstance> instances, AnchorPredicate rule) {
-        long count = instances.stream().filter((instance) -> {
-            if (rule instanceof AnchorPredicateEnum) {
-                return instance.getOriginalValue(rule.getFeatureName()).equals(((AnchorPredicateEnum) rule).getCategory());
-            } else if (rule instanceof AnchorPredicateMetric) {
-                double instanceValue = Double.valueOf(instance.getOriginalValue(rule.getFeatureName()).toString());
-                return instanceValue >= ((AnchorPredicateMetric) rule).getConditionMin()
-                        && instanceValue < ((AnchorPredicateMetric) rule).getConditionMax();
-            } else {
-                throw new IllegalArgumentException("Rule of class " + rule.getClass().getSimpleName() + " not handled");
-            }
-        }).count();
-
-        return (double) count / instances.size();
-    }
-
-    public static <T extends DataInstance<?>, E extends AnchorResult<T>> Set<T> findCoveredInstances(final List<T> instances,
-                                                                                                     final List<E> anchorResults) {
-        return AnchorUtil.runParallel(() -> {
+    public static <T extends TabularInstance> void calculateCoveragePerPredicate(final List<T> instances,
+                                                                                 final Collection<Anchor> explanations) {
+        final Map<String, Integer> featureMapping = instances.get(0).getFeatureNamesMapping();
+        final Consumer<AnchorPredicate> calculateCoverage = predicate -> {
+            final Integer featureIndex = featureMapping.get(predicate.getFeatureName());
+            final Integer featureValue = predicate.getDiscretizedValue();
             final Set<T> coveredInstances = new HashSet<>();
             instances.parallelStream().forEach(item -> {
-                anchorResults.forEach((result) -> {
-                    if (isInstanceInAnchor(item, result)) {
-                        coveredInstances.add(item);
-                    }
-                });
+                if (item.getValue(featureIndex).equals(featureValue)) {
+                    coveredInstances.add(item);
+                }
             });
+            double exactCoverage = (double) coveredInstances.size() / instances.size();
+            predicate.setExactCoverage(exactCoverage);
+        };
 
-            return coveredInstances;
+        explanations.forEach((expl) -> {
+            expl.getEnumPredicate().values().forEach(calculateCoverage);
+            expl.getMetricPredicate().values().forEach(calculateCoverage);
         });
+
     }
 
-    public static <T extends DataInstance<?>> boolean isInstanceInAnchor(T item, AnchorResult<T> result) {
-        return result.getOrderedFeatures().stream().allMatch((featureIndex) ->
-                item.getValue(featureIndex).equals(result.getInstance().getValue(featureIndex)));
+    public static <T extends TabularInstance, E extends AnchorResult<T>> Set<T> findCoveredInstances(final List<T> instances,
+                                                                                                     final List<E> anchorResults) {
+        final Set<T> coveredInstances = new HashSet<>();
+        instances.parallelStream().forEach(item -> {
+            anchorResults.forEach((result) -> {
+                if (isInstanceInAnchor(item, result.getInstance(), result.getOrderedFeatures())) {
+                    coveredInstances.add(item);
+                }
+            });
+        });
+
+        return coveredInstances;
     }
 
-    public static <T> T runParallel(Callable<T> call) {
-        ForkJoinPool fjp = new ForkJoinPool(10, ForkJoinPool.defaultForkJoinWorkerThreadFactory, (t, e) ->
-                LOG.error("uncaught exception of thread: " + t.getName() + " and error: " + e.getMessage(), e), false);
-        try {
-            return fjp.submit(call).get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("interrupted filter: " + e.getMessage(), e);
-        } finally {
-            fjp.shutdown();
+    public static <T extends DataInstance<?>> boolean isInstanceInAnchor(T item, T comparingInstance, List<Integer> featureIndexes) {
+        for (Integer featureIndex : featureIndexes) {
+            if (!item.getValue(featureIndex).equals(comparingInstance.getValue(featureIndex))) {
+                return false;
+            }
         }
-
-        return null;
+        return true;
     }
 
     /**
@@ -114,17 +106,13 @@ public class AnchorUtil {
                 .mapToInt((description) -> header.get(description.getName()))
                 .boxed().collect(Collectors.toList());
 
-        AnchorUtil.runParallel(() -> {
-                    dataSet.forEach((dataEntry) -> {
-                        nominalColumnsIndexes.forEach((nominalColumnIndex) -> {
-                            if (dataEntry[nominalColumnIndex].isEmpty()) {
-                                dataEntry[nominalColumnIndex] = String.valueOf(NoValueHandler.getNumberNa());
-                            }
-                        });
-                    });
-                    return null;
+        dataSet.forEach((dataEntry) -> {
+            nominalColumnsIndexes.forEach((nominalColumnIndex) -> {
+                if (dataEntry[nominalColumnIndex].isEmpty()) {
+                    dataEntry[nominalColumnIndex] = String.valueOf(NoValueHandler.getNumberNa());
                 }
-        );
+            });
+        });
     }
 
     public static AnchorCandidate findCandidate(AnchorCandidate candidate, Integer feature) {
@@ -144,7 +132,7 @@ public class AnchorUtil {
                                          H2oTabularNominalMojoClassifier<TabularInstance> classificationFunction,
                                          AnchorResultWithExactCoverage anchorResult) {
         Anchor convertedAnchor = new Anchor();
-        convertedAnchor.setCoverage(anchorResult.getExactCoverage());
+        convertedAnchor.setCoverage(anchorResult.getCoverage());
         convertedAnchor.setPrecision(anchorResult.getPrecision());
         convertedAnchor.setCreated_at(LocalDateTime.now());
         convertedAnchor.setFeatures(anchorResult.getOrderedFeatures());
@@ -186,13 +174,13 @@ public class AnchorUtil {
             final FeatureValueMapping featureValueMapping = entry.getValue();
             if (featureValueMapping instanceof CategoricalValueMapping) {
                 String value = featureValueMapping.getValue().toString();
-                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), value, addedPrecision, addedCoverage));
+                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), (Integer) ((CategoricalValueMapping) featureValueMapping).getCategoricalValue(), value, addedPrecision, addedCoverage));
             } else if (featureValueMapping instanceof NativeValueMapping) {
-                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(),
+                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), (Integer) featureValueMapping.getValue(),
                         featureValueMapping.getValue().toString(), addedPrecision, addedCoverage));
             } else if (featureValueMapping instanceof MetricValueMapping) {
                 MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
-                metricAnchors.put(entry.getKey(), new AnchorPredicateMetric(feature.getName(),
+                metricAnchors.put(entry.getKey(), new AnchorPredicateMetric(feature.getName(), (Integer) featureValueMapping.getValue(),
                         metric.getMinValue(), metric.getMaxValue(), addedPrecision, addedCoverage));
             } else {
                 throw new IllegalArgumentException("feature value mapping of type " +
@@ -251,29 +239,7 @@ public class AnchorUtil {
         AnchorUtil.handleNa(instance.getFeatureNamesMapping(), anchorInstance, anchorBuilder.getColumnDescriptions());
         TabularInstance transformedInstance = anchorBuilder.build(anchorInstance).getTabularInstances().get(0);
 
-        return runParallel(() -> tabular.getTabularInstances().parallelStream().filter((predicate) -> Arrays.equals(predicate.getOriginalInstance(), transformedInstance.getOriginalInstance())).findFirst().get());
-    }
-
-    public static void calculateCoveragePerPredicate(final List<TabularInstance> instances,
-                                                     final Collection<Anchor> explanations) {
-
-        final Map<String, Double> predicateCoverage = new HashMap<>();
-        final Consumer<AnchorPredicate> calculateCoverage = predicate -> {
-            final String featureName = predicate.getFeatureName();
-            double exactCoverage;
-            if (!predicateCoverage.containsKey(featureName)) {
-                exactCoverage = computeExactCoverage(instances, predicate);
-                predicateCoverage.put(featureName, exactCoverage);
-            } else {
-                exactCoverage = predicateCoverage.get(featureName);
-            }
-            predicate.setExactCoverage(exactCoverage);
-        };
-        explanations.forEach((expl) -> {
-            expl.getEnumPredicate().values().forEach(calculateCoverage);
-            expl.getMetricPredicate().values().forEach(calculateCoverage);
-        });
-
+        return tabular.getTabularInstances().parallelStream().filter((predicate) -> Arrays.equals(predicate.getOriginalInstance(), transformedInstance.getOriginalInstance())).findFirst().get();
     }
 
 }

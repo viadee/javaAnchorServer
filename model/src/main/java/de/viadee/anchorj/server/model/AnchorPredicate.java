@@ -7,11 +7,13 @@ import java.util.Objects;
  *
  */
 public class AnchorPredicate implements Serializable {
-    private static final long serialVersionUID = 4576473634080656223L;
+    private static final long serialVersionUID = -900326553380583758L;
 
     private String columnType;
 
     private String featureName;
+
+    private Integer discretizedValue;
 
     private double addedPrecision;
 
@@ -26,9 +28,10 @@ public class AnchorPredicate implements Serializable {
         this.columnType = columnType;
     }
 
-    public AnchorPredicate(String columnType, String featureName, double addedPrecision, double addedCoverage) {
+    public AnchorPredicate(String columnType, String featureName, Integer discretizedValue, double addedPrecision, double addedCoverage) {
         this.columnType = columnType;
         this.featureName = featureName;
+        this.discretizedValue = discretizedValue;
         this.addedPrecision = addedPrecision;
         this.addedCoverage = addedCoverage;
     }
@@ -73,6 +76,14 @@ public class AnchorPredicate implements Serializable {
         this.exactCoverage = exactCoverage;
     }
 
+    public Integer getDiscretizedValue() {
+        return discretizedValue;
+    }
+
+    public void setDiscretizedValue(Integer discretizedValue) {
+        this.discretizedValue = discretizedValue;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -82,12 +93,13 @@ public class AnchorPredicate implements Serializable {
                 Double.compare(that.addedCoverage, addedCoverage) == 0 &&
                 Double.compare(that.exactCoverage, exactCoverage) == 0 &&
                 Objects.equals(columnType, that.columnType) &&
-                Objects.equals(featureName, that.featureName);
+                Objects.equals(featureName, that.featureName) &&
+                Objects.equals(discretizedValue, that.discretizedValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(columnType, featureName, addedPrecision, addedCoverage, exactCoverage);
+        return Objects.hash(columnType, featureName, discretizedValue, addedPrecision, addedCoverage, exactCoverage);
     }
 
     @Override
@@ -95,6 +107,7 @@ public class AnchorPredicate implements Serializable {
         return "AnchorPredicate{" +
                 "columnType='" + columnType + '\'' +
                 ", featureName='" + featureName + '\'' +
+                ", discretizedValue=" + discretizedValue +
                 ", addedPrecision=" + addedPrecision +
                 ", addedCoverage=" + addedCoverage +
                 ", exactCoverage=" + exactCoverage +

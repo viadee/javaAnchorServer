@@ -27,7 +27,6 @@ import water.bindings.H2oApi;
 
 @Component("local")
 public class AnchorH2o implements AnchorRule, H2oConnector {
-//    private static final long serialVersionUID = 1315158080441804288L;
 
     private static final Logger LOG = LoggerFactory.getLogger(AnchorH2o.class);
 
@@ -56,10 +55,10 @@ public class AnchorH2o implements AnchorRule, H2oConnector {
         final H2oApi api = this.createH2o(connectionName);
         AnchorProcessor processor = new AnchorProcessor(connectionName, api, modelBO, frameBO, anchorConfig, modelId,
                 frameId);
-        processor.preProcess(instance);
-
         BatchExplainer<TabularInstance> explainer = new ThreadedBatchExplainer<>(SP_MAX_THREADS);
+        processor.preProcess(instance);
         final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(explainer, processor.getConstructionBuilder());
+
         return processor.globalExplanation(subPick);
     }
 

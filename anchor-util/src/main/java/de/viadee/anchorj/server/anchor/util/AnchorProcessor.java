@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.viadee.anchorj.AnchorConstructionBuilder;
-import de.viadee.anchorj.ClassificationFunction;
 import de.viadee.anchorj.exploration.KL_LUCB;
 import de.viadee.anchorj.global.AbstractGlobalExplainer;
 import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
@@ -87,8 +86,7 @@ public class AnchorProcessor {
         final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance(), instance.getInstance());
         final TabularInstance cleanedInstance = AnchorUtil.handleInstanceToExplain(convertedInstance, tabularPreprocessor, anchorTabular);
 
-        this.constructionBuilder = createAnchorBuilderWithConfig(this.anchorTabular, this.classificationFunction,
-                cleanedInstance, this.anchorConfig);
+        this.constructionBuilder = createAnchorBuilderWithConfig(cleanedInstance);
     }
 
     public static H2oTabularNominalMojoClassifier<TabularInstance> createMojoClassifier(final H2oApi api, String modelId, List<String> sortedHeaderMapping)
@@ -174,10 +172,7 @@ public class AnchorProcessor {
         return anchorBuilder;
     }
 
-    private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(AnchorTabular anchorTabular,
-                                                                                     ClassificationFunction<TabularInstance> classificationFunction,
-                                                                                     TabularInstance cleanedInstance,
-                                                                                     Map<String, Object> anchorConfig) {
+    private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(TabularInstance cleanedInstance) {
         ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(
                 cleanedInstance,
                 anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
@@ -186,11 +181,12 @@ public class AnchorProcessor {
         final double anchorDelta = 0.1; // (Double) AnchorUtil.getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_DELTA);
         final double anchorEpsilon = 0.1; // (Double) AnchorUtil.getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_EPSILON);
         final double anchorTauDiscrepancy = AnchorConfig.getTauDiscrepancy(anchorConfig);
+        final int sampleSize = AnchorConfig.getSampleSize(anchorConfig);
 
         return new AnchorConstructionBuilder<>(classificationFunction,
                 tabularPerturbationFunction, cleanedInstance, classificationFunction.predict(cleanedInstance))
                 .setBestAnchorIdentification(new KL_LUCB(100))
-                .setInitSampleCount(100)
+                .setInitSampleCount(sampleSize)
                 .setTau(anchorTau)
                 .setDelta(anchorDelta)
                 .setEpsilon(anchorEpsilon)

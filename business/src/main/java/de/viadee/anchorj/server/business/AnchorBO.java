@@ -38,7 +38,7 @@ public class AnchorBO {
                                                   String frameId,
                                                   FrameInstance instance,
                                                   Map<String, Object> anchorConfig) throws DataAccessException {
-        return this.localAnchor.runSubmodularPick(connectionName, modelId, frameId, instance, anchorConfig);
+        return this.sparkAnchor.runSubmodularPick(connectionName, modelId, frameId, instance, anchorConfig);
     }
 
     public Collection<AnchorConfigDescription> getAnchorConfigs() throws DataAccessException {

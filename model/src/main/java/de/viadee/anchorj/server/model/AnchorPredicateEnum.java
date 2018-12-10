@@ -6,7 +6,7 @@ import java.util.Objects;
  *
  */
 public class AnchorPredicateEnum extends AnchorPredicate {
-    private static final long serialVersionUID = 4354328659946347111L;
+    private static final long serialVersionUID = -5264028186945224368L;
 
     private static final String COLUMN_TYPE = "string";
 
@@ -16,8 +16,8 @@ public class AnchorPredicateEnum extends AnchorPredicate {
         super(COLUMN_TYPE);
     }
 
-    public AnchorPredicateEnum(String featureName, String category, double precision, double coverage) {
-        super(COLUMN_TYPE, featureName, precision, coverage);
+    public AnchorPredicateEnum(String featureName, Integer discretizedValue, String category, double precision, double coverage) {
+        super(COLUMN_TYPE, featureName, discretizedValue, precision, coverage);
         this.category = category;
     }
 
