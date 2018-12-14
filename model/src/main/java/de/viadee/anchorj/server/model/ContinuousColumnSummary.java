@@ -1,5 +1,6 @@
 package de.viadee.anchorj.server.model;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -9,6 +10,17 @@ public class ContinuousColumnSummary extends ColumnSummary<Double> {
     private double column_max;
 
     private double mean;
+
+    public ContinuousColumnSummary() {
+    }
+
+    public ContinuousColumnSummary(String frame_id, String label, String column_type, Collection<Double> data,
+                                   long missing_count, double column_min, double column_max, double mean) {
+        super(frame_id, label, column_type, data, missing_count);
+        this.column_min = column_min;
+        this.column_max = column_max;
+        this.mean = mean;
+    }
 
     public double getColumn_min() {
         return column_min;

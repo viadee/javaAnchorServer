@@ -64,11 +64,11 @@ public class AnchorH2o implements AnchorRule, H2oConnector {
 
     @Override
     public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance,
-                              Map<String, Object> anchorConfig)
+                              Map<String, Object> anchorConfig, Long seed)
             throws DataAccessException {
         final H2oApi api = this.createH2o(connectionName);
         AnchorProcessor processor = new AnchorProcessor(connectionName, api, modelBO, frameBO, anchorConfig, modelId,
-                frameId);
+                frameId, seed);
         processor.preProcess(instance);
 
         return processor.singleExplanation();

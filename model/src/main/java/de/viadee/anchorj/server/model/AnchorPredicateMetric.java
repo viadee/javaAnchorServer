@@ -18,8 +18,15 @@ public class AnchorPredicateMetric extends AnchorPredicate {
         super(COLUMN_TYPE);
     }
 
-    public AnchorPredicateMetric(String featureName, Integer discretizedValue, double conditionMin, double conditionMax, double precision, double coverage) {
-        super(COLUMN_TYPE, featureName, discretizedValue, precision, coverage);
+    public AnchorPredicateMetric(String featureName, Integer discretizedValue, double addedPrecision,
+                                 double addedCoverage, double conditionMin, double conditionMax) {
+        super(COLUMN_TYPE, featureName, discretizedValue, addedPrecision, addedCoverage);
+        this.conditionMin = conditionMin;
+        this.conditionMax = conditionMax;
+    }
+
+    public AnchorPredicateMetric(String featureName, Integer discretizedValue, double addedPrecision, double addedCoverage, double exactCoverage, double conditionMin, double conditionMax) {
+        super(COLUMN_TYPE, featureName, discretizedValue, addedPrecision, addedCoverage, exactCoverage);
         this.conditionMin = conditionMin;
         this.conditionMax = conditionMax;
     }

@@ -30,7 +30,7 @@ public class AnchorBO {
                               String frameId,
                               FrameInstance instance,
                               Map<String, Object> anchorConfig) throws DataAccessException {
-        return this.localAnchor.computeRule(connectionName, modelId, frameId, instance, anchorConfig);
+        return this.localAnchor.computeRule(connectionName, modelId, frameId, instance, anchorConfig, null);
     }
 
     public SubmodularPickResult runSubmodularPick(String connectionName,

@@ -11,4 +11,11 @@
 
     <artifactId>test-resources</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>model</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

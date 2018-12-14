@@ -53,8 +53,13 @@ public class AnchorProcessor {
     private AnchorTabular anchorTabular;
     private H2oTabularNominalMojoClassifier<TabularInstance> classificationFunction;
     private AnchorTabular.TabularPreprocessorBuilder tabularPreprocessor;
+    private Long seed;
 
     public AnchorProcessor(String connectionName, H2oApi api, ModelBO modelBO, FrameBO frameBO, Map<String, Object> anchorConfig, final String modelId, final String frameId) {
+        this(connectionName, api, modelBO, frameBO, anchorConfig, modelId, frameId, null);
+    }
+
+    public AnchorProcessor(String connectionName, H2oApi api, ModelBO modelBO, FrameBO frameBO, Map<String, Object> anchorConfig, final String modelId, final String frameId, Long seed) {
         this.connectionName = connectionName;
         this.api = api;
         this.modelBO = modelBO;
@@ -62,6 +67,7 @@ public class AnchorProcessor {
         this.anchorConfig = anchorConfig;
         this.modelId = modelId;
         this.frameId = frameId;
+        this.seed = seed;
     }
 
     public void preProcess(FrameInstance instance) throws DataAccessException {
@@ -86,7 +92,7 @@ public class AnchorProcessor {
         final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance(), instance.getInstance());
         final TabularInstance cleanedInstance = AnchorUtil.handleInstanceToExplain(convertedInstance, tabularPreprocessor, anchorTabular);
 
-        this.constructionBuilder = createAnchorBuilderWithConfig(cleanedInstance);
+        this.constructionBuilder = createAnchorBuilderWithConfig(cleanedInstance, this.seed);
     }
 
     public static H2oTabularNominalMojoClassifier<TabularInstance> createMojoClassifier(final H2oApi api, String modelId, List<String> sortedHeaderMapping)
@@ -100,7 +106,7 @@ public class AnchorProcessor {
                     new FileInputStream(mojoFile),
                     sortedHeaderMapping);
         } catch (IOException e) {
-            throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + api.getUrl());
+            throw new DataAccessException("Failed to load Model MOJO with id: " + modelId + " and connection: " + api.getUrl(), e);
         }
         return classificationFunction;
     }
@@ -172,10 +178,11 @@ public class AnchorProcessor {
         return anchorBuilder;
     }
 
-    private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(TabularInstance cleanedInstance) {
+    private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(TabularInstance cleanedInstance, Long seed) {
         ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(
                 cleanedInstance,
-                anchorTabular.getTabularInstances().toArray(new TabularInstance[0]));
+                anchorTabular.getTabularInstances().toArray(new TabularInstance[0]),
+                seed);
 
         final double anchorTau = AnchorConfig.getTau(anchorConfig);
         final double anchorDelta = 0.1; // (Double) AnchorUtil.getAnchorOptionFromParamsOrDefault(anchorConfig, ANCHOR_DELTA);

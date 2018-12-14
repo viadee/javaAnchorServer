@@ -221,7 +221,7 @@ class AnchorUtilTest {
         Map<Integer, AnchorPredicateEnum> enumPredicates = new HashMap<>();
         Map<Integer, AnchorPredicateMetric> metricPredicates = new HashMap<>();
         enumPredicates.put(0, new AnchorPredicateEnum("C", 3, "3", 0, 0));
-        metricPredicates.put(0, new AnchorPredicateMetric("B", 1, 0, 2, 0, 0));
+        metricPredicates.put(0, new AnchorPredicateMetric("B", 1, 0, 0, 0, 2));
         a.setEnumPredicate(enumPredicates);
         a.setMetricPredicate(metricPredicates);
         anchors.add(a);

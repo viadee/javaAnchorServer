@@ -21,7 +21,8 @@ public interface AnchorRule {
                        String modelId,
                        String frameId,
                        FrameInstance instance,
-                       Map<String, Object> anchorConfig) throws DataAccessException;
+                       Map<String, Object> anchorConfig,
+                       Long seed) throws DataAccessException;
 
     Collection<AnchorConfigDescription> getAnchorConfigs() throws DataAccessException;
 

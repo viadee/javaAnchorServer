@@ -1,6 +1,7 @@
 package de.viadee.anchorj.server.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,6 +10,16 @@ import java.util.Objects;
 public class CategoricalColumnSummary<T extends Serializable> extends ColumnSummary<T> {
     private List<CategoryFreq> categories;
     private int unique;
+
+    public CategoricalColumnSummary() {
+    }
+
+    public CategoricalColumnSummary(String frame_id, String label, String column_type, Collection<T> data,
+                                    long missing_count, List<CategoryFreq> categories, int unique) {
+        super(frame_id, label, column_type, data, missing_count);
+        this.categories = categories;
+        this.unique = unique;
+    }
 
     public List<CategoryFreq> getCategories() {
         return categories;

@@ -1,9 +1,9 @@
 package de.viadee.anchorj.server.dao;
 
+import java.util.Collection;
+
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
 import de.viadee.anchorj.server.model.Model;
-
-import java.util.Collection;
 
 /**
  * Definierter Zugriff auf die Modelle, die im Cluster gespeichert sind.
@@ -23,6 +23,7 @@ public interface ModelDAO {
 
     /**
      * Liefert alle Modelle aus dem Cluster mit dem Namen aus connectionName.
+     *
      * @param connectionName der Name des ausgewählten Clusters
      * @return eine Liste aller Modelle auf die im Cluster zugegriffen werden kann
      * @throws DataAccessException wenn bei der Kommunikation mit dem Cluster Fehler aufgetreten sind

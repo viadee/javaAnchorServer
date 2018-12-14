@@ -14,6 +14,17 @@ public abstract class ColumnSummary<T extends Serializable> {
     private Collection<T> data;
     private long missing_count;
 
+    public ColumnSummary() {
+    }
+
+    public ColumnSummary(String frame_id, String label, String column_type, Collection<T> data, long missing_count) {
+        this.frame_id = frame_id;
+        this.label = label;
+        this.column_type = column_type;
+        this.data = data;
+        this.missing_count = missing_count;
+    }
+
     public String getFrame_id() {
         return frame_id;
     }

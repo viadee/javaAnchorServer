@@ -28,12 +28,23 @@ public class AnchorPredicate implements Serializable {
         this.columnType = columnType;
     }
 
-    public AnchorPredicate(String columnType, String featureName, Integer discretizedValue, double addedPrecision, double addedCoverage) {
+    public AnchorPredicate(String columnType, String featureName, Integer discretizedValue, double addedPrecision,
+                           double addedCoverage) {
         this.columnType = columnType;
         this.featureName = featureName;
         this.discretizedValue = discretizedValue;
         this.addedPrecision = addedPrecision;
         this.addedCoverage = addedCoverage;
+    }
+
+    public AnchorPredicate(String columnType, String featureName, Integer discretizedValue, double addedPrecision,
+                           double addedCoverage, double exactCoverage) {
+        this.columnType = columnType;
+        this.featureName = featureName;
+        this.discretizedValue = discretizedValue;
+        this.addedPrecision = addedPrecision;
+        this.addedCoverage = addedCoverage;
+        this.exactCoverage = exactCoverage;
     }
 
     public String getColumnType() {

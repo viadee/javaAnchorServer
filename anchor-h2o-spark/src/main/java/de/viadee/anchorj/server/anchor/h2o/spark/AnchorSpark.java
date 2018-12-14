@@ -58,7 +58,7 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
     }
 
     @Override
-    public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance, Map<String, Object> anchorConfig) throws DataAccessException {
+    public Anchor computeRule(String connectionName, String modelId, String frameId, FrameInstance instance, Map<String, Object> anchorConfig, Long seed) throws DataAccessException {
         throw new NotImplementedException("not available for spark");
     }
 

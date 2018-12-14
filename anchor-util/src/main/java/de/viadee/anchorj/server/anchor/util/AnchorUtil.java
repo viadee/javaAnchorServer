@@ -181,7 +181,7 @@ public class AnchorUtil {
             } else if (featureValueMapping instanceof MetricValueMapping) {
                 MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
                 metricAnchors.put(entry.getKey(), new AnchorPredicateMetric(feature.getName(), (Integer) featureValueMapping.getValue(),
-                        metric.getMinValue(), metric.getMaxValue(), addedPrecision, addedCoverage));
+                        addedPrecision, addedCoverage, metric.getMinValue(), metric.getMaxValue()));
             } else {
                 throw new IllegalArgumentException("feature value mapping of type " +
                         featureValueMapping.getClass().getSimpleName() + " not handled");

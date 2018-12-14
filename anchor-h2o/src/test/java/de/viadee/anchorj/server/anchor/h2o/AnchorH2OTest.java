@@ -1,25 +1,31 @@
 package de.viadee.anchorj.server.anchor.h2o;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import de.viadee.anchorj.server.test.resources.Resources;
 import de.viadee.anchorj.server.business.FrameBO;
 import de.viadee.anchorj.server.business.ModelBO;
-import de.viadee.anchorj.server.model.ColumnSummary;
+import de.viadee.anchorj.server.model.Anchor;
+import de.viadee.anchorj.server.model.AnchorPredicateEnum;
+import de.viadee.anchorj.server.model.AnchorPredicateMetric;
 import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.FrameSummary;
+import de.viadee.anchorj.server.model.Model;
+import de.viadee.anchorj.server.test.resources.Resources;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import water.bindings.H2oApi;
+import water.bindings.pojos.ModelKeyV3;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -41,33 +47,63 @@ class AnchorH2OTest {
     private ModelBO modelBO;
 
     @Mock
-    private Response<ResponseBody> frameResponse;
+    private Response<ResponseBody> h2oResponse;
 
     @InjectMocks
-    private AnchorH2o anchor;
+    private AnchorH2o anchorH2o;
 
     @Test
-    @Disabled
     void testComputeRule() throws IOException {
-        anchor = spy(anchor);
-        when(anchor.createH2o(any())).thenReturn(api);
+        anchorH2o = spy(anchorH2o);
+        when(anchorH2o.createH2o(any())).thenReturn(api);
 
         ResponseBody body = mock(ResponseBody.class);
-        when(frameResponse.isSuccessful()).thenReturn(true);
+        when(h2oResponse.isSuccessful()).thenReturn(true, true);
         when(body.byteStream()).thenReturn(
-                this.getClass().getResourceAsStream(Resources.AIRLINE_CSV)
+                this.getClass().getResourceAsStream(Resources.TITANIC_CSV),
+                this.getClass().getResourceAsStream(Resources.TITANIC_CLASSIFIER)
         );
-        when(frameResponse.body()).thenReturn(body);
-        when(api._downloadDataset_fetch(any())).thenReturn(frameResponse);
+        when(h2oResponse.body()).thenReturn(body);
+        when(api._downloadDataset_fetch(any())).thenReturn(h2oResponse);
+        when(api.modelMojo(any(ModelKeyV3.class))).thenReturn(h2oResponse);
 
         FrameSummary frameSummary = new FrameSummary();
         frameSummary.setFrame_id("frame_id");
         frameSummary.setRow_count(6);
-        Collection<ColumnSummary<?>> columnSummaries = new ArrayList<>();
+        frameSummary.setColumn_summary_list(Resources.TITANIC_COLUMN_SUMMARY);
+        when(frameBO.getFrameSummary(any(), any())).thenReturn(frameSummary);
 
-        when(frameBO.getFrameSummary(any(), any())).thenReturn(null);
+        Model modelUT = new Model();
+        Set<String> ignoredColumns = new HashSet<>();
+        ignoredColumns.add("PassengerId");
+        ignoredColumns.add("Name");
+        ignoredColumns.add("Ticket");
+        ignoredColumns.add("Parch");
+        ignoredColumns.add("Cabin");
+        ignoredColumns.add("Embarked");
+        ignoredColumns.add("rx_master");
+        ignoredColumns.add("rx_miss");
+        ignoredColumns.add("CabinLength");
+        modelUT.setIgnoredColumns(ignoredColumns);
+        modelUT.setTarget_column("Survived");
+        when(modelBO.getModel(any(), any())).thenReturn(modelUT);
 
-        FrameInstance instance = new FrameInstance(Resources.AIRLINE_FEATURE_MAPPING, Resources.SIMPLE_AIRLINE_INSTANCE);
-        anchor.computeRule("", "", "", instance, null);
+        FrameInstance instance = new FrameInstance(Resources.TITANIC_FEATURE_MAPPING, Resources.SIMPLE_TITANIC_INSTANCE);
+        Anchor anchor = anchorH2o.computeRule("", "", "", instance, null, 1L);
+        assertNotNull(anchor);
+        assertEquals("0", anchor.getLabel_of_case());
+        assertEquals("0", anchor.getPrediction());
+
+        assertEquals(2, anchor.getFeatures().size());
+        Iterator<Integer> features = anchor.getFeatures().iterator();
+        assertEquals(Integer.valueOf(1), features.next());
+        assertEquals(Integer.valueOf(0), features.next());
+
+        AnchorPredicateMetric pClassPredicate = new AnchorPredicateMetric("Pclass", 2, 0.10571428571428576, -0.256, 3, 3);
+        assertEquals(pClassPredicate, anchor.getMetricPredicate().get(1));
+        AnchorPredicateEnum sexPredicate = new AnchorPredicateEnum("Sex", 0, "male", 0.83, -0.357);
+        assertEquals(sexPredicate, anchor.getEnumPredicate().get(0));
+
+        assertEquals(Integer.valueOf(345), anchor.getAffected_rows());
     }
 }
