@@ -25,6 +25,7 @@ import de.viadee.anchorj.server.model.ColumnSummary;
 import de.viadee.anchorj.tabular.AnchorTabular;
 import de.viadee.anchorj.tabular.TabularInstance;
 import de.viadee.anchorj.tabular.column.GenericColumn;
+import de.viadee.anchorj.tabular.column.IgnoredColumn;
 import de.viadee.anchorj.tabular.column.IntegerColumn;
 import de.viadee.anchorj.tabular.column.StringColumn;
 import de.viadee.anchorj.tabular.discretizer.DiscretizerRelation;
@@ -162,7 +163,7 @@ public class AnchorUtil {
 
         int featureIndex = candidate.getOrderedFeatures().get(0);
         GenericColumn featureOfInterest = instance.getFeatures()[featureIndex];
-        DiscretizerRelation relation = featureOfInterest.getDiscretizer().unFit(instance.getValue(featureIndex));
+        DiscretizerRelation relation = featureOfInterest.getDiscretizer().unApply(instance.getValue(featureIndex));
         AnchorPredicate predicate;
         switch (relation.getFeatureType()) {
             case METRIC:
@@ -211,24 +212,24 @@ public class AnchorUtil {
             GenericColumn column;
             if (ignoredColumns.contains(columnLabel)) {
                 // ignore
-                column = null;
+                column = new IgnoredColumn(columnLabel, entry.getValue());
             } else if (H2oUtil.isColumnTypeInt(columnSummary.getColumn_type())) {
                 column = new IntegerColumn(
-                        columnLabel,
+                        columnLabel, entry.getValue(),
                         Arrays.asList(
                                 new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
                                 new StringToIntTransformer()),
                         new PercentileMedianDiscretizer(classCount));
             } else if (H2oUtil.isColumnTypeReal(columnSummary.getColumn_type())) {
                 column = new IntegerColumn(
-                        columnLabel,
+                        columnLabel, entry.getValue(),
                         Arrays.asList(
                                 new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
                                 new StringToDoubleTransformer()),
                         new PercentileMedianDiscretizer(classCount));
             } else if (H2oUtil.isColumnTypeEnum(columnSummary.getColumn_type()) ||
                     H2oUtil.isColumnTypeString(columnSummary.getColumn_type())) {
-                column = new StringColumn(columnLabel, null, new UniqueValueDiscretizer());
+                column = new StringColumn(columnLabel, entry.getValue(), null, new UniqueValueDiscretizer());
             } else {
                 throw new IllegalArgumentException("Column type " + columnSummary.getColumn_type() + " not handled");
             }
