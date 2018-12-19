@@ -8,19 +8,19 @@ import java.util.Objects;
 
 /**
  */
+@SuppressWarnings({ "unused", "ClassWithTooManyMethods", "ClassWithTooManyFields" })
 public class Anchor implements Serializable {
-    private static final long serialVersionUID = -1345662548683897191L;
+    private static final long serialVersionUID = 4391527342934385039L;
 
     private String model_id;
     private String frame_id;
     private Map<String, Serializable> instance;
-    private Object label_of_case;
+    private Serializable label_of_case;
     private String prediction;
     private double precision;
     private double coverage;
     private Collection<Integer> features;
-    private Map<Integer, AnchorPredicateMetric> metricPredicate;
-    private Map<Integer, AnchorPredicateEnum> enumPredicate;
+    private Map<Integer, AnchorPredicate> predicates;
     private Integer affected_rows;
     private LocalDateTime created_at;
 
@@ -48,11 +48,11 @@ public class Anchor implements Serializable {
         this.instance = instance;
     }
 
-    public Object getLabel_of_case() {
+    public Serializable getLabel_of_case() {
         return label_of_case;
     }
 
-    public void setLabel_of_case(Object label_of_case) {
+    public void setLabel_of_case(Serializable label_of_case) {
         this.label_of_case = label_of_case;
     }
 
@@ -104,20 +104,12 @@ public class Anchor implements Serializable {
         this.created_at = created_at;
     }
 
-    public Map<Integer, AnchorPredicateMetric> getMetricPredicate() {
-        return metricPredicate;
+    public Map<Integer, AnchorPredicate> getPredicates() {
+        return predicates;
     }
 
-    public void setMetricPredicate(Map<Integer, AnchorPredicateMetric> metricPredicate) {
-        this.metricPredicate = metricPredicate;
-    }
-
-    public Map<Integer, AnchorPredicateEnum> getEnumPredicate() {
-        return enumPredicate;
-    }
-
-    public void setEnumPredicate(Map<Integer, AnchorPredicateEnum> enumPredicate) {
-        this.enumPredicate = enumPredicate;
+    public void setPredicates(Map<Integer, AnchorPredicate> predicates) {
+        this.predicates = predicates;
     }
 
     @Override
@@ -133,15 +125,14 @@ public class Anchor implements Serializable {
                 Objects.equals(label_of_case, anchor.label_of_case) &&
                 Objects.equals(prediction, anchor.prediction) &&
                 Objects.equals(features, anchor.features) &&
-                Objects.equals(metricPredicate, anchor.metricPredicate) &&
-                Objects.equals(enumPredicate, anchor.enumPredicate) &&
+                Objects.equals(predicates, anchor.predicates) &&
                 Objects.equals(affected_rows, anchor.affected_rows) &&
                 Objects.equals(created_at, anchor.created_at);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(model_id, frame_id, instance, label_of_case, prediction, precision, coverage, features, metricPredicate, enumPredicate, affected_rows, created_at);
+        return Objects.hash(model_id, frame_id, instance, label_of_case, prediction, precision, coverage, features, predicates, affected_rows, created_at);
     }
 
     @Override
@@ -155,8 +146,7 @@ public class Anchor implements Serializable {
                 ", precision=" + precision +
                 ", coverage=" + coverage +
                 ", features=" + features +
-                ", metricPredicate=" + metricPredicate +
-                ", enumPredicate=" + enumPredicate +
+                ", predicates=" + predicates +
                 ", affected_rows=" + affected_rows +
                 ", created_at=" + created_at +
                 '}';

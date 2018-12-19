@@ -11,9 +11,11 @@ public final class H2oUtil {
 
     private static final Map<String, String> H2O_SERVER = new HashMap<>();
 
-    private static final String H2O_ENUM_COLUMN = "enum";
-    private static final String H2O_UUID_COLUMN = "uuid";
-    private static final String H2O_STRING_COLUMN = "string";
+    private static final String H2O_COLUMN_TYPE_ENUM = "enum";
+    private static final String H2O_COLUMN_TYPE_UUID = "uuid";
+    private static final String H2O_COLUMN_TYPE_STRING = "string";
+    private static final String H2O_COLUMN_TYPE_REAL = "real";
+    private static final String H2O_COLUMN_TYPE_INT = "int";
 
     // TODO make list of servers configurable
     static {
@@ -31,12 +33,22 @@ public final class H2oUtil {
         return H2O_SERVER.get(connectionName);
     }
 
-    public static boolean isEnumColumn(String columnType) {
-        return H2O_ENUM_COLUMN.equalsIgnoreCase(columnType);
+    public static boolean isColumnTypeReal(String columnType) {
+        return H2O_COLUMN_TYPE_REAL.equalsIgnoreCase(columnType);
     }
 
-    public static boolean isStringColumn(String columnType) {
-        return H2O_STRING_COLUMN.equalsIgnoreCase(columnType) || H2O_UUID_COLUMN.equalsIgnoreCase(columnType);
+
+    public static boolean isColumnTypeInt(String columnType) {
+        return H2O_COLUMN_TYPE_INT.equalsIgnoreCase(columnType);
+    }
+
+
+    public static boolean isColumnTypeEnum(String columnType) {
+        return H2O_COLUMN_TYPE_ENUM.equalsIgnoreCase(columnType);
+    }
+
+    public static boolean isColumnTypeString(String columnType) {
+        return H2O_COLUMN_TYPE_STRING.equalsIgnoreCase(columnType) || H2O_COLUMN_TYPE_UUID.equalsIgnoreCase(columnType);
     }
 
 }

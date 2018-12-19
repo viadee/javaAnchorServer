@@ -6,119 +6,126 @@ import java.util.Objects;
 /**
  *
  */
+@SuppressWarnings({ "unused", "WeakerAccess" })
 public class AnchorPredicate implements Serializable {
-    private static final long serialVersionUID = -900326553380583758L;
+    private static final long serialVersionUID = 9101074766885725364L;
 
-    private String columnType;
-
-    private String featureName;
-
-    private Integer discretizedValue;
-
-    private double addedPrecision;
-
-    private double addedCoverage;
-
-    private double exactCoverage;
-
-    public AnchorPredicate() {
+    public enum FeatureType {
+        CATEGORICAL, METRIC, UNDEFINED
     }
 
-    public AnchorPredicate(String columnType) {
-        this.columnType = columnType;
-    }
+    private static final String COLUMN_TYPE = "metric";
 
-    public AnchorPredicate(String columnType, String featureName, Integer discretizedValue, double addedPrecision,
-                           double addedCoverage) {
-        this.columnType = columnType;
+    private final FeatureType featureType;
+
+    private final String featureName;
+
+    private final Integer discretizedValue;
+
+    private final Serializable categoricalValue;
+
+    private final Double conditionMin;
+
+    private final Double conditionMax;
+
+    private final Double addedPrecision;
+
+    private final Double addedCoverage;
+
+    private Double exactCoverage;
+
+    public AnchorPredicate(String featureName, Integer discretizedValue, double addedPrecision, double addedCoverage, Serializable categoricalValue) {
+        this.featureType = FeatureType.CATEGORICAL;
         this.featureName = featureName;
         this.discretizedValue = discretizedValue;
+        this.categoricalValue = categoricalValue;
+        this.conditionMin = null;
+        this.conditionMax = null;
         this.addedPrecision = addedPrecision;
         this.addedCoverage = addedCoverage;
     }
 
-    public AnchorPredicate(String columnType, String featureName, Integer discretizedValue, double addedPrecision,
-                           double addedCoverage, double exactCoverage) {
-        this.columnType = columnType;
+    public AnchorPredicate(String featureName, Integer discretizedValue, double addedPrecision, double addedCoverage, double conditionMin, double conditionMax) {
+        this.featureType = FeatureType.METRIC;
         this.featureName = featureName;
         this.discretizedValue = discretizedValue;
+        this.categoricalValue = null;
+        this.conditionMin = conditionMin;
+        this.conditionMax = conditionMax;
         this.addedPrecision = addedPrecision;
         this.addedCoverage = addedCoverage;
-        this.exactCoverage = exactCoverage;
     }
 
-    public String getColumnType() {
-        return columnType;
+    public FeatureType getFeatureType() {
+        return featureType;
     }
 
     public String getFeatureName() {
         return featureName;
     }
 
-    public double getAddedPrecision() {
+    public Double getAddedPrecision() {
         return addedPrecision;
     }
 
-    public double getAddedCoverage() {
+    public Double getAddedCoverage() {
         return addedCoverage;
     }
 
-    public void setColumnType(String columnType) {
-        this.columnType = columnType;
-    }
-
-    public void setFeatureName(String featureName) {
-        this.featureName = featureName;
-    }
-
-    public void setAddedPrecision(double addedPrecision) {
-        this.addedPrecision = addedPrecision;
-    }
-
-    public void setAddedCoverage(double addedCoverage) {
-        this.addedCoverage = addedCoverage;
-    }
-
-    public double getExactCoverage() {
+    public Double getExactCoverage() {
         return exactCoverage;
-    }
-
-    public void setExactCoverage(double exactCoverage) {
-        this.exactCoverage = exactCoverage;
     }
 
     public Integer getDiscretizedValue() {
         return discretizedValue;
     }
 
-    public void setDiscretizedValue(Integer discretizedValue) {
-        this.discretizedValue = discretizedValue;
+    public Serializable getCategoricalValue() {
+        return categoricalValue;
+    }
+
+    public Double getConditionMin() {
+        return conditionMin;
+    }
+
+    public Double getConditionMax() {
+        return conditionMax;
+    }
+
+    public void setExactCoverage(Double exactCoverage) {
+        this.exactCoverage = exactCoverage;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AnchorPredicate that = (AnchorPredicate) o;
-        return Double.compare(that.addedPrecision, addedPrecision) == 0 &&
-                Double.compare(that.addedCoverage, addedCoverage) == 0 &&
-                Double.compare(that.exactCoverage, exactCoverage) == 0 &&
-                Objects.equals(columnType, that.columnType) &&
-                Objects.equals(featureName, that.featureName) &&
-                Objects.equals(discretizedValue, that.discretizedValue);
+        AnchorPredicate predicate = (AnchorPredicate) o;
+        return featureType == predicate.featureType &&
+                Objects.equals(featureName, predicate.featureName) &&
+                Objects.equals(discretizedValue, predicate.discretizedValue) &&
+                Objects.equals(categoricalValue, predicate.categoricalValue) &&
+                Objects.equals(conditionMin, predicate.conditionMin) &&
+                Objects.equals(conditionMax, predicate.conditionMax) &&
+                Objects.equals(addedPrecision, predicate.addedPrecision) &&
+                Objects.equals(addedCoverage, predicate.addedCoverage) &&
+                Objects.equals(exactCoverage, predicate.exactCoverage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(columnType, featureName, discretizedValue, addedPrecision, addedCoverage, exactCoverage);
+        return Objects.hash(featureType, featureName, discretizedValue, categoricalValue, conditionMin, conditionMax, addedPrecision, addedCoverage, exactCoverage);
     }
 
     @Override
     public String toString() {
         return "AnchorPredicate{" +
-                "columnType='" + columnType + '\'' +
+                "featureType=" + featureType +
                 ", featureName='" + featureName + '\'' +
                 ", discretizedValue=" + discretizedValue +
+                ", categoricalValue=" + categoricalValue +
+                ", conditionMin=" + conditionMin +
+                ", conditionMax=" + conditionMax +
                 ", addedPrecision=" + addedPrecision +
                 ", addedCoverage=" + addedCoverage +
                 ", exactCoverage=" + exactCoverage +

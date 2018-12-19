@@ -52,7 +52,7 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
                 frameId);
         processor.preProcess(instance);
         SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(this.sparkCon.getSparkContext());
-        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(explainer, processor.getConstructionBuilder());
+        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(false, explainer, processor.getConstructionBuilder());
 
         return processor.globalExplanation(subPick);
     }

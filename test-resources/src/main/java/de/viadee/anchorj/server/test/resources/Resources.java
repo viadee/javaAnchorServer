@@ -41,7 +41,7 @@ public class Resources {
 
     public static final String TITANIC_CLASSIFIER = "/mojo/Titanic_GBM_grid_0_AutoML_20181207_120821_model_7.zip";
 
-    public static final Serializable[] SIMPLE_TITANIC_INSTANCE;
+    public static final String[] SIMPLE_TITANIC_INSTANCE;
 
     public static final Map<String, Integer> TITANIC_FEATURE_MAPPING;
 
@@ -183,7 +183,7 @@ public class Resources {
                 0, 0, 15, 0.8215488215488215));
         TITANIC_FEATURE_MAPPING.put("CabinLength", 14);
 
-        SIMPLE_TITANIC_INSTANCE = new Serializable[15];
+        SIMPLE_TITANIC_INSTANCE = new String[15];
         SIMPLE_TITANIC_INSTANCE[0] = "361";
         SIMPLE_TITANIC_INSTANCE[1] = "0";
         SIMPLE_TITANIC_INSTANCE[2] = "3";

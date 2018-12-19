@@ -14,18 +14,14 @@ import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
 import de.viadee.anchorj.server.model.Anchor;
-import de.viadee.anchorj.server.model.AnchorPredicateEnum;
-import de.viadee.anchorj.server.model.AnchorPredicateMetric;
+import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.CategoricalColumnSummary;
 import de.viadee.anchorj.server.model.ColumnSummary;
 import de.viadee.anchorj.server.model.ContinuousColumnSummary;
 import de.viadee.anchorj.tabular.AnchorTabular;
-import de.viadee.anchorj.tabular.CategoricalValueMapping;
-import de.viadee.anchorj.tabular.ColumnDescription;
-import de.viadee.anchorj.tabular.FeatureValueMapping;
-import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
 import de.viadee.anchorj.tabular.TabularInstanceVisualizer;
+import de.viadee.anchorj.tabular.column.GenericColumn;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,54 +32,6 @@ import static org.mockito.Mockito.*;
  *
  */
 class AnchorUtilTest {
-
-    @Test
-    void testHandleNa() {
-        Map<String, Integer> header = new HashMap<>(3);
-        header.put("A", 0);
-        header.put("B", 1);
-        header.put("C", 2);
-
-        List<ColumnDescription> columnDescriptions = Arrays.asList(
-                new ColumnDescription(TabularFeature.ColumnType.NOMINAL, "A", true, false, null, null),
-                new ColumnDescription(TabularFeature.ColumnType.NOMINAL, "B", true, false, null, null),
-                new ColumnDescription(TabularFeature.ColumnType.NOMINAL, "C", true, false, null, null)
-        );
-
-        List<String[]> dataSet = new LinkedList<>();
-
-        String[] data1 = new String[3];
-        data1[0] = "1";
-        data1[1] = "2";
-        data1[2] = "3";
-        dataSet.add(data1);
-
-        String[] data2 = new String[3];
-        data2[0] = "3";
-        data2[1] = "1";
-        data2[2] = "2";
-        dataSet.add(data2);
-
-        String[] data3 = new String[3];
-        data3[0] = "3";
-        data3[1] = "1";
-        data3[2] = "";
-        dataSet.add(data3);
-
-        AnchorUtil.handleNa(header, dataSet, columnDescriptions);
-
-        assertEquals(data1[0], dataSet.get(0)[0]);
-        assertEquals(data1[1], dataSet.get(0)[1]);
-        assertEquals(data1[2], dataSet.get(0)[2]);
-
-        assertEquals(data2[0], dataSet.get(1)[0]);
-        assertEquals(data2[1], dataSet.get(1)[1]);
-        assertEquals(data2[2], dataSet.get(1)[2]);
-
-        assertEquals(data3[0], dataSet.get(2)[0]);
-        assertEquals(data3[1], dataSet.get(2)[1]);
-        assertEquals(String.valueOf(NoValueHandler.getNumberNa()), dataSet.get(2)[2]);
-    }
 
     @Test
     void testFindColumn() {
@@ -116,7 +64,7 @@ class AnchorUtilTest {
 
     @Test
     void testAddColumnsToAnchorBuilder() {
-        AnchorTabular.TabularPreprocessorBuilder builder = new AnchorTabular.TabularPreprocessorBuilder();
+        AnchorTabular.Builder builder = new AnchorTabular.Builder();
 
         Map<String, Integer> header = new HashMap<>(3);
         header.put("A", 0);
@@ -169,7 +117,8 @@ class AnchorUtilTest {
         int classCount = 5;
 
         AnchorUtil.addColumnsToAnchorBuilder(builder, header, targetColumnName, columns, ignoredColumns, classCount);
-        ColumnDescription cd = builder.getColumnDescriptions().get(0);
+        AnchorTabular tabular = builder.build(Collections.EMPTY_LIST);
+        GenericColumn cd = tabular.getColumns().get(0);
         assertEquals("A", cd.getName());
         assertTrue(cd.isTargetFeature());
         assertTrue(cd.isDoUse());
@@ -204,26 +153,26 @@ class AnchorUtilTest {
 
     @Test
     void testCalculateCoveragePerPredicate() {
+        GenericColumn[] columns = new GenericColumn[3];
+        columns[0] = new
         Map<String, Integer> header = new HashMap<>();
         header.put("A", 0);
         header.put("B", 1);
         header.put("C", 2);
 
-        List<TabularInstance> instances = new LinkedList<>();
-        instances.add(new TabularInstance(header, null, new Integer[] {0, 1, 3}, new String[] { "0", "1", "3" }));
-        instances.add(new TabularInstance(header, null, new Integer[] {0, 2, 2}, new String[] { "0", "2", "2" }));
-        instances.add(new TabularInstance(header, null, new Integer[] {0, 1, 2}, new String[] { "0", "1", "2" }));
-        instances.add(new TabularInstance(header, null, new Integer[] {0, 2, 2}, new String[] { "0", "2", "2" }));
-        instances.add(new TabularInstance(header, null, new Integer[] {0, 1, 2}, new String[] { "0", "1", "2" }));
+        TabularInstance[] instances = new TabularInstance[5];
+        instances[0] = new TabularInstance(header, null, new Integer[] {0, 1, 3}, new String[] { "0", "1", "3" });
+        instances[0] = new TabularInstance(header, null, new Integer[] {0, 2, 2}, new String[] { "0", "2", "2" });
+        instances[0] = new TabularInstance(header, null, new Integer[] {0, 1, 2}, new String[] { "0", "1", "2" });
+        instances[0] = new TabularInstance(header, null, new Integer[] {0, 2, 2}, new String[] { "0", "2", "2" });
+        instances[0] = new TabularInstance(header, null, new Integer[] {0, 1, 2}, new String[] { "0", "1", "2" });
 
         ArrayList<Anchor> anchors = new ArrayList<>();
         Anchor a = new Anchor();
-        Map<Integer, AnchorPredicateEnum> enumPredicates = new HashMap<>();
-        Map<Integer, AnchorPredicateMetric> metricPredicates = new HashMap<>();
-        enumPredicates.put(0, new AnchorPredicateEnum("C", 3, "3", 0, 0));
-        metricPredicates.put(0, new AnchorPredicateMetric("B", 1, 0, 0, 0, 2));
-        a.setEnumPredicate(enumPredicates);
-        a.setMetricPredicate(metricPredicates);
+        Map<Integer, AnchorPredicate> predicates = new HashMap<>();
+        predicates.put(0, new AnchorPredicate("C", 3, 0, 0, "3"));
+        predicates.put(1, new AnchorPredicate("B", 1, 0, 0, 0, 2));
+        a.setPredicates(predicates);
         anchors.add(a);
 
         AnchorUtil.calculateCoveragePerPredicate(instances, anchors);

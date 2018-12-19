@@ -13,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.viadee.anchorj.server.business.FrameBO;
 import de.viadee.anchorj.server.business.ModelBO;
 import de.viadee.anchorj.server.model.Anchor;
-import de.viadee.anchorj.server.model.AnchorPredicateEnum;
-import de.viadee.anchorj.server.model.AnchorPredicateMetric;
+import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.FrameSummary;
 import de.viadee.anchorj.server.model.Model;
@@ -99,10 +98,10 @@ class AnchorH2OTest {
         assertEquals(Integer.valueOf(1), features.next());
         assertEquals(Integer.valueOf(0), features.next());
 
-        AnchorPredicateMetric pClassPredicate = new AnchorPredicateMetric("Pclass", 2, 0.10571428571428576, -0.256, 3, 3);
-        assertEquals(pClassPredicate, anchor.getMetricPredicate().get(1));
-        AnchorPredicateEnum sexPredicate = new AnchorPredicateEnum("Sex", 0, "male", 0.83, -0.357);
-        assertEquals(sexPredicate, anchor.getEnumPredicate().get(0));
+        AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 2, 0.10571428571428576, -0.256, 3, 3);
+        assertEquals(pClassPredicate, anchor.getPredicates().get(1));
+        AnchorPredicate sexPredicate = new AnchorPredicate("Sex", 0, 0.83, -0.357, "male");
+        assertEquals(sexPredicate, anchor.getPredicates().get(0));
 
         assertEquals(Integer.valueOf(345), anchor.getAffected_rows());
     }
