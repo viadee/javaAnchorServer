@@ -5,14 +5,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
@@ -33,7 +32,6 @@ import de.viadee.anchorj.tabular.discretizer.PercentileMedianDiscretizer;
 import de.viadee.anchorj.tabular.discretizer.UniqueValueDiscretizer;
 import de.viadee.anchorj.tabular.transformations.ReplaceNullTransformer;
 import de.viadee.anchorj.tabular.transformations.StringToDoubleTransformer;
-import de.viadee.anchorj.tabular.transformations.StringToIntTransformer;
 
 /**
  *
@@ -46,34 +44,49 @@ public class AnchorUtil {
 
     public static <T extends TabularInstance> void calculateCoveragePerPredicate(final T[] instances,
                                                                                  final Collection<Anchor> explanations) {
-        final Consumer<AnchorPredicate> calculateCoveragePerPredicate = predicate -> {
-            final Integer featureValue = predicate.getDiscretizedValue();
-            final Set<T> coveredInstances = new HashSet<>();
-            Stream.of(instances).parallel().forEach(item -> {
-                if (item.getValue(predicate.getFeatureName()).equals(featureValue)) {
-                    coveredInstances.add(item);
+        T instance = instances[0];
+        GenericColumn[] columns = instance.getFeatures();
+        for (Anchor expl : explanations) {
+            for (AnchorPredicate predicate : expl.getPredicates().values()) {
+                Integer featureIndex = null;
+                for (int i = 0; i < columns.length; i++) {
+                    if (predicate.getFeatureName().equals(columns[i].getName())) {
+                        featureIndex = i;
+                    }
                 }
-            });
-            double exactCoverage = (double) coveredInstances.size() / instances.length;
-            predicate.setExactCoverage(exactCoverage);
-        };
+                if (featureIndex == null) {
+                    throw new IllegalArgumentException("No feature found with name " + predicate.getFeatureName());
+                }
 
-        explanations.forEach((expl) -> expl.getPredicates().values().forEach(calculateCoveragePerPredicate));
+                AnchorCandidate fakeCandidate = new AnchorCandidate(Collections.singleton(featureIndex));
+                fakeCandidate.setCoverage(0);
+                TabularInstance predicateInstance = new TabularInstance(instance);
+                predicateInstance.getInstance()[featureIndex] = predicate.getDiscretizedValue();
+                AnchorResultWithExactCoverage anchorResult = new AnchorResultWithExactCoverage(
+                        fakeCandidate,
+                        predicateInstance,
+                        0,
+                        true,
+                        0,
+                        0
+                );
+                int foundInstances = findCoveredInstances(instances, Collections.singletonList(anchorResult)).size();
+                predicate.setExactCoverage(foundInstances / (double) instances.length);
+            }
+        }
 
     }
 
     public static <T extends TabularInstance, E extends AnchorResult<T>> Set<T> findCoveredInstances(final T[] instances,
                                                                                                      final List<E> anchorResults) {
-        // TODO the final may be the reason of the odd behavior of the unit test
-        final Set<T> coveredInstances = new HashSet<>();
-        Consumer<T> findCoveredInstance = item ->
-                anchorResults.forEach((result) -> {
-                    if (isInstanceInAnchor(item, result.getInstance(), result.getOrderedFeatures())) {
-                        coveredInstances.add(item);
-                    }
-                });
-
-        Stream.of(instances).parallel().forEach(findCoveredInstance);
+        Set<T> coveredInstances = new HashSet<>();
+        for (T item : instances) {
+            for (E result : anchorResults) {
+                if (isInstanceInAnchor(item, result.getInstance(), result.getOrderedFeatures())) {
+                    coveredInstances.add(item);
+                }
+            }
+        }
 
         return coveredInstances;
     }
@@ -111,7 +124,7 @@ public class AnchorUtil {
         }
         convertedAnchor.setInstance(cleanedInstanceMap);
 
-        final int affectedRows = (int) Math.round(dataSetSize * convertedAnchor.getCoverage());
+        final int affectedRows = (int) Math.round(dataSetSize * anchorResult.getExactCoverage());
         convertedAnchor.setAffected_rows(affectedRows);
 
         String prediction = classificationFunction.getModelWrapper().getResponseDomainValues()[anchorResult.getLabel()];
@@ -120,38 +133,6 @@ public class AnchorUtil {
         final Map<Integer, AnchorPredicate> anchorPredicateMap = new HashMap<>();
         createAnchorPredicateMap(anchorPredicateMap, anchorResult, anchorResult.getInstance());
         convertedAnchor.setPredicates(anchorPredicateMap);
-//        for (Map.Entry<Integer, FeatureValueMapping> entry : anchor.getVisualizer().getAnchor(anchorResult).entrySet()) {
-//            final TabularFeature feature = entry.getValue().getFeature();
-//
-//            final int featureIndex = anchorResult.getInstance().getFeatureArrayIndex(feature.getName());
-//            final AnchorCandidate candidate = AnchorUtil.findCandidate(anchorResult, featureIndex);
-//            double addedCoverage = 0;
-//            double addedPrecision = 0;
-//            if (candidate != null) {
-//                addedCoverage = candidate.getAddedCoverage();
-//                addedPrecision = candidate.getAddedPrecision();
-//            } else {
-//                LOG.error("No AnchorCandidate for feature with index " + featureIndex + " and name " + feature.getName() + " found");
-//            }
-//
-//            final FeatureValueMapping featureValueMapping = entry.getValue();
-//            if (featureValueMapping instanceof CategoricalValueMapping) {
-//                String value = featureValueMapping.getValue().toString();
-//                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), (Integer) ((CategoricalValueMapping) featureValueMapping).getCategoricalValue(), value, addedPrecision, addedCoverage));
-//            } else if (featureValueMapping instanceof NativeValueMapping) {
-//                enumAnchors.put(entry.getKey(), new AnchorPredicateEnum(feature.getName(), (Integer) featureValueMapping.getValue(),
-//                        featureValueMapping.getValue().toString(), addedPrecision, addedCoverage));
-//            } else if (featureValueMapping instanceof MetricValueMapping) {
-//                MetricValueMapping metric = (MetricValueMapping) featureValueMapping;
-//                metricAnchors.put(entry.getKey(), new AnchorPredicateMetric(feature.getName(), (Integer) featureValueMapping.getValue(),
-//                        addedPrecision, addedCoverage, metric.getMinValue(), metric.getMaxValue()));
-//            } else {
-//                throw new IllegalArgumentException("feature value mapping of type " +
-//                        featureValueMapping.getClass().getSimpleName() + " not handled");
-//            }
-//        }
-//        convertedAnchor.setEnumPredicate(enumAnchors);
-//        convertedAnchor.setMetricPredicate(metricAnchors);
         return convertedAnchor;
     }
 
@@ -161,7 +142,7 @@ public class AnchorUtil {
             return;
         }
 
-        int featureIndex = candidate.getOrderedFeatures().get(0);
+        int featureIndex = candidate.getAddedFeature();
         GenericColumn featureOfInterest = instance.getFeatures()[featureIndex];
         DiscretizerRelation relation = featureOfInterest.getDiscretizer().unApply(instance.getValue(featureIndex));
         AnchorPredicate predicate;
@@ -188,7 +169,7 @@ public class AnchorUtil {
             default:
                 throw new IllegalArgumentException("relation with undefined feature type not handled: " + relation.toString());
         }
-        predicateMap.put(candidate.getAddedFeature(), predicate);
+        predicateMap.put(predicateMap.size(), predicate);
 
         if (candidate.hasParentCandidate()) {
             createAnchorPredicateMap(predicateMap, candidate.getParentCandidate(), instance);
@@ -206,30 +187,29 @@ public class AnchorUtil {
         headList.addAll(header.entrySet());
         headList.sort(Comparator.comparingInt(Map.Entry::getValue));
 
-        headList.forEach((entry) -> {
+        for (Map.Entry<String, Integer> entry : headList) {
             String columnLabel = entry.getKey();
             ColumnSummary<?> columnSummary = findColumn(columnSummaries, columnLabel);
             GenericColumn column;
             if (ignoredColumns.contains(columnLabel)) {
-                // ignore
-                column = new IgnoredColumn(columnLabel, entry.getValue());
+                column = new IgnoredColumn(columnLabel);
             } else if (H2oUtil.isColumnTypeInt(columnSummary.getColumn_type())) {
                 column = new IntegerColumn(
-                        columnLabel, entry.getValue(),
+                        columnLabel,
                         Arrays.asList(
                                 new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
-                                new StringToIntTransformer()),
+                                new StringToDoubleTransformer()),
                         new PercentileMedianDiscretizer(classCount));
             } else if (H2oUtil.isColumnTypeReal(columnSummary.getColumn_type())) {
                 column = new IntegerColumn(
-                        columnLabel, entry.getValue(),
+                        columnLabel,
                         Arrays.asList(
                                 new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
                                 new StringToDoubleTransformer()),
                         new PercentileMedianDiscretizer(classCount));
             } else if (H2oUtil.isColumnTypeEnum(columnSummary.getColumn_type()) ||
                     H2oUtil.isColumnTypeString(columnSummary.getColumn_type())) {
-                column = new StringColumn(columnLabel, entry.getValue(), null, new UniqueValueDiscretizer());
+                column = new StringColumn(columnLabel, null, new UniqueValueDiscretizer());
             } else {
                 throw new IllegalArgumentException("Column type " + columnSummary.getColumn_type() + " not handled");
             }
@@ -241,7 +221,7 @@ public class AnchorUtil {
             } else {
                 builder.addColumn(column);
             }
-        });
+        }
     }
 
     public static ColumnSummary<?> findColumn(final Collection<ColumnSummary<?>> columns, final String columnName) {

@@ -91,7 +91,7 @@ class AnchorUtilTest {
         bColumn.setLabel("B");
         bColumn.setColumn_min(1);
         bColumn.setColumn_max(10);
-        bColumn.setColumn_type("metric");
+        bColumn.setColumn_type("int");
         columns.add(bColumn);
 
         CategoricalColumnSummary<String> cColumn = new CategoricalColumnSummary<>();
@@ -108,7 +108,7 @@ class AnchorUtilTest {
         eColumn.setLabel("E");
         eColumn.setColumn_min(1);
         eColumn.setColumn_max(8);
-        eColumn.setColumn_type("metric");
+        eColumn.setColumn_type("int");
         columns.add(eColumn);
 
         CategoricalColumnSummary<String> fColumn = new CategoricalColumnSummary<>();
@@ -121,44 +121,44 @@ class AnchorUtilTest {
         int classCount = 5;
 
         AnchorUtil.addColumnsToAnchorBuilder(builder, header, targetColumnName, columns, ignoredColumns, classCount);
-        AnchorTabular tabular = builder.build(Collections.emptyList());
-        GenericColumn cd = tabular.getColumns().get(0);
+        AnchorTabular tabular = builder.build(Collections.singleton(new String[]{"A-Value", "1", "C-String", "D-UUID", "4", "F-Enum"}));
+        GenericColumn cd = tabular.getTargetColumn();
         assertEquals("A", cd.getName());
         assertEquals(targetColumnName, tabular.getTargetColumn().getName());
         assertTrue(cd.isDoUse());
 
-        cd = tabular.getColumns().get(1);
-        assertEquals("B", cd.getName());
-        assertFalse(cd.isDoUse());
-
-        cd = tabular.getColumns().get(2);
+        cd = tabular.getColumns().get(0);
         assertEquals("C", cd.getName());
         assertTrue(cd.isDoUse());
 
-        cd = tabular.getColumns().get(3);
+        cd = tabular.getColumns().get(1);
         assertEquals("D", cd.getName());
         assertTrue(cd.isDoUse());
 
-        cd = tabular.getColumns().get(4);
+        cd = tabular.getColumns().get(2);
         assertEquals("E", cd.getName());
         assertTrue(cd.isDoUse());
-        assertEquals(0, cd.getDiscretizer().apply(1).intValue());
-        assertEquals(1, cd.getDiscretizer().apply(3).intValue());
+        assertEquals(4, cd.getDiscretizer().apply(4).intValue());
+
+        cd = tabular.getColumns().get(3);
+        assertEquals("F", cd.getName());
+        assertTrue(cd.isDoUse());
+        assertEquals(0, cd.getDiscretizer().apply("F-Enum").intValue());
     }
 
     @Test
     void testCalculateCoveragePerPredicate() {
         GenericColumn[] columns = new GenericColumn[3];
-        columns[0] = new IntegerColumn("A", 0);
-        columns[1] = new IntegerColumn("B", 1);
-        columns[2] = new IntegerColumn("C", 2);
+        columns[0] = new IntegerColumn("A");
+        columns[1] = new IntegerColumn("B");
+        columns[2] = new IntegerColumn("C");
 
         TabularInstance[] instances = new TabularInstance[5];
         instances[0] = new TabularInstance(columns, null, new String[] { "0", "1", "3" }, new Integer[] { 0, 1, 3 }, "", 0);
-        instances[0] = new TabularInstance(columns, null, new String[] { "0", "2", "2" }, new Integer[] { 0, 2, 2 }, "", 0);
-        instances[0] = new TabularInstance(columns, null, new String[] { "0", "1", "2" }, new Integer[] { 0, 1, 2 }, "", 0);
-        instances[0] = new TabularInstance(columns, null, new String[] { "0", "2", "2" }, new Integer[] { 0, 2, 2 }, "", 0);
-        instances[0] = new TabularInstance(columns, null, new String[] { "0", "1", "2" }, new Integer[] { 0, 1, 2 }, "", 0);
+        instances[1] = new TabularInstance(columns, null, new String[] { "0", "2", "2" }, new Integer[] { 0, 2, 2 }, "", 0);
+        instances[2] = new TabularInstance(columns, null, new String[] { "0", "1", "2" }, new Integer[] { 0, 1, 2 }, "", 0);
+        instances[3] = new TabularInstance(columns, null, new String[] { "0", "2", "2" }, new Integer[] { 0, 2, 2 }, "", 0);
+        instances[4] = new TabularInstance(columns, null, new String[] { "0", "1", "2" }, new Integer[] { 0, 1, 2 }, "", 0);
 
         ArrayList<Anchor> anchors = new ArrayList<>();
         Anchor a = new Anchor();
@@ -182,8 +182,8 @@ class AnchorUtilTest {
         originalInstance2[1] = "2";
 
         GenericColumn[] columns = new GenericColumn[2];
-        columns[0] = new IntegerColumn("A", 0, null, new UniqueValueDiscretizer());
-        columns[1] = new IntegerColumn("B", 1, null, new UniqueValueDiscretizer());
+        columns[0] = new IntegerColumn("A", null, new UniqueValueDiscretizer());
+        columns[1] = new IntegerColumn("B", null, new UniqueValueDiscretizer());
 
         H2oTabularNominalMojoClassifier classifier = mock(H2oTabularNominalMojoClassifier.class);
         EasyPredictModelWrapper modelWrapper = mock(EasyPredictModelWrapper.class);
@@ -200,7 +200,7 @@ class AnchorUtilTest {
         when(result.getTimeSpent()).thenReturn(12.3);
         when(result.getTimeSpentSampling()).thenReturn(4.9);
         when(result.getPrecision()).thenReturn(0.89);
-        when(result.getOrderedFeatures()).thenReturn(Collections.singletonList(1));
+        when(result.getOrderedFeatures()).thenReturn(Collections.singletonList(0));
         when(result.getCoverage()).thenReturn(0.12);
 
 
@@ -214,9 +214,9 @@ class AnchorUtilTest {
     @Test
     void testIsInstanceInAnchor() {
         GenericColumn[] columns = new GenericColumn[3];
-        columns[0] = new IntegerColumn("A", 0);
-        columns[1] = new IntegerColumn("B", 1);
-        columns[2] = new IntegerColumn("C", 2);
+        columns[0] = new IntegerColumn("A");
+        columns[1] = new IntegerColumn("B");
+        columns[2] = new IntegerColumn("C");
 
         TabularInstance[] instances = new TabularInstance[5];
         instances[0] = new TabularInstance(columns, null, null, new Integer[] { 0, 1, 3 }, null, null);

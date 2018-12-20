@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import de.viadee.anchorj.AnchorConstructionBuilder;
 import de.viadee.anchorj.exploration.KL_LUCB;
@@ -84,9 +83,10 @@ public class AnchorProcessor {
         // garbage!
         dataSet.clear();
 
-//        GenericColumn targetFeature = anchorTabular.getTargetColumn();
-        List<String> sortedHeaderNames = Stream.of(this.anchorTabular.getTabularInstances()[0].getFeatures()).map((GenericColumn::getName)).collect(Collectors.toList());
+        List<String> sortedHeaderNames = anchorTabular.getColumns().stream().map(GenericColumn::getName)
+                .collect(Collectors.toList());
         this.classificationFunction = createMojoClassifier(this.api, this.modelId, sortedHeaderNames);
+
         final TabularInstance cleanedInstance = AnchorTabular.preprocessData(anchorTabular,
                 Collections.singleton(instance.getInstance()), false)[0];
 
@@ -138,9 +138,13 @@ public class AnchorProcessor {
         anchorResults.forEach(this::computeSingleAnchorCoverage);
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
-        anchorResults.forEach((anchorResult) -> explanations.add(AnchorUtil.transformAnchor(modelId, frameId,
-                this.getDataSetSize(), this.getAnchorTabular(),
-                this.getClassificationFunction(), anchorResult)));
+        for (AnchorResultWithExactCoverage anchorResult : anchorResults) {
+            Anchor anchor = AnchorUtil.transformAnchor(modelId, frameId,
+                    this.getDataSetSize(), this.getAnchorTabular(),
+                    this.getClassificationFunction(), anchorResult);
+
+            explanations.add(anchor);
+        }
 
         AnchorUtil.calculateCoveragePerPredicate(this.getInstances(), explanations);
 
