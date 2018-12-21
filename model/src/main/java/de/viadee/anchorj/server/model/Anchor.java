@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  */
-@SuppressWarnings({ "unused", "ClassWithTooManyMethods", "ClassWithTooManyFields" })
+@SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields"})
 public class Anchor implements Serializable {
     private static final long serialVersionUID = 4391527342934385039L;
 

@@ -6,15 +6,12 @@ import java.util.Objects;
 /**
  *
  */
-@SuppressWarnings({ "unused", "WeakerAccess" })
 public class AnchorPredicate implements Serializable {
     private static final long serialVersionUID = 9101074766885725364L;
 
     public enum FeatureType {
         CATEGORICAL, METRIC, UNDEFINED
     }
-
-    private static final String COLUMN_TYPE = "metric";
 
     private final FeatureType featureType;
 

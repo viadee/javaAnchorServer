@@ -108,7 +108,7 @@ class AnchorH2OTest {
         precisionWithIntelliJ = 0.1183333333333334;
         AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), -0.251, 3, 3);
         assertEquals(pClassPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.02);
+        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.04);
 
         testPredicate = anchor.getPredicates().get(1);
         precisionWithIntelliJ = 0.825;
@@ -122,7 +122,7 @@ class AnchorH2OTest {
     private final static class MockedAnchorH2o extends AnchorH2o {
         private H2oApi api;
 
-        public MockedAnchorH2o(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
+        MockedAnchorH2o(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
             super(modelBO, frameBO);
             this.api = api;
         }
