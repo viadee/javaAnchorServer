@@ -25,10 +25,7 @@ import de.viadee.anchorj.tabular.column.IntegerColumn;
 import de.viadee.anchorj.tabular.discretizer.UniqueValueDiscretizer;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -182,8 +179,8 @@ class AnchorUtilTest {
         originalInstance2[1] = "2";
 
         GenericColumn[] columns = new GenericColumn[2];
-        columns[0] = new IntegerColumn("A", null, new UniqueValueDiscretizer());
-        columns[1] = new IntegerColumn("B", null, new UniqueValueDiscretizer());
+        columns[0] = new IntegerColumn("A", null, null, new UniqueValueDiscretizer());
+        columns[1] = new IntegerColumn("B", null, null, new UniqueValueDiscretizer());
 
         H2oTabularNominalMojoClassifier classifier = mock(H2oTabularNominalMojoClassifier.class);
         EasyPredictModelWrapper modelWrapper = mock(EasyPredictModelWrapper.class);
