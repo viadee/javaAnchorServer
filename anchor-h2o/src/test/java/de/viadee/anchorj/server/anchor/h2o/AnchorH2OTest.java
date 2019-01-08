@@ -56,7 +56,6 @@ class AnchorH2OTest {
 
     @Test
     void testComputeRule() throws IOException {
-
         ResponseBody body = mock(ResponseBody.class);
         when(h2oResponse.isSuccessful()).thenReturn(true, true);
         when(body.byteStream()).thenReturn(
@@ -106,7 +105,7 @@ class AnchorH2OTest {
 
         testPredicate = anchor.getPredicates().get(0);
         precisionWithIntelliJ = 0.1183333333333334;
-        AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), -0.251, 3, 3);
+        AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), -0.251, 2, 3);
         assertEquals(pClassPredicate, testPredicate);
         assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.04);
 

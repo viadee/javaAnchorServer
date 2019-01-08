@@ -107,7 +107,7 @@ public class Resources {
                 2));
         TITANIC_FEATURE_MAPPING.put("Survived", 1);
 
-        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "Pclass", "int", null,
+        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "Pclass", "real", null,
                 0, 1, 3, 2.3086419753086447));
         TITANIC_FEATURE_MAPPING.put("Pclass", 2);
 
@@ -130,7 +130,7 @@ public class Resources {
                 0, 0.42, 80, 29.630118193943826));
         TITANIC_FEATURE_MAPPING.put("Age", 5);
 
-        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "SibSp", "int", null,
+        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "SibSp", "real", null,
                 0, 0, 8, 0.5230078563411893));
         TITANIC_FEATURE_MAPPING.put("SibSp", 6);
 

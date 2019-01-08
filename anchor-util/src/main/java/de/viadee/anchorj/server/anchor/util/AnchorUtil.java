@@ -23,6 +23,7 @@ import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.ColumnSummary;
 import de.viadee.anchorj.tabular.AnchorTabular;
 import de.viadee.anchorj.tabular.TabularInstance;
+import de.viadee.anchorj.tabular.column.DoubleColumn;
 import de.viadee.anchorj.tabular.column.GenericColumn;
 import de.viadee.anchorj.tabular.column.IgnoredColumn;
 import de.viadee.anchorj.tabular.column.IntegerColumn;
@@ -32,11 +33,11 @@ import de.viadee.anchorj.tabular.discretizer.PercentileMedianDiscretizer;
 import de.viadee.anchorj.tabular.discretizer.UniqueValueDiscretizer;
 import de.viadee.anchorj.tabular.transformations.ReplaceNullTransformer;
 import de.viadee.anchorj.tabular.transformations.StringToDoubleTransformer;
+import de.viadee.anchorj.tabular.transformations.StringToIntTransformer;
 
 /**
  *
  */
-@SuppressWarnings("WeakerAccess")
 public class AnchorUtil {
 
     private AnchorUtil() {
@@ -195,21 +196,21 @@ public class AnchorUtil {
                 column = new IgnoredColumn(columnLabel);
             } else if (H2oUtil.isColumnTypeInt(columnSummary.getColumn_type())) {
                 column = new IntegerColumn(
-                        columnLabel,
+                        columnLabel, null,
                         Arrays.asList(
                                 new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
-                                new StringToDoubleTransformer()),
-                        new PercentileMedianDiscretizer(classCount));
+                                new StringToIntTransformer()),
+                        new PercentileMedianDiscretizer(classCount, NoValueHandler.getNumberNa()));
             } else if (H2oUtil.isColumnTypeReal(columnSummary.getColumn_type())) {
-                column = new IntegerColumn(
-                        columnLabel,
+                column = new DoubleColumn(
+                        columnLabel, null,
                         Arrays.asList(
-                                new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
+                                new ReplaceNullTransformer((double) NoValueHandler.getNumberNa()),
                                 new StringToDoubleTransformer()),
-                        new PercentileMedianDiscretizer(classCount));
+                        new PercentileMedianDiscretizer(classCount, (double) NoValueHandler.getNumberNa()));
             } else if (H2oUtil.isColumnTypeEnum(columnSummary.getColumn_type()) ||
                     H2oUtil.isColumnTypeString(columnSummary.getColumn_type())) {
-                column = new StringColumn(columnLabel, null, new UniqueValueDiscretizer());
+                column = new StringColumn(columnLabel, null, null, new UniqueValueDiscretizer());
             } else {
                 throw new IllegalArgumentException("Column type " + columnSummary.getColumn_type() + " not handled");
             }
