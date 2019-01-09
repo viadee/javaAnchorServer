@@ -41,7 +41,7 @@ public class Resources {
 
     public static final String TITANIC_CLASSIFIER = "/mojo/Titanic_GBM_grid_0_AutoML_20181207_120821_model_7.zip";
 
-    public static final Serializable[] SIMPLE_TITANIC_INSTANCE;
+    public static final String[] SIMPLE_TITANIC_INSTANCE;
 
     public static final Map<String, Integer> TITANIC_FEATURE_MAPPING;
 
@@ -107,7 +107,7 @@ public class Resources {
                 2));
         TITANIC_FEATURE_MAPPING.put("Survived", 1);
 
-        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "Pclass", "int", null,
+        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "Pclass", "real", null,
                 0, 1, 3, 2.3086419753086447));
         TITANIC_FEATURE_MAPPING.put("Pclass", 2);
 
@@ -130,7 +130,7 @@ public class Resources {
                 0, 0.42, 80, 29.630118193943826));
         TITANIC_FEATURE_MAPPING.put("Age", 5);
 
-        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "SibSp", "int", null,
+        TITANIC_COLUMN_SUMMARY.add(new ContinuousColumnSummary(FRAME_NAME, "SibSp", "real", null,
                 0, 0, 8, 0.5230078563411893));
         TITANIC_FEATURE_MAPPING.put("SibSp", 6);
 
@@ -183,7 +183,7 @@ public class Resources {
                 0, 0, 15, 0.8215488215488215));
         TITANIC_FEATURE_MAPPING.put("CabinLength", 14);
 
-        SIMPLE_TITANIC_INSTANCE = new Serializable[15];
+        SIMPLE_TITANIC_INSTANCE = new String[15];
         SIMPLE_TITANIC_INSTANCE[0] = "361";
         SIMPLE_TITANIC_INSTANCE[1] = "0";
         SIMPLE_TITANIC_INSTANCE[2] = "3";

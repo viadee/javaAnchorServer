@@ -85,9 +85,9 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
                 String columnType = h2oCol.type;
                 ColumnSummary column;
 
-                if (H2oUtil.isEnumColumn(columnType)) {
+                if (H2oUtil.isColumnTypeEnum(columnType)) {
                     column = generateEnumColumnSummary(rowCount, h2oCol);
-                } else if (H2oUtil.isStringColumn(columnType)) {
+                } else if (H2oUtil.isColumnTypeString(columnType)) {
                     column = generateStringColumnSummary(dataSet, h2oCol, rowCount);
                 } else {
                     column = generateMetricColumnSummary(h2oCol);

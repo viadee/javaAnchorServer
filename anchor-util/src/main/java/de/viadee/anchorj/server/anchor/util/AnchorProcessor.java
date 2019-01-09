@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +29,15 @@ import de.viadee.anchorj.server.model.FrameSummary;
 import de.viadee.anchorj.server.model.Model;
 import de.viadee.anchorj.server.model.SubmodularPickResult;
 import de.viadee.anchorj.tabular.AnchorTabular;
-import de.viadee.anchorj.tabular.TabularFeature;
 import de.viadee.anchorj.tabular.TabularInstance;
+import de.viadee.anchorj.tabular.TabularPerturbationFunction;
+import de.viadee.anchorj.tabular.column.GenericColumn;
 import water.bindings.H2oApi;
 
 /**
  *
  */
+@SuppressWarnings({ "WeakerAccess", "ClassWithTooManyFields" })
 public class AnchorProcessor {
 
     private final H2oApi api;
@@ -48,11 +49,10 @@ public class AnchorProcessor {
     private final String connectionName;
 
     private int dataSetSize;
-    private List<TabularInstance> instances;
     private AnchorConstructionBuilder<TabularInstance> constructionBuilder;
     private AnchorTabular anchorTabular;
     private H2oTabularNominalMojoClassifier<TabularInstance> classificationFunction;
-    private AnchorTabular.TabularPreprocessorBuilder tabularPreprocessor;
+    private AnchorTabular.Builder tabularPreprocessor;
     private Long seed;
 
     public AnchorProcessor(String connectionName, H2oApi api, ModelBO modelBO, FrameBO frameBO, Map<String, Object> anchorConfig, final String modelId, final String frameId) {
@@ -76,21 +76,19 @@ public class AnchorProcessor {
         final List<String[]> dataSet = new LinkedList<>();
         final Map<String, Integer> header = H2oDataUtil.loadDataSetFromH2o(frameId, this.api, dataSet);
 
-        this.tabularPreprocessor = buildAnchorPreprocessor(this.connectionName, this.modelId, this.frameId, header,
-                dataSet, bucketNo);
+        this.tabularPreprocessor = buildAnchorPreprocessor(this.connectionName, this.modelId, this.frameId, header, bucketNo);
         this.anchorTabular = this.tabularPreprocessor.build(dataSet);
 
         this.dataSetSize = dataSet.size();
         // garbage!
         dataSet.clear();
 
-        this.instances = anchorTabular.getTabularInstances();
-
-        String targetFeatureName = anchorTabular.getMappings().keySet().stream().filter((TabularFeature::isTargetFeature)).findFirst().orElseThrow(() -> new IllegalStateException("no target column found")).getName();
-        List<String> sortedHeaderNames = this.instances.get(0).getFeatureNamesMapping().entrySet().stream().filter((entry) -> !targetFeatureName.equals(entry.getKey())).sorted(Comparator.comparingInt(Map.Entry::getValue)).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> sortedHeaderNames = anchorTabular.getColumns().stream().map(GenericColumn::getName)
+                .collect(Collectors.toList());
         this.classificationFunction = createMojoClassifier(this.api, this.modelId, sortedHeaderNames);
-        final TabularInstance convertedInstance = new TabularInstance(instance.getFeatureNamesMapping(), null, instance.getInstance(), instance.getInstance());
-        final TabularInstance cleanedInstance = AnchorUtil.handleInstanceToExplain(convertedInstance, tabularPreprocessor, anchorTabular);
+
+        final TabularInstance cleanedInstance = AnchorTabular.preprocessData(anchorTabular,
+                Collections.singleton(instance.getInstance()), false)[0];
 
         this.constructionBuilder = createAnchorBuilderWithConfig(cleanedInstance, this.seed);
     }
@@ -140,9 +138,13 @@ public class AnchorProcessor {
         anchorResults.forEach(this::computeSingleAnchorCoverage);
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
-        anchorResults.forEach((anchorResult) -> explanations.add(AnchorUtil.transformAnchor(modelId, frameId,
-                this.getDataSetSize(), this.getAnchorTabular(),
-                this.getClassificationFunction(), anchorResult)));
+        for (AnchorResultWithExactCoverage anchorResult : anchorResults) {
+            Anchor anchor = AnchorUtil.transformAnchor(modelId, frameId,
+                    this.getDataSetSize(), this.getAnchorTabular(),
+                    this.getClassificationFunction(), anchorResult);
+
+            explanations.add(anchor);
+        }
 
         AnchorUtil.calculateCoveragePerPredicate(this.getInstances(), explanations);
 
@@ -154,16 +156,15 @@ public class AnchorProcessor {
         return new SubmodularPickResult(explanations, aggregatedCoverage);
     }
 
-    private AnchorTabular.TabularPreprocessorBuilder buildAnchorPreprocessor(String connectionName,
-                                                                             String modelId,
-                                                                             String frameId,
-                                                                             Map<String, Integer> header,
-                                                                             List<String[]> dataSet,
-                                                                             final int classCount) throws DataAccessException {
+    private AnchorTabular.Builder buildAnchorPreprocessor(String connectionName,
+                                                          String modelId,
+                                                          String frameId,
+                                                          Map<String, Integer> header,
+                                                          final int classCount) throws DataAccessException {
         Model model = this.modelBO.getModel(connectionName, modelId);
         FrameSummary frameSummary = this.frameBO.getFrameSummary(connectionName, frameId);
 
-        AnchorTabular.TabularPreprocessorBuilder anchorBuilder = new AnchorTabular.TabularPreprocessorBuilder();
+        AnchorTabular.Builder anchorBuilder = new AnchorTabular.Builder();
         AnchorUtil.addColumnsToAnchorBuilder(
                 anchorBuilder,
                 header,
@@ -173,15 +174,13 @@ public class AnchorProcessor {
                 classCount
         );
 
-        AnchorUtil.handleNa(header, dataSet, anchorBuilder.getColumnDescriptions());
-
         return anchorBuilder;
     }
 
     private AnchorConstructionBuilder<TabularInstance> createAnchorBuilderWithConfig(TabularInstance cleanedInstance, Long seed) {
-        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularWithOriginalDataPerturbationFunction(
+        ReconfigurablePerturbationFunction<TabularInstance> tabularPerturbationFunction = new TabularPerturbationFunction(
                 cleanedInstance,
-                anchorTabular.getTabularInstances().toArray(new TabularInstance[0]),
+                anchorTabular.getTabularInstances(),
                 seed);
 
         final double anchorTau = AnchorConfig.getTau(anchorConfig);
@@ -201,8 +200,8 @@ public class AnchorProcessor {
                 .setAllowSuboptimalSteps(false);
     }
 
-    public List<TabularInstance> getInstances() {
-        return this.instances;
+    public TabularInstance[] getInstances() {
+        return this.anchorTabular.getTabularInstances();
     }
 
     public AnchorConstructionBuilder<TabularInstance> getConstructionBuilder() {
@@ -221,7 +220,8 @@ public class AnchorProcessor {
         return this.classificationFunction;
     }
 
-    public AnchorTabular.TabularPreprocessorBuilder getTabularPreprocessor() {
+    @SuppressWarnings("unused")
+    public AnchorTabular.Builder getTabularPreprocessor() {
         return tabularPreprocessor;
     }
 }

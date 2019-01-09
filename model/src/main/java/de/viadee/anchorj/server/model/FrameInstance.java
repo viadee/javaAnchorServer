@@ -1,22 +1,21 @@
 package de.viadee.anchorj.server.model;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
 public class FrameInstance {
 
-    private final Serializable[] instance;
+    private final String[] instance;
 
     private final Map<String, Integer> featureNamesMapping;
 
-    public FrameInstance(Map<String, Integer> featureNamesMapping, Serializable[] instance) {
+    public FrameInstance(Map<String, Integer> featureNamesMapping, String[] instance) {
         this.instance = instance;
         this.featureNamesMapping = featureNamesMapping;
     }
 
-    public Serializable[] getInstance() {
+    public String[] getInstance() {
         return instance;
     }
 

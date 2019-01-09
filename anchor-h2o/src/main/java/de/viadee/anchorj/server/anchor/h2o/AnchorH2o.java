@@ -57,7 +57,7 @@ public class AnchorH2o implements AnchorRule, H2oConnector {
                 frameId);
         BatchExplainer<TabularInstance> explainer = new ThreadedBatchExplainer<>(SP_MAX_THREADS);
         processor.preProcess(instance);
-        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(explainer, processor.getConstructionBuilder());
+        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(false, explainer, processor.getConstructionBuilder());
 
         return processor.globalExplanation(subPick);
     }

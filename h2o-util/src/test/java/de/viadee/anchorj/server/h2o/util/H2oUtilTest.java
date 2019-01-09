@@ -11,13 +11,13 @@ class H2oUtilTest {
 
     @Test
     void testIsEnumColumn() {
-        assertTrue(H2oUtil.isEnumColumn("enum"));
+        assertTrue(H2oUtil.isColumnTypeEnum("enum"));
     }
 
     @Test
     void testIsStringColumn() {
-        assertTrue(H2oUtil.isStringColumn("String"));
-        assertTrue(H2oUtil.isStringColumn("uuid"));
+        assertTrue(H2oUtil.isColumnTypeString("String"));
+        assertTrue(H2oUtil.isColumnTypeString("uuid"));
     }
 
 }
