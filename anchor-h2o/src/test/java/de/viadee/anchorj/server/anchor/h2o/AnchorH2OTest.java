@@ -109,7 +109,7 @@ class AnchorH2OTest {
         coverageWithIntellJ = -0.14100000000000001;
         AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), 3, 3);
         assertEquals(pClassPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.06);
+        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.1);
         assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.2);
 
         testPredicate = anchor.getPredicates().get(1);
@@ -117,7 +117,7 @@ class AnchorH2OTest {
         coverageWithIntellJ = -0.348;
         AnchorPredicate sexPredicate = new AnchorPredicate("Sex", 0, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), "male");
         assertEquals(sexPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.06);
+        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.1);
         assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.1);
 
         // TODO check 455!!
