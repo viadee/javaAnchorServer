@@ -3,6 +3,7 @@ package de.viadee.anchorj.server.controller;
 import de.viadee.anchorj.server.api.ClusterApi;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
 import de.viadee.anchorj.server.business.ClusterBO;
+import de.viadee.anchorj.server.model.ConnectionNameListResponse;
 import de.viadee.anchorj.server.model.TryConnectResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
 
 /**
  */
@@ -49,7 +49,7 @@ public class ClusterController implements ClusterApi {
             path = "/",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON)
-    public Collection<String> getConnectionNames() {
+    public ConnectionNameListResponse getConnectionNames() {
         return this.clusterBO.getConnectionNames();
     }
 
