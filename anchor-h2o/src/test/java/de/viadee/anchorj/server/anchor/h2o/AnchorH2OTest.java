@@ -102,21 +102,26 @@ class AnchorH2OTest {
         // therefor ignore the added precision
         AnchorPredicate testPredicate;
         double precisionWithIntelliJ;
+        double coverageWithIntellJ;
 
         testPredicate = anchor.getPredicates().get(0);
         precisionWithIntelliJ = 0.1183333333333334;
-        AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), -0.14100000000000001, 2, 3);
+        coverageWithIntellJ = -0.14100000000000001;
+        AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), 3, 3);
         assertEquals(pClassPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.04);
+        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.06);
+        assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.2);
 
         testPredicate = anchor.getPredicates().get(1);
         precisionWithIntelliJ = 0.825;
-        AnchorPredicate sexPredicate = new AnchorPredicate("Sex", 0, testPredicate.getAddedPrecision(), -0.348, "male");
+        coverageWithIntellJ = -0.348;
+        AnchorPredicate sexPredicate = new AnchorPredicate("Sex", 0, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), "male");
         assertEquals(sexPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.05);
+        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.06);
+        assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.1);
 
         // TODO check 455!!
-        assertEquals(Integer.valueOf(455), anchor.getAffected_rows());
+        assertEquals(Integer.valueOf(347), anchor.getAffected_rows());
     }
 
     private final static class MockedAnchorH2o extends AnchorH2o {
