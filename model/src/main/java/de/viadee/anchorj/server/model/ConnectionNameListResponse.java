@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  */
 public class ConnectionNameListResponse {
-    Collection<String> connectionNames;
+    private Collection<String> connectionNames;
 
     public ConnectionNameListResponse(Collection<String> connectionNames) {
         this.connectionNames = connectionNames;

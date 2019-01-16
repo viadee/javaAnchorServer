@@ -15,8 +15,43 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>anchor-j-server</name>
+    <name>anchorj-server</name>
     <description>Provides Anchors-Explanations for Machine Learning Models as a Service</description>
+
+    <url>https://github.com/viadee/javaAnchorServer</url>
+
+    <licenses>
+        <license>
+            <name>BSD-3 Clause</name>
+            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>viadee Unternehmensberatung AG</name>
+        <url>http://www.viadee.de</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Alex Kroeker</name>
+            <email>Alex.Kroeker@viadee.de</email>
+            <organization>viadee Unternehmensberatung AG</organization>
+            <organizationUrl>http://www.viadee.de</organizationUrl>
+        </developer>
+        <developer>
+            <name>Frank Koehne</name>
+            <email>Frank.Koehne@viadee.de</email>
+            <organization>viadee Unternehmensberatung AG</organization>
+            <organizationUrl>http://www.viadee.de</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://https://github.com/viadee/javaAnchorServer</connection>
+        <developerConnection>scm:git:ssh://github.com/viadee/javaAnchorServer</developerConnection>
+        <url>scm:git:git@github.com:viadee/javaAnchorServer.git</url>
+    </scm>
 
     <modules>
         <module>application</module>
@@ -327,16 +362,16 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>mvncentral</id>
-            <name>Maven Central</name>
-            <url>http://central.maven.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>h2o-ai</id>
-            <name>H2O maven Repo</name>
-            <url>http://h2o-release.s3.amazonaws.com/h2o/rel-xia/2/maven/repo/</url>
-        </repository>
-    </repositories>
+    <!--<repositories>-->
+    <!--<repository>-->
+    <!--<id>mvncentral</id>-->
+    <!--<name>Maven Central</name>-->
+    <!--<url>http://central.maven.org/maven2/</url>-->
+    <!--</repository>-->
+    <!--<repository>-->
+    <!--<id>h2o-ai</id>-->
+    <!--<name>H2O maven Repo</name>-->
+    <!--<url>http://h2o-release.s3.amazonaws.com/h2o/rel-xia/2/maven/repo/</url>-->
+    <!--</repository>-->
+    <!--</repositories>-->
 </project>
