@@ -27,6 +27,10 @@
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>anchor-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>api</artifactId>
         </dependency>
         <dependency>
@@ -52,14 +56,6 @@
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>h2o-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>anchor-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>anchor-util</artifactId>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>de.viadee.anchorj.server</groupId>-->
