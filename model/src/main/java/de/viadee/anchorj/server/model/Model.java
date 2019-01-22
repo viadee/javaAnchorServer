@@ -13,7 +13,7 @@ public class Model {
     private String url;
     private String target_column;
     private DataFrame data_frame;
-    private Collection<DataFrame> compatibleFrames;
+    private Collection<String> compatibleFrames;
     private Set<String> ignoredColumns;
 
     public Model() {
@@ -59,11 +59,11 @@ public class Model {
         this.data_frame = data_frame;
     }
 
-    public Collection<DataFrame> getCompatibleFrames() {
+    public Collection<String> getCompatibleFrames() {
         return compatibleFrames;
     }
 
-    public void setCompatibleFrames(Collection<DataFrame> compatibleFrames) {
+    public void setCompatibleFrames(Collection<String> compatibleFrames) {
         this.compatibleFrames = compatibleFrames;
     }
 

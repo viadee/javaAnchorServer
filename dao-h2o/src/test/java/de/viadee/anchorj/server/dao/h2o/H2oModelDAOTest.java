@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
-public class H2oModelDAOTest {
+class H2oModelDAOTest {
 
     @Mock
     private H2oApi api;
@@ -39,8 +39,8 @@ public class H2oModelDAOTest {
         when(api.model(any(ModelKeyV3.class))).thenReturn(modelResponse);
         GBMModelV3 h2oModel = new GBMModelV3();
         h2oModel.parameters = new GBMParametersV3();
-        h2oModel.parameters.ignoredColumns = new String[] {"A"};
-        modelResponse.models = new ModelSchemaBaseV3[] { h2oModel };
+        h2oModel.parameters.ignoredColumns = new String[]{"A"};
+        modelResponse.models = new ModelSchemaBaseV3[]{h2oModel};
 
         ModelKeyV3 modelKey = new ModelKeyV3();
         h2oModel.algo = "gbm";
@@ -73,8 +73,8 @@ public class H2oModelDAOTest {
         when(api.model(any(ModelKeyV3.class))).thenReturn(modelResponse);
         DRFModelV3 h2oModel = new DRFModelV3();
         h2oModel.parameters = new DRFParametersV3();
-        h2oModel.parameters.ignoredColumns = new String[] {"A"};
-        modelResponse.models = new ModelSchemaBaseV3[] { h2oModel };
+        h2oModel.parameters.ignoredColumns = new String[]{"A"};
+        modelResponse.models = new ModelSchemaBaseV3[]{h2oModel};
 
         ModelKeyV3 modelKey = new ModelKeyV3();
         h2oModel.algo = "drf";
@@ -107,8 +107,8 @@ public class H2oModelDAOTest {
         when(api.model(any(ModelKeyV3.class))).thenReturn(modelResponse);
         DeepLearningModelV3 h2oModel = new DeepLearningModelV3();
         h2oModel.parameters = new DeepLearningParametersV3();
-        h2oModel.parameters.ignoredColumns = new String[] {"A"};
-        modelResponse.models = new ModelSchemaBaseV3[] { h2oModel };
+        h2oModel.parameters.ignoredColumns = new String[]{"A"};
+        modelResponse.models = new ModelSchemaBaseV3[]{h2oModel};
 
         ModelKeyV3 modelKey = new ModelKeyV3();
         h2oModel.algo = "deeplearning";

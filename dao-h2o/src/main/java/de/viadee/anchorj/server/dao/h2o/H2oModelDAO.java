@@ -38,9 +38,7 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
             Collection<Model> models = new ArrayList<>(h2oModels.models.length);
 
             for (ModelSchemaBaseV3 h2oModel : h2oModels.models) {
-                Model model = transferToModelObject(h2oModel);
-
-                models.add(model);
+                models.add(this.getModel(connectionName, h2oModel.modelId.name));
             }
 
             return models;
@@ -52,11 +50,13 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
 
     @Override
     public Model getModel(String connectionName, String modelId) throws DataAccessException {
-        ModelKeyV3 modelKey = new ModelKeyV3();
-        modelKey.name = modelId;
+        ModelsV3 modelsV3 = new ModelsV3();
+        modelsV3.findCompatibleFrames = true;
+        modelsV3.modelId = new ModelKeyV3();
+        modelsV3.modelId.name = modelId;
 
         try {
-            ModelsV3 models = this.createH2o(connectionName).model(modelKey);
+            ModelsV3 models = this.createH2o(connectionName).model(modelsV3);
             return transferToModelObject(models.models[0]);
         } catch (IOException ioe) {
             throw new DataAccessException("Failed to load model: " + modelId + "; from " + connectionName, ioe);
@@ -64,16 +64,9 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
     }
 
     private Model transferToModelObject(ModelSchemaBaseV3 h2oModel) {
-        String[] ignoredColumns;
         final String algoName = h2oModel.algo;
-        ignoredColumns = findIgnoredColumns(h2oModel, algoName);
-
         Model model = new Model();
-        if (ignoredColumns != null) {
-            model.setIgnoredColumns(new HashSet<>(Arrays.asList(ignoredColumns)));
-        } else {
-            model.setIgnoredColumns(Collections.emptySet());
-        }
+
         model.setModel_id(h2oModel.modelId.name);
         model.setName(h2oModel.modelId.name);
         model.setTarget_column(h2oModel.responseColumnName);
@@ -84,38 +77,71 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
         frame.setName(h2oModel.dataFrame.name);
         frame.setUrl(h2oModel.dataFrame.url);
         model.setData_frame(frame);
+
+        extractModelSpecificValues(model, h2oModel, algoName);
+
         return model;
     }
 
-    private String[] findIgnoredColumns(ModelSchemaBaseV3 h2oModel, String algoName) {
+    private void extractModelSpecificValues(Model model, ModelSchemaBaseV3 h2oModel, String algoName) {
+        String[] ignoredColumns;
+        String[] compatibleFrames;
         switch (algoName) {
             case "gbm":
                 GBMModelV3 gbmModel = (GBMModelV3) h2oModel;
-                return gbmModel.parameters != null ? gbmModel.parameters.ignoredColumns : null;
+                ignoredColumns = gbmModel.parameters != null ? gbmModel.parameters.ignoredColumns : null;
+                compatibleFrames = gbmModel.compatibleFrames;
+                break;
             case "drf":
             case "random_forest":
                 DRFModelV3 drfModel = (DRFModelV3) h2oModel;
-                return drfModel.parameters != null ? drfModel.parameters.ignoredColumns : null;
+                ignoredColumns = drfModel.parameters != null ? drfModel.parameters.ignoredColumns : null;
+                compatibleFrames = drfModel.compatibleFrames;
+                break;
             case "deeplearning":
                 DeepLearningModelV3 dlModel = (DeepLearningModelV3) h2oModel;
-                return dlModel.parameters != null ? dlModel.parameters.ignoredColumns : null;
+                ignoredColumns = dlModel.parameters != null ? dlModel.parameters.ignoredColumns : null;
+                compatibleFrames = dlModel.compatibleFrames;
+                break;
             case "glm":
                 GLMModelV3 glmModel = (GLMModelV3) h2oModel;
-                return glmModel.parameters != null ? glmModel.parameters.ignoredColumns : null;
+                ignoredColumns = glmModel.parameters != null ? glmModel.parameters.ignoredColumns : null;
+                compatibleFrames = glmModel.compatibleFrames;
+                break;
             case "naive_bayes":
                 NaiveBayesModelV3 nbModel = (NaiveBayesModelV3) h2oModel;
-                return nbModel.parameters != null ? nbModel.parameters.ignoredColumns : null;
+                ignoredColumns = nbModel.parameters != null ? nbModel.parameters.ignoredColumns : null;
+                compatibleFrames = nbModel.compatibleFrames;
+                break;
             case "kmeans":
                 KMeansModelV3 kmModel = (KMeansModelV3) h2oModel;
-                return kmModel.parameters != null ? kmModel.parameters.ignoredColumns : null;
+                ignoredColumns = kmModel.parameters != null ? kmModel.parameters.ignoredColumns : null;
+                compatibleFrames = kmModel.compatibleFrames;
+                break;
             case "pca":
                 PCAModelV3 pcaModel = (PCAModelV3) h2oModel;
-                return pcaModel.parameters != null ? pcaModel.parameters.ignoredColumns : null;
+                ignoredColumns = pcaModel.parameters != null ? pcaModel.parameters.ignoredColumns : null;
+                compatibleFrames = pcaModel.compatibleFrames;
+                break;
             case "stackedensemble":
                 StackedEnsembleModelV99 seModel = (StackedEnsembleModelV99) h2oModel;
-                return seModel.parameters != null ? seModel.parameters.ignoredColumns : null;
+                ignoredColumns = seModel.parameters != null ? seModel.parameters.ignoredColumns : null;
+                compatibleFrames = seModel.compatibleFrames;
+                break;
             default:
                 throw new IllegalArgumentException("Model with algo " + algoName + " not handled");
+        }
+
+        if (ignoredColumns != null) {
+            model.setIgnoredColumns(new HashSet<>(Arrays.asList(ignoredColumns)));
+        } else {
+            model.setIgnoredColumns(Collections.emptySet());
+        }
+
+        if (compatibleFrames != null) {
+            model.setCompatibleFrames(Arrays.asList(compatibleFrames));
+        } else {
+            model.setCompatibleFrames(Collections.emptySet());
         }
     }
 
