@@ -7,17 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  *
  */
-class H2oUtilTest {
+class H2OColumnTypeTest {
 
     @Test
     void testIsEnumColumn() {
-        assertTrue(H2oUtil.isColumnTypeEnum("enum"));
+        assertTrue(H2oColumnType.isColumnTypeEnum("enum"));
     }
 
     @Test
     void testIsStringColumn() {
-        assertTrue(H2oUtil.isColumnTypeString("String"));
-        assertTrue(H2oUtil.isColumnTypeString("uuid"));
+        assertTrue(H2oColumnType.isColumnTypeString("String"));
+        assertTrue(H2oColumnType.isColumnTypeString("uuid"));
     }
 
 }

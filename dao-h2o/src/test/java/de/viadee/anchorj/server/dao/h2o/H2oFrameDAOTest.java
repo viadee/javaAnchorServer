@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import de.viadee.anchorj.server.configuration.AppConfiguration;
 import de.viadee.anchorj.server.model.CategoricalColumnSummary;
 import de.viadee.anchorj.server.model.FrameSummary;
-import de.viadee.anchorj.server.test.resources.Resources;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import water.bindings.H2oApi;
@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
@@ -107,8 +106,12 @@ class H2oFrameDAOTest {
     }
 
     private class MockFrameDAO extends H2oFrameDAO {
+        private MockFrameDAO() {
+            super(null);
+        }
+
         @Override
-        public H2oApi createH2o(String connectionName) {
+        public H2oApi createH2o(AppConfiguration configuration, String connectionName) {
             return api;
         }
     }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import de.viadee.anchorj.server.configuration.AppConfiguration;
 import de.viadee.anchorj.server.model.Model;
 import water.bindings.H2oApi;
 import water.bindings.pojos.DRFModelV3;
@@ -36,7 +37,7 @@ class H2oModelDAOTest {
     void testGetGbmModel() throws IOException {
         H2oModelDAO modelDAO = new MockModelDAO();
         ModelsV3 modelResponse = new ModelsV3();
-        when(api.model(any(ModelKeyV3.class))).thenReturn(modelResponse);
+        when(api.model(any(ModelsV3.class))).thenReturn(modelResponse);
         GBMModelV3 h2oModel = new GBMModelV3();
         h2oModel.parameters = new GBMParametersV3();
         h2oModel.parameters.ignoredColumns = new String[]{"A"};
@@ -70,7 +71,7 @@ class H2oModelDAOTest {
     void testGetDrfModel() throws IOException {
         H2oModelDAO modelDAO = new MockModelDAO();
         ModelsV3 modelResponse = new ModelsV3();
-        when(api.model(any(ModelKeyV3.class))).thenReturn(modelResponse);
+        when(api.model(any(ModelsV3.class))).thenReturn(modelResponse);
         DRFModelV3 h2oModel = new DRFModelV3();
         h2oModel.parameters = new DRFParametersV3();
         h2oModel.parameters.ignoredColumns = new String[]{"A"};
@@ -104,7 +105,7 @@ class H2oModelDAOTest {
     void testGetDLModel() throws IOException {
         H2oModelDAO modelDAO = new MockModelDAO();
         ModelsV3 modelResponse = new ModelsV3();
-        when(api.model(any(ModelKeyV3.class))).thenReturn(modelResponse);
+        when(api.model(any(ModelsV3.class))).thenReturn(modelResponse);
         DeepLearningModelV3 h2oModel = new DeepLearningModelV3();
         h2oModel.parameters = new DeepLearningParametersV3();
         h2oModel.parameters.ignoredColumns = new String[]{"A"};
@@ -135,8 +136,12 @@ class H2oModelDAOTest {
     }
 
     private class MockModelDAO extends H2oModelDAO {
+        private MockModelDAO() {
+            super(null);
+        }
+
         @Override
-        public H2oApi createH2o(String connectionName) {
+        public H2oApi createH2o(AppConfiguration configuration, String connectionName) {
             return api;
         }
     }

@@ -17,7 +17,7 @@ import de.viadee.anchorj.AnchorCandidate;
 import de.viadee.anchorj.AnchorResult;
 import de.viadee.anchorj.DataInstance;
 import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
-import de.viadee.anchorj.server.h2o.util.H2oUtil;
+import de.viadee.anchorj.server.h2o.util.H2oColumnType;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.ColumnSummary;
@@ -194,22 +194,22 @@ public class AnchorUtil {
             GenericColumn column;
             if (ignoredColumns.contains(columnLabel)) {
                 column = new IgnoredColumn(columnLabel);
-            } else if (H2oUtil.isColumnTypeInt(columnSummary.getColumn_type())) {
+            } else if (H2oColumnType.isColumnTypeInt(columnSummary.getColumn_type())) {
                 column = new IntegerColumn(
                         columnLabel, null,
                         Arrays.asList(
                                 new ReplaceNullTransformer(NoValueHandler.getNumberNa()),
                                 new StringToIntTransformer()),
                         new PercentileMedianDiscretizer(classCount, NoValueHandler.getNumberNa()));
-            } else if (H2oUtil.isColumnTypeReal(columnSummary.getColumn_type())) {
+            } else if (H2oColumnType.isColumnTypeReal(columnSummary.getColumn_type())) {
                 column = new DoubleColumn(
                         columnLabel, null,
                         Arrays.asList(
                                 new ReplaceNullTransformer((double) NoValueHandler.getNumberNa()),
                                 new StringToDoubleTransformer()),
                         new PercentileMedianDiscretizer(classCount, (double) NoValueHandler.getNumberNa()));
-            } else if (H2oUtil.isColumnTypeEnum(columnSummary.getColumn_type()) ||
-                    H2oUtil.isColumnTypeString(columnSummary.getColumn_type())) {
+            } else if (H2oColumnType.isColumnTypeEnum(columnSummary.getColumn_type()) ||
+                    H2oColumnType.isColumnTypeString(columnSummary.getColumn_type())) {
                 column = new StringColumn(columnLabel, null, null, new UniqueValueDiscretizer());
             } else {
                 throw new IllegalArgumentException("Column type " + columnSummary.getColumn_type() + " not handled");

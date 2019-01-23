@@ -39,6 +39,10 @@
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>controller</artifactId>
         </dependency>
         <dependency>

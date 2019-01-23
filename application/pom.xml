@@ -15,19 +15,23 @@
     <dependencies>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>anchor-h2o</artifactId>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>de.viadee.anchorj.server</groupId>-->
+        <!--<artifactId>anchor-h2o-spark</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>controller</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
             <artifactId>dao-h2o</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>anchor-h2o</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>anchor-h2o-spark</artifactId>
         </dependency>
 
 

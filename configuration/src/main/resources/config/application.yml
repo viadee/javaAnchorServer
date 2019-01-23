@@ -1,0 +1,5 @@
+server:
+  port: 5000
+app:
+  h2o-server:
+    local-H2O: 'http://localhost:54321'

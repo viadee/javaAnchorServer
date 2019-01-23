@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import de.viadee.anchorj.server.business.FrameBO;
 import de.viadee.anchorj.server.business.ModelBO;
+import de.viadee.anchorj.server.configuration.AppConfiguration;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.FrameInstance;
@@ -120,20 +121,19 @@ class AnchorH2OTest {
         assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.1);
         assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.1);
 
-        // TODO check 455!!
         assertEquals(Integer.valueOf(347), anchor.getAffected_rows());
     }
 
     private final static class MockedAnchorH2o extends AnchorH2o {
         private H2oApi api;
 
-        MockedAnchorH2o(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
-            super(modelBO, frameBO);
+        private MockedAnchorH2o(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
+            super(modelBO, frameBO, null);
             this.api = api;
         }
 
         @Override
-        public H2oApi createH2o(String connectionName) {
+        public H2oApi createH2o(AppConfiguration configuration, String connectionName) {
             return api;
         }
     }

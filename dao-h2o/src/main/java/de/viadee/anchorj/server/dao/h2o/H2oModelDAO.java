@@ -7,8 +7,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
+import de.viadee.anchorj.server.configuration.AppConfiguration;
 import de.viadee.anchorj.server.dao.ModelDAO;
 import de.viadee.anchorj.server.h2o.util.H2oConnector;
 import de.viadee.anchorj.server.model.DataFrame;
@@ -31,10 +33,16 @@ import water.bindings.pojos.StackedEnsembleModelV99;
 @Component
 public class H2oModelDAO implements ModelDAO, H2oConnector {
 
+    private AppConfiguration configuration;
+
+    public H2oModelDAO(@Autowired AppConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
     @Override
     public Collection<Model> getModels(String connectionName) throws DataAccessException {
         try {
-            ModelsV3 h2oModels = this.createH2o(connectionName).models();
+            ModelsV3 h2oModels = this.createH2o(this.configuration, connectionName).models();
             Collection<Model> models = new ArrayList<>(h2oModels.models.length);
 
             for (ModelSchemaBaseV3 h2oModel : h2oModels.models) {
@@ -56,7 +64,7 @@ public class H2oModelDAO implements ModelDAO, H2oConnector {
         modelsV3.modelId.name = modelId;
 
         try {
-            ModelsV3 models = this.createH2o(connectionName).model(modelsV3);
+            ModelsV3 models = this.createH2o(this.configuration, connectionName).model(modelsV3);
             return transferToModelObject(models.models[0]);
         } catch (IOException ioe) {
             throw new DataAccessException("Failed to load model: " + modelId + "; from " + connectionName, ioe);

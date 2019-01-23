@@ -23,7 +23,15 @@
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>business</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>configuration</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
@@ -31,11 +39,7 @@
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>business</artifactId>
+            <artifactId>model</artifactId>
         </dependency>
 
         <dependency>

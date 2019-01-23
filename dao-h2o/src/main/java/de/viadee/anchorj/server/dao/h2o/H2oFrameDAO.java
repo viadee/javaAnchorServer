@@ -10,13 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
+import de.viadee.anchorj.server.configuration.AppConfiguration;
 import de.viadee.anchorj.server.dao.FrameDAO;
+import de.viadee.anchorj.server.h2o.util.H2oColumnType;
 import de.viadee.anchorj.server.h2o.util.H2oConnector;
 import de.viadee.anchorj.server.h2o.util.H2oDataUtil;
 import de.viadee.anchorj.server.h2o.util.H2oFrameDownload;
-import de.viadee.anchorj.server.h2o.util.H2oUtil;
 import de.viadee.anchorj.server.model.CategoricalColumnSummary;
 import de.viadee.anchorj.server.model.CategoryFreq;
 import de.viadee.anchorj.server.model.ColumnSummary;
@@ -40,10 +42,16 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
 
     private static final int DOMAIN_MAX_ITEMS = 20;
 
+    private AppConfiguration configuration;
+
+    public H2oFrameDAO(@Autowired AppConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
     @Override
     public Collection<DataFrame> getFrames(String connectionName) throws DataAccessException {
         try {
-            FramesListV3 h2oFrames = this.createH2o(connectionName).frames();
+            FramesListV3 h2oFrames = this.createH2o(this.configuration, connectionName).frames();
             Collection<DataFrame> frames = new ArrayList<>(h2oFrames.frames.length);
             for (FrameBaseV3 h2oFrame : h2oFrames.frames) {
                 DataFrame frame = new DataFrame();
@@ -67,7 +75,7 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
         frameKey.name = frameId;
 
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
-            H2oApi api = this.createH2o(connectionName);
+            H2oApi api = this.createH2o(this.configuration, connectionName);
 
             File dataSet = h2oDownload.getFile(api, frameId);
 
@@ -85,9 +93,9 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
                 String columnType = h2oCol.type;
                 ColumnSummary column;
 
-                if (H2oUtil.isColumnTypeEnum(columnType)) {
+                if (H2oColumnType.isColumnTypeEnum(columnType)) {
                     column = generateEnumColumnSummary(rowCount, h2oCol);
-                } else if (H2oUtil.isColumnTypeString(columnType)) {
+                } else if (H2oColumnType.isColumnTypeString(columnType)) {
                     column = generateStringColumnSummary(dataSet, h2oCol, rowCount);
                 } else {
                     column = generateMetricColumnSummary(h2oCol);
@@ -111,7 +119,7 @@ public class H2oFrameDAO implements FrameDAO, H2oConnector {
 
     @Override
     public FrameInstance randomInstance(String connectionName, String frameId, FeatureConditionsRequest conditions) throws DataAccessException {
-        H2oApi api = this.createH2o(connectionName);
+        H2oApi api = this.createH2o(this.configuration, connectionName);
         try (H2oFrameDownload h2oDownload = new H2oFrameDownload()) {
             File dataSet = h2oDownload.getFile(api, frameId);
             return H2oDataUtil.getRandomInstance(conditions, dataSet);

@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>configuration</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
@@ -33,6 +33,10 @@
         <dependency>
             <groupId>ai.h2o</groupId>
             <artifactId>h2o-genmodel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.viadee.anchorj.server</groupId>
+            <artifactId>model</artifactId>
         </dependency>
 
         <dependency>
