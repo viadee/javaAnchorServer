@@ -23,7 +23,7 @@
         <!--</dependency>-->
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>
-            <artifactId>configuration</artifactId>
+            <artifactId>configuration-yaml</artifactId>
         </dependency>
         <dependency>
             <groupId>de.viadee.anchorj.server</groupId>

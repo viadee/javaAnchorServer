@@ -71,6 +71,7 @@
         <module>anchor-util</module>
         <module>test-resources</module>
         <module>configuration</module>
+        <module>configuration-yaml</module>
     </modules>
 
     <properties>
@@ -124,6 +125,11 @@
             <dependency>
                 <groupId>de.viadee.anchorj.server</groupId>
                 <artifactId>configuration</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>de.viadee.anchorj.server</groupId>
+                <artifactId>configuration-yaml</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
