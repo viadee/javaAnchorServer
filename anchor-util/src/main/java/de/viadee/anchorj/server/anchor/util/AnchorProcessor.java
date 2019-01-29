@@ -197,6 +197,7 @@ public class AnchorProcessor {
                 .setDelta(anchorDelta)
                 .setEpsilon(anchorEpsilon)
                 .setTauDiscrepancy(anchorTauDiscrepancy)
+                .enableThreading(10, false)
                 .setAllowSuboptimalSteps(false);
     }
 

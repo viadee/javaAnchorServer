@@ -24,6 +24,8 @@ import retrofit2.Response;
 import water.bindings.H2oApi;
 import water.bindings.pojos.ModelKeyV3;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,8 +57,7 @@ class AnchorH2OTest {
         anchorH2o = new MockedAnchorH2o(api, modelBO, frameBO);
     }
 
-    @Test
-    void testComputeRule() throws IOException {
+    private FrameInstance prepareAnchorRun() throws IOException {
         ResponseBody body = mock(ResponseBody.class);
         when(h2oResponse.isSuccessful()).thenReturn(true, true);
         when(body.byteStream()).thenReturn(
@@ -88,7 +89,12 @@ class AnchorH2OTest {
         modelUT.setTarget_column("Survived");
         when(modelBO.getModel(any(), any())).thenReturn(modelUT);
 
-        FrameInstance instance = new FrameInstance(Resources.TITANIC_FEATURE_MAPPING, Resources.SIMPLE_TITANIC_INSTANCE);
+        return new FrameInstance(Resources.TITANIC_FEATURE_MAPPING, Resources.SIMPLE_TITANIC_INSTANCE);
+    }
+
+    @Test
+    void testComputeRule() throws IOException {
+        FrameInstance instance = this.prepareAnchorRun();
         Anchor anchor = anchorH2o.computeRule("", "", "", instance, null, 1L);
         assertNotNull(anchor);
         assertEquals("0", anchor.getLabel_of_case());
@@ -109,6 +115,7 @@ class AnchorH2OTest {
         precisionWithIntelliJ = 0.1183333333333334;
         coverageWithIntellJ = -0.14100000000000001;
         AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), 3, 3);
+        pClassPredicate.setExactCoverage(testPredicate.getExactCoverage());
         assertEquals(pClassPredicate, testPredicate);
         assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.1);
         assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.2);
@@ -122,6 +129,13 @@ class AnchorH2OTest {
         assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.1);
 
         assertEquals(Integer.valueOf(347), anchor.getAffected_rows());
+    }
+
+    @Test
+    void testThreadCountWhenExplainGlobal() throws IOException {
+        FrameInstance instance = this.prepareAnchorRun();
+        anchorH2o.runSubmodularPick("", "", "", instance, null);
+        assertThat(Thread.activeCount(), lessThan(200));
     }
 
     private final static class MockedAnchorH2o extends AnchorH2o {
