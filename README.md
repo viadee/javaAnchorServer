@@ -5,7 +5,14 @@
 [![Sonarcloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=de.viadee.anchorj.server:anchorj-server&metric=coverage)](https://de.viadee.anchorj.server:anchorj-server&metric=coverage) 
 
 This is a server to provide Anchor-Explanations for machine learning models. 
-It uses the [Java implementation of anchors](https://github.com/viadee/javaAnchorExplainer) as well as [adapters](https://github.com/viadee/javaAnchorAdapters) for accessing the data from an H2O server and optionally distributing the execution on a spark cluster.
+It uses the [Java implementation of anchors](https://github.com/viadee/javaAnchorExplainer) 
+as well as [adapters](https://github.com/viadee/javaAnchorAdapters) for accessing the data from an H2O server 
+and optionally distributing the execution on a spark cluster. 
+In conjunction with [javaAnchorFrontend](https://github.com/viadee/javaAnchorFrontend) an explanation can be created and
+viewed easily, efficiently and fast: 
+
+![Titanic Explanation](https://user-images.githubusercontent.com/5667523/51996301-bde31580-24b4-11e9-9c75-6205546d1463.png)
+A description how to read this table can be found in the [ReadMe of javaAnchorFrontend](https://github.com/viadee/javaAnchorFrontend).
 
 At this point, only access to data from the H2O and its models is supported. How this can be extended is described in [...].
 
@@ -17,6 +24,9 @@ The project is divided into 3 main parts:
 - Business
 - Access to data: dao
 - Execution of the anchor algorithm: anchor
+
+![Server Architecture](https://user-images.githubusercontent.com/5667523/51995074-51ffad80-24b2-11e9-9d98-731837be79b0.png)
+
 
 ### Access
 In the current version, access is via REST. 
