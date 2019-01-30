@@ -12,11 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.viadee.anchorj.AnchorConstructionBuilder;
-import de.viadee.anchorj.exploration.KL_LUCB;
-import de.viadee.anchorj.global.AbstractGlobalExplainer;
-import de.viadee.anchorj.global.ReconfigurablePerturbationFunction;
-import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
 import de.viadee.anchorj.server.business.FrameBO;
 import de.viadee.anchorj.server.business.ModelBO;
@@ -28,10 +23,15 @@ import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.FrameSummary;
 import de.viadee.anchorj.server.model.Model;
 import de.viadee.anchorj.server.model.SubmodularPickResult;
-import de.viadee.anchorj.tabular.AnchorTabular;
-import de.viadee.anchorj.tabular.TabularInstance;
-import de.viadee.anchorj.tabular.TabularPerturbationFunction;
-import de.viadee.anchorj.tabular.column.GenericColumn;
+import de.viadee.xai.anchor.adapter.model.h2o.H2oTabularNominalMojoClassifier;
+import de.viadee.xai.anchor.adapter.tabular.AnchorTabular;
+import de.viadee.xai.anchor.adapter.tabular.TabularInstance;
+import de.viadee.xai.anchor.adapter.tabular.TabularPerturbationFunction;
+import de.viadee.xai.anchor.adapter.tabular.column.GenericColumn;
+import de.viadee.xai.anchor.algorithm.AnchorConstructionBuilder;
+import de.viadee.xai.anchor.algorithm.exploration.KL_LUCB;
+import de.viadee.xai.anchor.algorithm.global.AbstractGlobalExplainer;
+import de.viadee.xai.anchor.algorithm.global.ReconfigurablePerturbationFunction;
 import water.bindings.H2oApi;
 
 /**

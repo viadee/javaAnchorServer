@@ -23,12 +23,12 @@
         </dependency>
 
         <dependency>
-            <groupId>de.viadee</groupId>
-            <artifactId>DefaultConfigsExtension</artifactId>
+            <groupId>de.viadee.xai.anchor</groupId>
+            <artifactId>DefaultConfigsAdapter</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.viadee</groupId>
-            <artifactId>SparkExtension</artifactId>
+            <groupId>de.viadee.xai.anchor</groupId>
+            <artifactId>SparkAdapter</artifactId>
         </dependency>
 
         <dependency>
