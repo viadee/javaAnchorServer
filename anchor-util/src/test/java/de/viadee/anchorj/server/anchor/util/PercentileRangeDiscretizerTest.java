@@ -2,8 +2,6 @@ package de.viadee.anchorj.server.anchor.util;
 
 import org.junit.jupiter.api.Test;
 
-import de.viadee.anchorj.server.anchor.util.PercentileRangeDiscretizer;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
