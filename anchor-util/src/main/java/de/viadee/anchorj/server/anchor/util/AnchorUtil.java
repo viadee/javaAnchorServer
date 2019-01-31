@@ -13,27 +13,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.viadee.anchorj.AnchorCandidate;
-import de.viadee.anchorj.AnchorResult;
-import de.viadee.anchorj.DataInstance;
-import de.viadee.anchorj.h2o.H2oTabularNominalMojoClassifier;
 import de.viadee.anchorj.server.h2o.util.H2oColumnType;
 import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.ColumnSummary;
-import de.viadee.anchorj.tabular.AnchorTabular;
-import de.viadee.anchorj.tabular.TabularInstance;
-import de.viadee.anchorj.tabular.column.DoubleColumn;
-import de.viadee.anchorj.tabular.column.GenericColumn;
-import de.viadee.anchorj.tabular.column.IgnoredColumn;
-import de.viadee.anchorj.tabular.column.IntegerColumn;
-import de.viadee.anchorj.tabular.column.StringColumn;
-import de.viadee.anchorj.tabular.discretizer.DiscretizerRelation;
-import de.viadee.anchorj.tabular.discretizer.PercentileMedianDiscretizer;
-import de.viadee.anchorj.tabular.discretizer.UniqueValueDiscretizer;
-import de.viadee.anchorj.tabular.transformations.ReplaceNullTransformer;
-import de.viadee.anchorj.tabular.transformations.StringToDoubleTransformer;
-import de.viadee.anchorj.tabular.transformations.StringToIntTransformer;
+import de.viadee.xai.anchor.adapter.model.h2o.H2oTabularNominalMojoClassifier;
+import de.viadee.xai.anchor.adapter.tabular.AnchorTabular;
+import de.viadee.xai.anchor.adapter.tabular.TabularInstance;
+import de.viadee.xai.anchor.adapter.tabular.column.DoubleColumn;
+import de.viadee.xai.anchor.adapter.tabular.column.GenericColumn;
+import de.viadee.xai.anchor.adapter.tabular.column.IgnoredColumn;
+import de.viadee.xai.anchor.adapter.tabular.column.IntegerColumn;
+import de.viadee.xai.anchor.adapter.tabular.column.StringColumn;
+import de.viadee.xai.anchor.adapter.tabular.discretizer.DiscretizerRelation;
+import de.viadee.xai.anchor.adapter.tabular.discretizer.PercentileMedianDiscretizer;
+import de.viadee.xai.anchor.adapter.tabular.discretizer.UniqueValueDiscretizer;
+import de.viadee.xai.anchor.adapter.tabular.transformations.ReplaceNullTransformer;
+import de.viadee.xai.anchor.adapter.tabular.transformations.StringToDoubleTransformer;
+import de.viadee.xai.anchor.adapter.tabular.transformations.StringToIntTransformer;
+import de.viadee.xai.anchor.algorithm.AnchorCandidate;
+import de.viadee.xai.anchor.algorithm.AnchorResult;
+import de.viadee.xai.anchor.algorithm.DataInstance;
 
 /**
  *

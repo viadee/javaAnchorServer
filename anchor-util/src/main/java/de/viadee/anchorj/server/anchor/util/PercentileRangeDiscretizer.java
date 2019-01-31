@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- *
+ * @deprecated rather use {@link de.viadee.xai.anchor.adapter.tabular.discretizer.PercentileMedianDiscretizer}
  */
 public class PercentileRangeDiscretizer implements Function<Number[], Integer[]>, Serializable {
     private static final long serialVersionUID = 9132759308646285100L;

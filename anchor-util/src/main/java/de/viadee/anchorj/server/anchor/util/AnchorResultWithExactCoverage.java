@@ -2,9 +2,9 @@ package de.viadee.anchorj.server.anchor.util;
 
 import java.util.Objects;
 
-import de.viadee.anchorj.AnchorCandidate;
-import de.viadee.anchorj.AnchorResult;
-import de.viadee.anchorj.tabular.TabularInstance;
+import de.viadee.xai.anchor.adapter.tabular.TabularInstance;
+import de.viadee.xai.anchor.algorithm.AnchorCandidate;
+import de.viadee.xai.anchor.algorithm.AnchorResult;
 
 public class AnchorResultWithExactCoverage extends AnchorResult<TabularInstance> {
     private static final long serialVersionUID = 7770534107863742504L;

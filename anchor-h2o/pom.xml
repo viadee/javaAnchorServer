@@ -43,12 +43,12 @@
         </dependency>
 
         <dependency>
-            <groupId>de.viadee</groupId>
-            <artifactId>anchorj</artifactId>
+            <groupId>de.viadee.xai.anchor</groupId>
+            <artifactId>algorithm</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.viadee</groupId>
-            <artifactId>DefaultConfigsExtension</artifactId>
+            <groupId>de.viadee.xai.anchor</groupId>
+            <artifactId>DefaultConfigsAdapter</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.h2o</groupId>

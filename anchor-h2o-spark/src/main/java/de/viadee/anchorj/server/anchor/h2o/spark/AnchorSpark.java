@@ -6,8 +6,6 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import de.viadee.anchorj.global.AbstractGlobalExplainer;
-import de.viadee.anchorj.global.CoveragePick;
 import de.viadee.anchorj.server.anchor.AnchorRule;
 import de.viadee.anchorj.server.anchor.util.AnchorConfig;
 import de.viadee.anchorj.server.anchor.util.AnchorProcessor;
@@ -20,8 +18,10 @@ import de.viadee.anchorj.server.model.Anchor;
 import de.viadee.anchorj.server.model.AnchorConfigDescription;
 import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.SubmodularPickResult;
-import de.viadee.anchorj.spark.SparkBatchExplainer;
-import de.viadee.anchorj.tabular.TabularInstance;
+import de.viadee.xai.anchor.adapter.global.SparkBatchExplainer;
+import de.viadee.xai.anchor.adapter.tabular.TabularInstance;
+import de.viadee.xai.anchor.algorithm.global.AbstractGlobalExplainer;
+import de.viadee.xai.anchor.algorithm.global.CoveragePick;
 import water.bindings.H2oApi;
 
 /**
