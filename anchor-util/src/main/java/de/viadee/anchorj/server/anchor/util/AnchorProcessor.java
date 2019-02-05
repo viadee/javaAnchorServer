@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
@@ -132,14 +133,14 @@ public class AnchorProcessor {
     }
 
     public SubmodularPickResult globalExplanation(AbstractGlobalExplainer<TabularInstance> globalExplainer) {
-        final int noAnchor = AnchorConfig.getSpAnchorNo(anchorConfig);
+        final int noAnchor = AnchorConfig.getSpAnchorNo(this.anchorConfig);
         List<AnchorResultWithExactCoverage> anchorResults = globalExplainer.run(this.getInstances(), noAnchor)
                 .stream().map(AnchorResultWithExactCoverage::new).collect(Collectors.toList());
         anchorResults.forEach(this::computeSingleAnchorCoverage);
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         for (AnchorResultWithExactCoverage anchorResult : anchorResults) {
-            Anchor anchor = AnchorUtil.transformAnchor(modelId, frameId,
+            Anchor anchor = AnchorUtil.transformAnchor(this.modelId, this.frameId,
                     this.getDataSetSize(), this.getAnchorTabular(),
                     this.getClassificationFunction(), anchorResult);
 
@@ -197,7 +198,7 @@ public class AnchorProcessor {
                 .setDelta(anchorDelta)
                 .setEpsilon(anchorEpsilon)
                 .setTauDiscrepancy(anchorTauDiscrepancy)
-                .enableThreading(10, false)
+                .enableThreading(Executors.newCachedThreadPool(), Executors::newCachedThreadPool)
                 .setAllowSuboptimalSteps(false);
     }
 
