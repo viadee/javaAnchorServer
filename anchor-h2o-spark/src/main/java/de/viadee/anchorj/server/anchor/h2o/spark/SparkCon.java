@@ -12,10 +12,12 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
+import de.viadee.anchorj.server.configuration.AppConfiguration;
 
 /**
  *
@@ -26,30 +28,34 @@ public class SparkCon {
 
     private static final Logger LOG = LoggerFactory.getLogger(SparkCon.class);
 
-    private static final String SPARK_LIB_FOLDER = "/Users/akr/git/javaAnchorServer/application/target/libs";
-
     private final Object sync = new Object();
 
     private SparkConf sparkConf;
 
     private JavaSparkContext sparkContext;
 
+    private AppConfiguration configuration;
+
+    public SparkCon(@Autowired AppConfiguration appConfiguration) {
+        this.configuration = appConfiguration;
+    }
+
     private SparkConf getSparkConf() throws DataAccessException {
         LOG.info("Creating Spark Configuration");
         if (this.sparkConf == null) {
             synchronized (this.sync) {
                 if (this.sparkConf == null) {
-                    final String sparkMasterUrl = "spark://localhost:7077";
                     try {
-                        this.sparkConf = new SparkConf().setAppName("anchorj").setMaster(sparkMasterUrl)
-                                //                .s
+                        this.sparkConf = new SparkConf().setAppName("javaAnchorServer")
+                                .setMaster(this.configuration.getSparkMasterUrl())
                                 .set("spark.shuffle.service.enabled", "false")
                                 .set("spark.dynamicAllocation.enabled", "false")
-                                //                .set("spark.io.compression.codec", "snappy")
-                                .setJars(Files.list(Paths.get(SPARK_LIB_FOLDER)).map(Path::toFile).map(File::getAbsolutePath).toArray(String[]::new))
+                                .setJars(Files.list(Paths.get(this.configuration.getSparkLibFolder()))
+                                        .map(Path::toFile).map(File::getAbsolutePath).toArray(String[]::new))
                                 .set("spark.rdd.compress", "true");
                     } catch (IOException e) {
-                        throw new DataAccessException("Failed to connect to the Spark Master: " + sparkMasterUrl, e);
+                        throw new DataAccessException("Failed to connect to the Spark Master: "
+                                + this.configuration.getSparkMasterUrl(), e);
                     }
                 }
             }
