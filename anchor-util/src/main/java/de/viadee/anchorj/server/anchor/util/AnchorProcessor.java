@@ -200,7 +200,6 @@ public class AnchorProcessor {
                 .setDelta(anchorDelta)
                 .setEpsilon(anchorEpsilon)
                 .setTauDiscrepancy(anchorTauDiscrepancy)
-                .enableThreading(Executors.newCachedThreadPool(), Executors::newCachedThreadPool)
                 .setAllowSuboptimalSteps(false);
     }
 
