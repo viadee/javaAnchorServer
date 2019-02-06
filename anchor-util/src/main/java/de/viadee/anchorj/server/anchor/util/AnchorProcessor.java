@@ -112,6 +112,8 @@ public class AnchorProcessor {
 
     public Anchor singleExplanation() {
         AnchorResultWithExactCoverage result = new AnchorResultWithExactCoverage(this.getConstructionBuilder().build().constructAnchor());
+        this.getConstructionBuilder().getSamplingService().endSampling();
+
         computeSingleAnchorCoverage(result);
 
         return AnchorUtil.transformAnchor(
