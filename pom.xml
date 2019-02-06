@@ -82,7 +82,7 @@
         <mockito.jupiter.version>2.23.4</mockito.jupiter.version>
         <junit.jupiter.version>5.3.2</junit.jupiter.version>
 
-        <sonar.exclusions>h2o-bindings</sonar.exclusions>
+        <sonar.exclusions>src/water/bindings/**</sonar.exclusions>
     </properties>
 
     <dependencies>
