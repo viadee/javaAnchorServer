@@ -81,6 +81,8 @@
         <h2o.version>3.20.0.10</h2o.version>
         <mockito.jupiter.version>2.23.4</mockito.jupiter.version>
         <junit.jupiter.version>5.3.2</junit.jupiter.version>
+
+        <sonar.exclusions>h2o-bindings</sonar.exclusions>
     </properties>
 
     <dependencies>

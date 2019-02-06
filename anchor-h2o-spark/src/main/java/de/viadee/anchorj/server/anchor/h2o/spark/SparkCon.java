@@ -50,8 +50,8 @@ public class SparkCon {
                                 .setMaster(this.configuration.getSparkMasterUrl())
                                 .set("spark.shuffle.service.enabled", "false")
                                 .set("spark.dynamicAllocation.enabled", "false")
-                                .setJars(Files.list(Paths.get(this.configuration.getSparkLibFolder()))
-                                        .map(Path::toFile).map(File::getAbsolutePath).toArray(String[]::new))
+                                .setJars(Files.list(Paths.get(this.configuration.getSparkLibFolder())).map(Path::toFile)
+                                        .map(File::getAbsolutePath).toArray(String[]::new))
                                 .set("spark.rdd.compress", "true");
                     } catch (IOException e) {
                         throw new DataAccessException("Failed to connect to the Spark Master: "
