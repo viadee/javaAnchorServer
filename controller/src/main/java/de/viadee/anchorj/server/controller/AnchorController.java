@@ -1,10 +1,5 @@
 package de.viadee.anchorj.server.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,33 +88,16 @@ public class AnchorController implements AnchorApi {
             @RequestHeader("Frame-Id") String frameId
     ) {
         try {
-            File anchorsSer = new File("test-anchors" + modelId + ".obj");
-            boolean cache = false;
-            if (cache && anchorsSer.exists() && anchorsSer.length() > 0) {
-                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(anchorsSer))) {
-                    return (SubmodularPickResult) ois.readObject();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
             FrameInstance instance = this.frameBO.randomInstance(connectionName, frameId);
 
             Collection<AnchorConfigDescription> configDescription = this.anchorBO.getAnchorConfigs();
-            SubmodularPickResult anchors = this.anchorBO.runSubmodularPick(
+            return this.anchorBO.runSubmodularPick(
                     connectionName,
                     modelId,
                     frameId,
                     instance,
                     this.getAnchorConfig(configDescription)
             );
-            if (cache) {
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(anchorsSer))) {
-                    oos.writeObject(anchors);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return anchors;
         } catch (DataAccessException dae) {
             LOG.error(dae.getMessage(), dae);
             // TODO add exception handling
