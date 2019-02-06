@@ -19,7 +19,7 @@ import de.viadee.anchorj.server.model.ContinuousColumnSummary;
 /**
  *
  */
-public class Resources {
+public enum Resources {;
 
     public static final String SIMPLE_CSV_FILE_STRING = "/csv/simple-csv-with-header.csv";
 

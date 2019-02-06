@@ -8,4 +8,8 @@ public interface AppConfiguration {
 
     String getConnectionName(String connectionName);
 
+    String getSparkLibFolder();
+
+    String getSparkMasterUrl();
+
 }

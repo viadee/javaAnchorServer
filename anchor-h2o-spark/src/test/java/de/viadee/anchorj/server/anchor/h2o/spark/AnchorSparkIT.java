@@ -1,8 +1,8 @@
-package de.viadee.anchorj.server.anchor.h2o;
+package de.viadee.anchorj.server.anchor.h2o.spark;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.viadee.anchorj.server.business.FrameBO;
 import de.viadee.anchorj.server.business.ModelBO;
 import de.viadee.anchorj.server.configuration.AppConfiguration;
-import de.viadee.anchorj.server.model.Anchor;
-import de.viadee.anchorj.server.model.AnchorPredicate;
 import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.FrameSummary;
 import de.viadee.anchorj.server.model.Model;
@@ -26,8 +24,6 @@ import water.bindings.pojos.ModelKeyV3;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +32,7 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
-class AnchorH2OTest {
+class AnchorSparkIT {
 
     @Mock
     private H2oApi api;
@@ -47,11 +43,11 @@ class AnchorH2OTest {
     @Mock
     private ModelBO modelBO;
 
-    private AnchorH2o anchorH2o;
+    private AnchorSpark anchorSpark;
 
     @BeforeEach
     void setUp() {
-        anchorH2o = new MockedAnchorH2o(api, modelBO, frameBO);
+        anchorSpark = new MockedAnchorSpark(api, modelBO, frameBO);
     }
 
     @SuppressWarnings("Duplicates")
@@ -93,62 +89,46 @@ class AnchorH2OTest {
     }
 
     @Test
-    void testComputeRule() throws IOException {
+    void testSparkGlobalExplanation() throws IOException {
         FrameInstance instance = this.prepareAnchorRun();
-        Anchor anchor = anchorH2o.computeRule("", "", "", instance, null, 1L);
-        assertNotNull(anchor);
-        assertEquals("0", anchor.getLabel_of_case());
-        assertEquals("0", anchor.getPrediction());
-
-        assertEquals(2, anchor.getFeatures().size());
-        Iterator<Integer> features = anchor.getFeatures().iterator();
-        assertEquals(Integer.valueOf(1), features.next());
-        assertEquals(Integer.valueOf(0), features.next());
-
-        // work around: the evaluated precision differs between running this test with IDE like IntelliJ or maven
-        // therefor ignore the added precision
-        AnchorPredicate testPredicate;
-        double precisionWithIntelliJ;
-        double coverageWithIntellJ;
-
-        testPredicate = anchor.getPredicates().get(0);
-        precisionWithIntelliJ = 0.1183333333333334;
-        coverageWithIntellJ = -0.14100000000000001;
-        AnchorPredicate pClassPredicate = new AnchorPredicate("Pclass", 3, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), 3, 3);
-        pClassPredicate.setExactCoverage(testPredicate.getExactCoverage());
-        assertEquals(pClassPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.1);
-        assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.2);
-
-        testPredicate = anchor.getPredicates().get(1);
-        precisionWithIntelliJ = 0.825;
-        coverageWithIntellJ = -0.348;
-        AnchorPredicate sexPredicate = new AnchorPredicate("Sex", 0, testPredicate.getAddedPrecision(), testPredicate.getAddedCoverage(), "male");
-        assertEquals(sexPredicate, testPredicate);
-        assertEquals(precisionWithIntelliJ, testPredicate.getAddedPrecision(), 0.1);
-        assertEquals(coverageWithIntellJ, testPredicate.getAddedCoverage(), 0.1);
-
-        assertEquals(Integer.valueOf(347), anchor.getAffected_rows());
-    }
-
-    @Test
-    void testThreadCountWhenExplainGlobal() throws IOException {
-        FrameInstance instance = this.prepareAnchorRun();
-        anchorH2o.runSubmodularPick("", "", "", instance, null);
+        anchorSpark.runSubmodularPick("", "", "", instance, null);
         assertThat(Thread.activeCount(), lessThan(200));
     }
 
-    private final static class MockedAnchorH2o extends AnchorH2o {
+    private final static class MockedAnchorSpark extends AnchorSpark {
         private H2oApi api;
 
-        private MockedAnchorH2o(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
-            super(modelBO, frameBO, null);
+        private MockedAnchorSpark(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
+            super(modelBO, frameBO, new SparkCon(new MyAppConfiguration()), new MyAppConfiguration());
             this.api = api;
         }
 
         @Override
         public H2oApi createH2o(AppConfiguration configuration, String connectionName) {
             return api;
+        }
+
+    }
+
+    private static class MyAppConfiguration implements AppConfiguration {
+        @Override
+        public Set<String> getConnectionNames() {
+            return null;
+        }
+
+        @Override
+        public String getConnectionName(String connectionName) {
+            return null;
+        }
+
+        @Override
+        public String getSparkLibFolder() {
+            return new File(new File("").getAbsolutePath(), "target/libs").getAbsolutePath();
+        }
+
+        @Override
+        public String getSparkMasterUrl() {
+            return "spark://localhost:7077";
         }
     }
 
