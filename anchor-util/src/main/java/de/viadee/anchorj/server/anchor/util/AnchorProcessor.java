@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import de.viadee.anchorj.server.api.exceptions.DataAccessException;
@@ -111,6 +112,8 @@ public class AnchorProcessor {
 
     public Anchor singleExplanation() {
         AnchorResultWithExactCoverage result = new AnchorResultWithExactCoverage(this.getConstructionBuilder().build().constructAnchor());
+        this.getConstructionBuilder().getSamplingService().endSampling();
+
         computeSingleAnchorCoverage(result);
 
         return AnchorUtil.transformAnchor(
@@ -132,14 +135,14 @@ public class AnchorProcessor {
     }
 
     public SubmodularPickResult globalExplanation(AbstractGlobalExplainer<TabularInstance> globalExplainer) {
-        final int noAnchor = AnchorConfig.getSpAnchorNo(anchorConfig);
+        final int noAnchor = AnchorConfig.getSpAnchorNo(this.anchorConfig);
         List<AnchorResultWithExactCoverage> anchorResults = globalExplainer.run(this.getInstances(), noAnchor)
                 .stream().map(AnchorResultWithExactCoverage::new).collect(Collectors.toList());
         anchorResults.forEach(this::computeSingleAnchorCoverage);
 
         final Collection<Anchor> explanations = new ArrayList<>(anchorResults.size());
         for (AnchorResultWithExactCoverage anchorResult : anchorResults) {
-            Anchor anchor = AnchorUtil.transformAnchor(modelId, frameId,
+            Anchor anchor = AnchorUtil.transformAnchor(this.modelId, this.frameId,
                     this.getDataSetSize(), this.getAnchorTabular(),
                     this.getClassificationFunction(), anchorResult);
 

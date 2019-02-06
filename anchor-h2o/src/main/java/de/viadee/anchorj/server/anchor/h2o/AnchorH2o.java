@@ -2,6 +2,7 @@ package de.viadee.anchorj.server.anchor.h2o;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import de.viadee.anchorj.server.model.AnchorConfigDescription;
 import de.viadee.anchorj.server.model.FrameInstance;
 import de.viadee.anchorj.server.model.SubmodularPickResult;
 import de.viadee.xai.anchor.adapter.tabular.TabularInstance;
+import de.viadee.xai.anchor.algorithm.execution.ExecutorServiceSupplier;
 import de.viadee.xai.anchor.algorithm.global.AbstractGlobalExplainer;
 import de.viadee.xai.anchor.algorithm.global.BatchExplainer;
 import de.viadee.xai.anchor.algorithm.global.CoveragePick;
@@ -53,9 +55,11 @@ public class AnchorH2o implements AnchorRule, H2oConnector {
         final H2oApi api = this.createH2o(this.configuration, connectionName);
         AnchorProcessor processor = new AnchorProcessor(connectionName, api, this.modelBO, this.frameBO, anchorConfig,
                 modelId, frameId);
-        BatchExplainer<TabularInstance> explainer = new ThreadedBatchExplainer<>(SP_MAX_THREADS);
+        BatchExplainer<TabularInstance> explainer = new ThreadedBatchExplainer<>(SP_MAX_THREADS,
+                Executors.newCachedThreadPool(), (ExecutorServiceSupplier) Executors::newCachedThreadPool);
         processor.preProcess(instance);
-        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(false, explainer, processor.getConstructionBuilder());
+        final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(false, explainer,
+                processor.getConstructionBuilder());
 
         return processor.globalExplanation(subPick);
     }
