@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
-class AnchorH2OTest {
+class AnchorH2oTest {
 
     @Mock
     private H2oApi api;
