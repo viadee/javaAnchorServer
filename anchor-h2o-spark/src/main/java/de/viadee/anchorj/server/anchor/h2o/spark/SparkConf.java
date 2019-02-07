@@ -63,7 +63,7 @@ public class SparkConf {
         return this.sparkConf;
     }
 
-    public synchronized JavaSparkContext getSparkContext() throws DataAccessException {
+    public JavaSparkContext getSparkContext() throws DataAccessException {
         if (this.sparkContext == null) {
             this.sparkContext = new JavaSparkContext(this.getSparkConf());
         }
@@ -71,7 +71,7 @@ public class SparkConf {
     }
 
     @PreDestroy
-    public synchronized void preDestroy() {
+    public void preDestroy() {
         if (this.sparkContext != null) {
             LOG.info("Closing Spark Context");
             this.sparkContext.close();
