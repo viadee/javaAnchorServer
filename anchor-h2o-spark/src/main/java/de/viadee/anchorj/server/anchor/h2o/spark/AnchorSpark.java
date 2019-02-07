@@ -32,14 +32,14 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
 
     private ModelBO modelBO;
     private FrameBO frameBO;
-    private SparkCon sparkCon;
+    private SparkConf sparkConf;
     private AppConfiguration configuration;
 
-    public AnchorSpark(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO, @Autowired SparkCon sparkCon,
+    public AnchorSpark(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO, @Autowired SparkConf sparkConf,
                        @Autowired AppConfiguration configuration) {
         this.modelBO = modelBO;
         this.frameBO = frameBO;
-        this.sparkCon = sparkCon;
+        this.sparkConf = sparkConf;
         this.configuration = configuration;
     }
 
@@ -49,7 +49,7 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
         AnchorProcessor processor = new AnchorProcessor(connectionName, api, this.modelBO, this.frameBO, anchorConfig,
                 modelId, frameId);
         processor.preProcess(instance);
-        SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(this.sparkCon.getSparkContext());
+        SparkBatchExplainer<TabularInstance> explainer = new SparkBatchExplainer<>(this.sparkConf.getSparkContext());
         final AbstractGlobalExplainer<TabularInstance> subPick = new CoveragePick<>(false, explainer, processor.getConstructionBuilder());
 
         return processor.globalExplanation(subPick);

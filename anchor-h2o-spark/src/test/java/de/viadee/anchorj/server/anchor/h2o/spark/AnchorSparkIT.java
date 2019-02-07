@@ -99,7 +99,7 @@ class AnchorSparkIT {
         private H2oApi api;
 
         private MockedAnchorSpark(H2oApi api, ModelBO modelBO, FrameBO frameBO) {
-            super(modelBO, frameBO, new SparkCon(new MyAppConfiguration()), new MyAppConfiguration());
+            super(modelBO, frameBO, new SparkConf(new MyAppConfiguration()), new MyAppConfiguration());
             this.api = api;
         }
 
