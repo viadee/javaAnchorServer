@@ -1,7 +1,9 @@
 package de.viadee.anchorj.server.configuration.yaml;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +23,8 @@ public class YamlAppConfiguration implements AppConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(YamlAppConfiguration.class);
 
+    private static final String VERSION_FILE_NAME = "version.txt";
+
     private Map<String, String> serverNameMapping = new HashMap<>();
 
     private String sparkLibFolder;
@@ -33,6 +37,16 @@ public class YamlAppConfiguration implements AppConfiguration {
 
     public void setServer(Map<String, String> serverNameMapping) {
         this.serverNameMapping = serverNameMapping;
+    }
+
+    @Override
+    public String getVersion() {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/" + VERSION_FILE_NAME)))) {
+            return in.readLine();
+        } catch (IOException ioe) {
+            LOG.error("failed to read version.txt: " + ioe.getMessage(), ioe);
+            return "N.A.";
+        }
     }
 
     public Set<String> getConnectionNames() {

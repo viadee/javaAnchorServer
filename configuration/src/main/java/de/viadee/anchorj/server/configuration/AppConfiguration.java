@@ -4,6 +4,8 @@ import java.util.Set;
 
 public interface AppConfiguration {
 
+    String getVersion();
+
     Set<String> getConnectionNames();
 
     String getConnectionName(String connectionName);
