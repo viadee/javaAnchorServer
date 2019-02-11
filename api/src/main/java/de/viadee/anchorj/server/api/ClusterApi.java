@@ -7,6 +7,8 @@ import de.viadee.anchorj.server.model.TryConnectResponse;
  */
 public interface ClusterApi {
 
+    String getVersion();
+
     TryConnectResponse tryConnect(String connectionName);
 
     ConnectionNameListResponse getConnectionNames();

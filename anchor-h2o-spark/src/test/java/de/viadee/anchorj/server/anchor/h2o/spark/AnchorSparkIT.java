@@ -111,6 +111,12 @@ class AnchorSparkIT {
     }
 
     private static class MyAppConfiguration implements AppConfiguration {
+
+        @Override
+        public String getVersion() {
+            return "IT";
+        }
+
         @Override
         public Set<String> getConnectionNames() {
             return null;
