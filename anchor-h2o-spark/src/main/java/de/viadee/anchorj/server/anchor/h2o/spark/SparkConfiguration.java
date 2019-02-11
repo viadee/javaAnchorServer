@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +25,17 @@ import de.viadee.anchorj.server.configuration.AppConfiguration;
  */
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_SINGLETON)
 @Component
-public class SparkConf {
+public class SparkConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SparkConf.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SparkConfiguration.class);
 
-    private org.apache.spark.SparkConf sparkConf;
+    private SparkConf sparkConf;
 
     private JavaSparkContext sparkContext;
 
     private AppConfiguration configuration;
 
-    public SparkConf(@Autowired AppConfiguration appConfiguration) {
+    public SparkConfiguration(@Autowired AppConfiguration appConfiguration) {
         this.configuration = appConfiguration;
     }
 
@@ -44,11 +45,11 @@ public class SparkConf {
      * @return the Spark configuration
      * @throws DataAccessException if connection with spark fails
      */
-    private org.apache.spark.SparkConf getSparkConf() throws DataAccessException {
+    private SparkConf getSparkConf() throws DataAccessException {
         LOG.info("Creating Spark Configuration");
         if (this.sparkConf == null) {
             try (Stream<Path> libs = Files.list(Paths.get(this.configuration.getSparkLibFolder()))) {
-                this.sparkConf = new org.apache.spark.SparkConf().setAppName("javaAnchorServer")
+                this.sparkConf = new SparkConf().setAppName("javaAnchorServer")
                         .setMaster(this.configuration.getSparkMasterUrl())
                         .set("spark.shuffle.service.enabled", "false")
                         .set("spark.dynamicAllocation.enabled", "false")

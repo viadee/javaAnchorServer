@@ -32,10 +32,10 @@ public class AnchorSpark implements AnchorRule, H2oConnector {
 
     private ModelBO modelBO;
     private FrameBO frameBO;
-    private SparkConf sparkConf;
+    private SparkConfiguration sparkConf;
     private AppConfiguration configuration;
 
-    public AnchorSpark(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO, @Autowired SparkConf sparkConf,
+    public AnchorSpark(@Autowired ModelBO modelBO, @Autowired FrameBO frameBO, @Autowired SparkConfiguration sparkConf,
                        @Autowired AppConfiguration configuration) {
         this.modelBO = modelBO;
         this.frameBO = frameBO;
