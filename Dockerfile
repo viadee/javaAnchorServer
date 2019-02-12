@@ -5,5 +5,5 @@ RUN mvn -B -e -T 1C verify
 
 FROM java:8-jre-alpine
 WORKDIR /app
-# COPY --from=build /usr/javaAnchorServer/application/target/*SNAPSHOT.jar ./
+COPY --from=build /usr/javaAnchorServer/application/target/*SNAPSHOT.jar ./
 CMD ["java","jar","./*SNAPSHOT.jar"]
