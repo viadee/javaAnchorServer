@@ -1,7 +1,8 @@
 server:
-  port: 5000
+  port: ${SERVER_PORT}
 app:
   server-name-mapping:
     local-H2O: 'http://localhost:54321'
-  spark-lib-folder: '../anchor-h2o-spark/target/libs'
-  spark-master-url: 'spark://localhost:7077'
+  spark:
+    lib-folder: ${SPARK_LIB_FOLDER:}
+    master-url: ${SPARK_MASTER_URL:}
